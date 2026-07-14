@@ -1,6 +1,7 @@
 using System.Threading.Tasks.Dataflow;
+namespace Domain.Entities;
 
-class Publication
+public class Publication
 {
     public Guid Id { get; init; }
     public Guid Creator { get; init; }
@@ -41,6 +42,36 @@ class Publication
             throw new Exception("No se puede tener menos de 0 aplicantes");
         }
 
+    }
+
+    public void Update(string job, string description, float salary)
+    {
+        if (salary < 0)
+        {
+            throw new Exception("salario mayor a 0");
+        }
+        if (string.IsNullOrEmpty(job))
+        {
+            throw new Exception("campo vacio.");
+        }
+        if (string.IsNullOrEmpty(description))
+        {
+            throw new Exception("campo vacio.");
+        }
+        Description = description;
+        Job_position = job;
+        Salary = salary;
+    }
+    public void AddApplicants()
+    {
+        Applicants++;
+    }
+    public void DeleteApplicants()
+    {
+        if (Applicants > 0)
+        {
+            Applicants--;
+        }
     }
 
 }
