@@ -1,4 +1,5 @@
 
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -10,6 +11,7 @@ public class AppDbContext : DbContext
         : base(options)
     {
     }
+        public DbSet<User> Users { get; set; }
 
      protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
