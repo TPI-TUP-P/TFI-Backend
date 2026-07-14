@@ -15,9 +15,9 @@ public class PublicationService : IPublicationService
         _Publication = publication;
     }
 
-    public async Task<GetByIdResponse> GetById(Guid Id, CancellationToken cancellationToken)
+    public async Task<GetByIdResponse> GetByIdAsync(Guid Id, CancellationToken cancellationToken)
     {
-        var publication = await _Publication.GetById(Id, cancellationToken);
+        var publication = await _Publication.GetByIdAsync(Id, cancellationToken);
         // momentaño para que funcione
         return new GetByIdResponse(
             publication.Id,

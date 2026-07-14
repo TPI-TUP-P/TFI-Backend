@@ -7,7 +7,7 @@ using Application.DTOs.Publication.Response;
 
 public interface IPublicationService
 {
-    Task<GetByIdResponse> GetById(Guid Id, CancellationToken cancellationToken);
+    Task<GetByIdResponse> GetByIdAsync(Guid Id, CancellationToken cancellationToken);
 
     //faltan mas
 }

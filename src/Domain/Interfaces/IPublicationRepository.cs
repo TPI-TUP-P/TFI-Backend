@@ -3,7 +3,7 @@ using Domain.Interfaces;
 
 namespace Domain.Interfaces;
 
-public interface IPublicationRepository : IRepository<Publication>
+public interface IPublicationRepository : IGenericRepository<Publication>
 {
-    new Task<Publication> GetById(Guid Id, CancellationToken cancellationToken);
+    Task<Publication> GetByIdAsync(Guid Id, CancellationToken cancellationToken);
 }

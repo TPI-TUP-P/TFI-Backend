@@ -11,7 +11,7 @@ public class PublicationController : ControllerBase
 
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<GetByIdResponse>> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<GetByIdResponse>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return Ok();
     }
