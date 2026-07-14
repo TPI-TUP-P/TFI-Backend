@@ -11,9 +11,11 @@ public class AppDbContext : DbContext
         : base(options)
     {
     }
-        public DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; }
 
-     protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public DbSet<Publication> Publications { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         base.OnModelCreating(modelBuilder);

@@ -1,0 +1,9 @@
+using Domain.Entities;
+using Domain.Interfaces;
+
+namespace Domain.Interfaces;
+
+public interface IPublicationRepository : IGenericRepository<Publication>
+{
+    Task<Publication> GetByIdAsync(Guid Id, CancellationToken cancellationToken);
+}
