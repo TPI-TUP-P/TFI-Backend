@@ -73,5 +73,9 @@ public class Publication
             Applicants--;
         }
     }
+    public void Delete()
+    {
+        var momentaneo = "momento";
+    }
 
 }
