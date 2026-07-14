@@ -8,8 +8,11 @@ public class User
     public string Password { get; set; }
     public string Email { get; set; }
     public string Phone { get; set; }
+
+    public bool IsActive {get; private set;}
     public UserRole Role { get; set; }
     public DateTime CreatedDate { get; set; }
+
 
 
     private User(string name, string lastName, string phone, string email, string password, UserRole role)
@@ -24,6 +27,11 @@ public class User
         Role = role;
         CreatedDate = DateTime.UtcNow;
     }
+
+    public void Delete()
+{
+    IsActive = false;
+}
 
     public User() { }
 

@@ -1,6 +1,8 @@
 public enum UserRole
 {
-    User = 0,
-    Admin = 1,
-    SuperAdmin =2
+    Candidate = 0,
+
+    Recruiter = 1,
+    Admin = 2,
+    SuperAdmin =3
 }
