@@ -1,3 +1,6 @@
+using Application.Interfaces.Services;
+using Application.Services;
+using Domain.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +17,9 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlite(
                 configuration.GetConnectionString("DefaultConnection")));
+
+    services.AddScoped<IUserRepository, UserRepository>();
+    services.AddScoped<IUserService, UserService>();
 
         return services;
     }
