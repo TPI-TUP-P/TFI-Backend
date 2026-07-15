@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Domain.Entities;
 
 public class User
@@ -15,7 +17,7 @@ public class User
 
 
 
-    private User(string name, string lastName, string phone, string email, string password, UserRole role)
+    public User(string name, string lastName, string phone, string email, string password, UserRole role)
     {
         ValidateProperties(name, lastName, phone, email, password);
         Id = Guid.NewGuid();
