@@ -5,13 +5,13 @@ namespace Application.Interfaces.Services;
 
 public interface IUserService
 {
-    Task<GetByIdResponse> GetByIdAsync(Guid id);
+    Task<GetByIdResponse> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     // Task<IEnumerable<UserResponse>> GetAllAsync();
 
-    Task<GetByIdResponse> CreateAsync(CreateRequest request);
+    Task<GetByIdResponse> CreateAsync(CreateRequest request, CancellationToken cancellationToken);
 
-    Task<GetByIdResponse> UpdateAsync(Guid id, UpdateRequest request);
+    Task<GetByIdResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
 
-    Task DeleteAsync(Guid id);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
 }

@@ -10,16 +10,11 @@ namespace Web.Controllers;
 public class UserController(IUserService userService) : ControllerBase
 {
     [HttpGet("{id}")] 
-    public async Task<ActionResult<GetByIdResponse>> GetById(Guid id)
+    public async Task<ActionResult<GetByIdResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var user = await userService.GetByIdAsync(id);
+        var user = await userService.GetByIdAsync(id, cancellationToken);
         return Ok(user);
     }
 
-    [HttpPost] 
-    public async Task<ActionResult<GetByIdResponse>> GetById(Guid id)
-    {
-        var user = await userService.GetByIdAsync(id);
-        return Ok(user);
-    }
+ 
 }

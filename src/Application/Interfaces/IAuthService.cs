@@ -3,7 +3,7 @@ using Application.DTOs.Auth.Response;
 
 public interface IAuthService
 {
-    Task RegisterAsync(RegisterRequest request);
+    Task<RegisterResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken);
 
-    Task<LoginResponse> LoginAsync(LoginRequest request);
+    Task<LoginResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken);
 }
