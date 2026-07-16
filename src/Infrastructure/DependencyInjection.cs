@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Repositories;
+using Infrastructure.Data.Repositories;
+using Infrastructure.Services;
 
 namespace Infrastructure;
 
@@ -24,6 +26,8 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IPasswordHasherService, PasswordHasherService>();
         services.AddScoped<IPublicationService, PublicationService>();
         services.AddScoped<IPublicationRepository, PublicationRepository>();
 
