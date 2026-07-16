@@ -114,7 +114,7 @@ public class UserService(IUserRepository _userRepository) : IUserService
             user.Phone = request.Phone;
         }
       
-        await _userRepository.UpdateAsync(user);
+        await _userRepository.UpdateAsync(user, cancellationToken);
         // await _userRepository.SaveChangesAsync();
 
         return new GetByIdResponse
