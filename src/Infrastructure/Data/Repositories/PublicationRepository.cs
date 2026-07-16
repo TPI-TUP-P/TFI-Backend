@@ -8,7 +8,7 @@ namespace Infrastructure.Repositories;
 public class PublicationRepository(AppDbContext context) : IPublicationRepository
 
 {
-    public async Task<Publication> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Publication?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var publication = await context.Publications.FindAsync(id, cancellationToken);
         return publication!;
