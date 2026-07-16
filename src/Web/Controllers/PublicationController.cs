@@ -9,21 +9,16 @@ namespace Web.Controllers;
 [ApiController]
 [Route("[controller]")]
 
-public class PublicationController : ControllerBase
+public class PublicationController(IPublicationService _publication) : ControllerBase
 {
-    private readonly IPublicationService _publication;
-    public PublicationController(IPublicationService publication)
-    {
-        _publication = publication;
-    }
-
+    // im testing the new method to do inject dependecy
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<GetByIdResponse>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _publication.GetByIdAsync(id, cancellationToken));
     }
 
-    [HttpPost("")]
+    [HttpPost()]
 
     public async Task<ActionResult<CreateResponse>> AddAsync([FromBody] CreateRequest publicationDto, CancellationToken cancellationToken)
     {
