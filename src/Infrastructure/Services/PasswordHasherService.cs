@@ -1,3 +1,5 @@
+using Application.Interfaces;
+
 namespace Infrastructure.Services;
 
 public class PasswordHasherService :IPasswordHasherService 
