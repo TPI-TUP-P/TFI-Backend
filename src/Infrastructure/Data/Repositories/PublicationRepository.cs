@@ -3,7 +3,9 @@ using Domain.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-public class PublicantionRepository(AppDbContext context) : IPublicationRepository
+namespace Infrastructure.Repositories;
+
+public class PublicationRepository(AppDbContext context) : IPublicationRepository
 
 {
     public async Task<Publication> GetByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -19,7 +21,7 @@ public class PublicantionRepository(AppDbContext context) : IPublicationReposito
         return publicationcreated.Entity;
     }
 
-    public async Task<Publication> UpdateAsync(Publication publication)
+    public async Task<Publication> UpdateAsync(Publication publication, CancellationToken cancellationToken)
     {
         var publicationToUpdate = await context.Publications.FindAsync(publication.Id);
         publicationToUpdate!.Job_position = publication.Job_position;
@@ -32,7 +34,7 @@ public class PublicantionRepository(AppDbContext context) : IPublicationReposito
 
     }
 
-    public async Task DeleteAsync(Publication publication)
+    public async Task DeleteAsync(Publication publication, CancellationToken cancellationToken)
     {
         publication.Delete();
         await context.SaveChangesAsync();
