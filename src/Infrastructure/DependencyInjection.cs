@@ -31,6 +31,8 @@ public static class DependencyInjection
         services.AddScoped<IPublicationService, PublicationService>();
         services.AddScoped<IPublicationRepository, PublicationRepository>();
 
+
+
         return services;
     }
 }
