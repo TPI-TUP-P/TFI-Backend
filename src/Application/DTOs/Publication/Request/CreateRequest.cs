@@ -3,8 +3,8 @@ namespace Application.DTOs.Publication.Request;
 public class CreateRequest
 {
     public Guid Creator { get; init; }
-    public string? Job_position { get; set; }
-    public string? Description { get; set; }
+    public required string Job_position { get; set; } = string.Empty;
+    public required string Description { get; set; } = string.Empty;
     public float Salary { get; set; }
     public int Applicants { get; set; }
 
