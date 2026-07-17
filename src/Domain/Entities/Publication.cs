@@ -10,6 +10,7 @@ public class Publication
     public float Salary { get; set; }
     public int Applicants { get; set; }
     public DateTime Created_Date { get; init; }
+    public bool State { get; set; }
 
     public Publication(Guid creator, string job_position, string description, float salary, int applicants)
     {
@@ -21,6 +22,7 @@ public class Publication
         Salary = salary;
         Applicants = applicants;
         Created_Date = DateTime.UtcNow;
+        State = true;
     }
 
     private void ValidateProperties(string job, string description, float salary, int applicants)
@@ -64,6 +66,10 @@ public class Publication
     }
     public void AddApplicants()
     {
+        if (!State)
+        {
+            throw new Exception("can't add apllicant cuz its is deleted");
+        }
         Applicants++;
     }
     public void DeleteApplicants()
@@ -75,7 +81,12 @@ public class Publication
     }
     public void Delete()
     {
-        var momentaneo = "momento";
+        if (State is true)
+        {
+
+            var State = false;
+        }
+
     }
 
 }
