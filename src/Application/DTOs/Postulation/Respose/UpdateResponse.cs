@@ -1,0 +1,22 @@
+using Domain.Enums;
+
+namespace Application.DTOs.Postulation.Response
+{
+    public class UpdateResponse
+    {
+        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+        public Guid JobOfferId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public EnumState State { get; set; }
+
+        public UpdateResponse(Guid id, Guid userId, Guid jobOfferId, DateTime createdAt, EnumState state)
+        {
+            Id = id;
+            UserId = userId;
+            JobOfferId = jobOfferId;
+            CreatedAt = createdAt;
+            State = state;
+        }
+    }
+}

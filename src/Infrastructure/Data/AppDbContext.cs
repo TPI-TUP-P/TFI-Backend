@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     {
     }
     public DbSet<User> Users { get; set; }
+    public DbSet<Postulation> Postulations { get; set; }
 
     public DbSet<Publication> Publications { get; set; }
 

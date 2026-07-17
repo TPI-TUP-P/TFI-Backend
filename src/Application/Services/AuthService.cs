@@ -3,6 +3,7 @@ using Application.DTOs.Auth.Response;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Interfaces;
 
 public class AuthService(IUserRepository userRepository,IJwtService jwtService, IPasswordHasherService passwordHasher) : IAuthService
@@ -13,13 +14,13 @@ public class AuthService(IUserRepository userRepository,IJwtService jwtService, 
         var existingEmail = await userRepository.GetByEmailAsync(request.Email, cancellationToken);
         if (existingEmail != null)
         {
-            throw new Exception("This email address already exists.");
+            throw new EmailAlredyExistsException();
         }
         var passwordHash = passwordHasher.Hash(request.Password);
         var user = new User(
+            name: request.Name,
             email: request.Email,
             password: passwordHash,
-            name: request.Name,
             lastName: request.LastName,
             phone: request.Phone,
             role: UserRole.Candidate
@@ -46,13 +47,13 @@ public class AuthService(IUserRepository userRepository,IJwtService jwtService, 
         var user = await userRepository.GetByEmailAsync(request.Email,cancellationToken );
         if(user == null)
         {
-            throw new Exception("incorrect credentials");
+            throw new InvalidCredentialsException();
         }
 
         bool isEquals =  passwordHasher.ComparePassword(request.Password, user.Password);
         if(isEquals == false)
         {
-            throw new Exception("incorrect credentials");
+            throw new InvalidCredentialsException();
         }
         var token = jwtService.GenerateToken(user);
         return new LoginResponse
