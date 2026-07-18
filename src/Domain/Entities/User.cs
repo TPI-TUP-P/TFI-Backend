@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using Domain.Enums;
+using Domain.Exceptions;
 
 namespace Domain.Entities;
 
@@ -15,11 +17,11 @@ public class User
     public string Password { get; set; } = string.Empty;
     [Required]
     public string Email { get; set; } = string.Empty;
-    
+
     [Required]
     public string Phone { get; set; } = string.Empty;
 
-    public bool IsActive {get; private set;}
+    public bool IsActive { get; private set; } = true;
     public UserRole Role { get; set; }
     public DateTime CreatedDate { get; set; }
 
@@ -39,9 +41,9 @@ public class User
     }
 
     public void Delete()
-{
-    IsActive = false;
-}
+    {
+        IsActive = false;
+    }
 
     public User() { }
 
@@ -49,33 +51,36 @@ public class User
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            throw new Exception("The name cannot be empty.");
+            throw new FieldEmptyException("Name");
         }
         else if (name.Length < 3 || name.Length > 100)
         {
-            throw new Exception("Name must be between 3 and 100 characters long");
-        }
+            throw new InvalidLegthException(3, 100, name);
+        } else if (!Regex.IsMatch(name, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+
 
 
         if (string.IsNullOrWhiteSpace(lastName))
         {
-            throw new Exception("The last name cannot be empty.");
+            throw new FieldEmptyException("Last name");
         }
         else if (lastName.Length < 3 || lastName.Length > 100)
         {
-            throw new Exception("last name must be between 3 and 100 characters long");
-        }
+            throw new InvalidLegthException(3, 100, lastName);
+        } else if (!Regex.IsMatch(lastName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+
 
         if (!string.IsNullOrWhiteSpace(phone) && phone.Length < 8)
         {
-            throw new Exception("Phone number must be at least 8 characters long.");
+            throw new InvalidLegthException(phone, 8);
 
-        }
+        } else  if (!Regex.IsMatch(phone, @"^\+?[0-9]{8,15}$"))
+    throw new InvalidFormatException(nameof(phone));
 
 
         if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
         {
-            throw new Exception("The email is not valid.");
+            throw new FieldEmptyException(email);
         }
     }
 }
