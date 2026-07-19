@@ -51,7 +51,7 @@ public class UserController(IUserService userService) : ControllerBase
         }
 
         var userId = Guid.Parse(userIdClaim);
-        var currentUserRole = Enum.Parse<UserRole>(roleClaim);
+        var currentUserRole = Enum.Parse<UserRole>(roleClaim!);
 
         await userService.DeleteAsync(userId, userId, currentUserRole, cancellationToken);
         return NoContent();
