@@ -56,7 +56,11 @@ public class User
         else if (name.Length < 3 || name.Length > 100)
         {
             throw new InvalidLegthException(3, 100, name);
-        } else if (!Regex.IsMatch(name, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+        }
+        else if (!Regex.IsMatch(name, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+        {
+            throw new InvalidFormatException(name);
+        }
 
 
 
@@ -67,15 +71,24 @@ public class User
         else if (lastName.Length < 3 || lastName.Length > 100)
         {
             throw new InvalidLegthException(3, 100, lastName);
-        } else if (!Regex.IsMatch(lastName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+        }
+        else if (!Regex.IsMatch(lastName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+        {
+            throw new InvalidFormatException(lastName);
+
+        }
 
 
         if (!string.IsNullOrWhiteSpace(phone) && phone.Length < 8)
         {
             throw new InvalidLegthException(phone, 8);
 
-        } else  if (!Regex.IsMatch(phone, @"^\+?[0-9]{8,15}$"))
-    throw new InvalidFormatException(nameof(phone));
+        }
+        else if (!Regex.IsMatch(phone, @"^\+?[0-9]{8,15}$"))
+        {
+
+            throw new InvalidFormatException(nameof(phone));
+        }
 
 
         if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
