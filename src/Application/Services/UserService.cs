@@ -10,12 +10,7 @@ namespace Application.Services;
 
 public class UserService(IUserRepository _userRepository) : IUserService
 {
-    // private readonly IUserRepository _userRepository;
 
-    // public UserService(IUserRepository userRepository)
-    // {
-    //     _userRepository = userRepository;
-    // }
 
     public async Task<GetByIdResponse> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -52,7 +47,6 @@ public class UserService(IUserRepository _userRepository) : IUserService
             );
 
         await _userRepository.AddAsync(user, cancellationToken);
-        // await _userRepository.SaveChangesAsync();
 
         return new GetByIdResponse
         {
@@ -115,7 +109,6 @@ public class UserService(IUserRepository _userRepository) : IUserService
         }
       
         await _userRepository.UpdateAsync(user, cancellationToken);
-        // await _userRepository.SaveChangesAsync();
 
         return new GetByIdResponse
         {
@@ -129,7 +122,7 @@ public class UserService(IUserRepository _userRepository) : IUserService
         };
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteAsync(Guid idTarget,Guid id, UserRole role,CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(id, cancellationToken);
 
@@ -138,8 +131,14 @@ public class UserService(IUserRepository _userRepository) : IUserService
             throw new Exception("User not found.");
         }
 
+    if (role != UserRole.Admin &&
+        role != UserRole.SuperAdmin &&
+        idTarget != id)
+    {
+        throw new Exception("You are not allowed to delete this user.");
+    }
+
         user.Delete();
 
-        // await _userRepository.SaveChangesAsync();
     }
 }
