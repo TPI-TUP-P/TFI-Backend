@@ -16,6 +16,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Publication> Publications { get; set; }
 
+    public DbSet<Calification> Califications { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
