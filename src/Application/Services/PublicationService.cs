@@ -8,20 +8,12 @@ using Application.DTOs.Publication.Request;
 using Application.Exceptions;
 namespace Application.Services;
 
-public class PublicationService : IPublicationService
+public class PublicationService(IPublicationRepository _Publication) : IPublicationService
 {
-    private readonly IPublicationRepository _Publication;
-
-    public PublicationService(IPublicationRepository publication)
-    {
-
-        _Publication = publication;
-    }
-
     public async Task<GetByIdResponse> GetByIdAsync(Guid Id, CancellationToken cancellationToken)
     {
         ValidateId(Id);
-        var publication = await _Publication.GetByIdAsync(Id, cancellationToken) ?? throw new KeyNotFoundException("Publicantion No Found");
+        var publication = await _Publication.GetByIdAsync(Id, cancellationToken) ?? throw new NotFoundException("Publicantion");
         return new GetByIdResponse(
             publication.Id,
             publication.Creator,
@@ -36,6 +28,14 @@ public class PublicationService : IPublicationService
     public async Task<CreateResponse> AddAsync(CreateRequest publicationDto, CancellationToken cancellationToken)
     {
 
+        if (publicationDto is null)
+        {
+            throw new NotFoundException("publication dto");
+        }
+        CheckField(publicationDto.Job_position, "Job_position");
+        CheckField(publicationDto.Description, "Description");
+
+        // el id creator lo tengo que traer desde el token
         var NewPublication = new Publication(
             publicationDto.Creator,
             publicationDto.Job_position!,
@@ -76,13 +76,13 @@ public class PublicationService : IPublicationService
         {
             existingPublication.Description = publicationDto.Description;
         }
-        if (publicationDto.Salary < 0)
+        if (publicationDto.Salary > 0)
         {
             existingPublication.Salary = publicationDto.Salary;
         }
         else
         {
-            throw new Exception("agregar el error de numeros negativos");
+            throw new NegativeNumberException("Salary");
         }
         return new UpdateResponse(
             existingPublication.Id,
@@ -96,11 +96,34 @@ public class PublicationService : IPublicationService
         );
     }
 
+    public async Task DeleteAsync(Guid id, Guid idUser, CancellationToken cancellationToken)
+    {
+        ValidateId(id);
+        ValidateId(idUser);
+
+        var publication = await _Publication.GetByIdAsync(id, cancellationToken) ?? throw new NotFoundException("Publication");
+        if (publication.Creator != idUser)
+        {
+            throw new UnauthorizedAccessException();
+        }
+        await _Publication.DeleteAsync(publication, cancellationToken);
+    }
+
     private void ValidateId(Guid Id)
     {
         if (Id == Guid.Empty)
         {
-            throw new Exception("Id Empty");
+            throw new NotFoundException("Id");
         }
     }
+
+    private void CheckField(string field, string fieldName)
+    {
+        if (string.IsNullOrWhiteSpace(field))
+        {
+            throw new NotFoundException(fieldName);
+        }
+    }
+
+
 }

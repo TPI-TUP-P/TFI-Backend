@@ -12,4 +12,6 @@ public interface IPublicationService
     Task<CreateResponse> AddAsync(CreateRequest publication, CancellationToken cancellationToken);
 
     Task<UpdateResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
+
+    Task DeleteAsync(Guid id, Guid idUser, CancellationToken cancellationToken);
 }
