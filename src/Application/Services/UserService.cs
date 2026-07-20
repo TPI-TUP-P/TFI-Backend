@@ -1,5 +1,8 @@
+using System.Diagnostics;
 using Application.DTOs.User.Request;
 using Application.DTOs.User.Response;
+using Application.Exceptions;
+
 // using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Domain.Entities;
@@ -10,12 +13,7 @@ namespace Application.Services;
 
 public class UserService(IUserRepository _userRepository) : IUserService
 {
-    // private readonly IUserRepository _userRepository;
 
-    // public UserService(IUserRepository userRepository)
-    // {
-    //     _userRepository = userRepository;
-    // }
 
     public async Task<GetByIdResponse> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -40,7 +38,7 @@ public class UserService(IUserRepository _userRepository) : IUserService
 
     public async Task<GetByIdResponse> CreateAsync(CreateRequest request, CancellationToken cancellationToken)
     {
-    
+
 
         var user = new User(
             request.Name,
@@ -52,7 +50,6 @@ public class UserService(IUserRepository _userRepository) : IUserService
             );
 
         await _userRepository.AddAsync(user, cancellationToken);
-        // await _userRepository.SaveChangesAsync();
 
         return new GetByIdResponse
         {
@@ -67,18 +64,18 @@ public class UserService(IUserRepository _userRepository) : IUserService
     }
 
 
-    public async Task<GetByIdResponse> GetByEmailAsync(string email , CancellationToken cancellationToken)
+    public async Task<GetByIdResponse> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
-        
-        if(user == null)
+
+        if (user == null)
         {
             throw new Exception("Not exists user");
         }
 
         return new GetByIdResponse
         {
-              Id = user.Id,
+            Id = user.Id,
             Name = user.Name,
             LastName = user.LastName,
             Email = user.Email,
@@ -113,9 +110,8 @@ public class UserService(IUserRepository _userRepository) : IUserService
         {
             user.Phone = request.Phone;
         }
-      
+
         await _userRepository.UpdateAsync(user, cancellationToken);
-        // await _userRepository.SaveChangesAsync();
 
         return new GetByIdResponse
         {
@@ -129,17 +125,25 @@ public class UserService(IUserRepository _userRepository) : IUserService
         };
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteAsync(Guid idTarget, Guid id, UserRole role, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+Debug.WriteLine($"Id Target: {idTarget}, Id: {id}, Role: {role}");
 
         if (user is null)
         {
-            throw new Exception("User not found.");
+            throw new NotFoundException("User not found.");
+        }
+
+        if (role != UserRole.Admin &&
+            role != UserRole.SuperAdmin &&
+            idTarget != id)
+        {
+            throw new Exception("You are not allowed to delete this user.");
         }
 
         user.Delete();
+       await _userRepository.UpdateAsync(user, cancellationToken);
 
-        // await _userRepository.SaveChangesAsync();
     }
 }
