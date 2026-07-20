@@ -1,17 +1,10 @@
 using Domain.Entities;
 using Domain.Interfaces;
-using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Data.Repositories;
 
 public class UserRepository(AppDbContext context) : IUserRepository
 {
-    // private readonly AppDbContext _context;
-    // public UserRepository(AppDbContext context)
-    // {
-    //     _context = context;
-    // }
-
 
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
