@@ -41,4 +41,26 @@ public class Calification
             throw new NegativeNumbersException(); // momentaño
         }
     }
+    public void Update(int score)
+    {
+        if (score < 0 || score > 5)
+        {
+            throw new NegativeNumbersException();
+        }
+        else
+        {
+            Score = score;
+        }
+
+
+    }
+    public void Delete()
+    {
+        if (State is true)
+        {
+
+            State = false;
+        }
+
+    }
 }
