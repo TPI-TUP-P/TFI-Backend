@@ -5,6 +5,7 @@ using Domain.Interfaces;
 
 using Application.DTOs.Publication.Response;
 using Application.DTOs.Publication.Request;
+using Application.Exceptions;
 namespace Application.Services;
 
 public class PublicationService : IPublicationService
@@ -21,7 +22,6 @@ public class PublicationService : IPublicationService
     {
         ValidateId(Id);
         var publication = await _Publication.GetByIdAsync(Id, cancellationToken) ?? throw new KeyNotFoundException("Publicantion No Found");
-        // momentaño para que funcione
         return new GetByIdResponse(
             publication.Id,
             publication.Creator,
@@ -53,6 +53,46 @@ public class PublicationService : IPublicationService
             publication.Salary,
             publication.Applicants,
             publication.Created_Date
+        );
+    }
+
+    public async Task<UpdateResponse> UpdateAsync(Guid IdUser, UpdateRequest publicationDto, CancellationToken cancellationToken)
+    {
+
+        ValidateId(publicationDto.Id);
+        ValidateId(IdUser);
+
+        var existingPublication = await GetByIdAsync(publicationDto.Id, cancellationToken);
+        //why fay are scared of needles
+        if (IdUser != existingPublication.Creator)
+        {
+            throw new UnauthorizedException();
+        }
+        if (!string.IsNullOrWhiteSpace(publicationDto.Job_position))
+        {
+            existingPublication.Job_position = publicationDto.Job_position;
+        }
+        if (!string.IsNullOrWhiteSpace(publicationDto.Description))
+        {
+            existingPublication.Description = publicationDto.Description;
+        }
+        if (publicationDto.Salary < 0)
+        {
+            existingPublication.Salary = publicationDto.Salary;
+        }
+        else
+        {
+            throw new Exception("agregar el error de numeros negativos");
+        }
+        return new UpdateResponse(
+            existingPublication.Id,
+            existingPublication.Creator,
+            existingPublication.Job_position!,
+            existingPublication.Description!,
+            existingPublication.Salary,
+            existingPublication.Applicants,
+            existingPublication.Created_Date
+
         );
     }
 

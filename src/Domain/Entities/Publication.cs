@@ -1,4 +1,5 @@
 using System.Threading.Tasks.Dataflow;
+using Domain.Exceptions;
 namespace Domain.Entities;
 
 public class Publication
@@ -29,19 +30,19 @@ public class Publication
     {
         if (job is null)
         {
-            throw new Exception("is null");
+            throw new FieldEmptyException("Job");
         }
         if (description is null)
         {
-            throw new Exception("is null");
+            throw new FieldEmptyException("Description");
         }
         if (salary < 0)
         {
-            throw new Exception("No se puede pagar menos de 0");
+            throw new NegativeNumbersException();
         }
         if (applicants < 0)
         {
-            throw new Exception("No se puede tener menos de 0 aplicantes");
+            throw new NegativeNumbersException();
         }
 
     }
@@ -50,15 +51,15 @@ public class Publication
     {
         if (salary < 0)
         {
-            throw new Exception("salario mayor a 0");
+            throw new NegativeNumbersException();
         }
         if (string.IsNullOrEmpty(job))
         {
-            throw new Exception("campo vacio.");
+            throw new FieldEmptyException("Job");
         }
         if (string.IsNullOrEmpty(description))
         {
-            throw new Exception("campo vacio.");
+            throw new FieldEmptyException("Description");
         }
         Description = description;
         Job_position = job;
@@ -78,13 +79,17 @@ public class Publication
         {
             Applicants--;
         }
+        else
+        {
+            throw new NegativeNumbersException();
+        }
     }
     public void Delete()
     {
         if (State is true)
         {
 
-            var State = false;
+            State = false;
         }
 
     }
