@@ -127,8 +127,7 @@ public class UserService(IUserRepository _userRepository) : IUserService
 
     public async Task DeleteAsync(Guid idTarget, Guid id, UserRole role, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(id, cancellationToken);
-Debug.WriteLine($"Id Target: {idTarget}, Id: {id}, Role: {role}");
+        var user = await _userRepository.GetByIdAsync(idTarget, cancellationToken);
 
         if (user is null)
         {

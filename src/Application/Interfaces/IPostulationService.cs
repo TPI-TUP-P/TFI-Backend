@@ -1,4 +1,4 @@
-using System;
+
 using Application.DTOs.Postulation.Request;
 using Application.DTOs.Postulation.Response;
 namespace Application.Interfaces
