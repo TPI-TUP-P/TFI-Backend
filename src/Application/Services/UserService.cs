@@ -1,5 +1,8 @@
+using System.Diagnostics;
 using Application.DTOs.User.Request;
 using Application.DTOs.User.Response;
+using Application.Exceptions;
+
 // using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Domain.Entities;
@@ -125,10 +128,11 @@ public class UserService(IUserRepository _userRepository) : IUserService
     public async Task DeleteAsync(Guid idTarget, Guid id, UserRole role, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+Debug.WriteLine($"Id Target: {idTarget}, Id: {id}, Role: {role}");
 
         if (user is null)
         {
-            throw new Exception("User not found.");
+            throw new NotFoundException("User not found.");
         }
 
         if (role != UserRole.Admin &&
@@ -139,6 +143,7 @@ public class UserService(IUserRepository _userRepository) : IUserService
         }
 
         user.Delete();
+       await _userRepository.UpdateAsync(user, cancellationToken);
 
     }
 }

@@ -38,7 +38,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete("/me")]
+    [HttpDelete("me")]
     [Authorize]
     public async Task<ActionResult> Delete(CancellationToken cancellationToken)
     {
