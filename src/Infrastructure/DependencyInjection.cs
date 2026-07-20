@@ -30,6 +30,8 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
         services.AddScoped<IPublicationService, PublicationService>();
         services.AddScoped<IPublicationRepository, PublicationRepository>();
+        services.AddScoped<ICalificationService, CalificationService>();
+        services.AddScoped<ICalificationRepository, CalificationRepository>();
 
 
 
