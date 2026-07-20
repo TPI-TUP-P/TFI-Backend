@@ -28,6 +28,21 @@ public class CalificationController(ICalificationService _calification) : Contro
 
         return CreatedAtAction(nameof(GetByIdAsync), new { id = calification.Id }, calification);
     }
+    [HttpPatch()]
+    public async Task<ActionResult<UpdateResponse>> UpdateAsync([FromBody] UpdateRequest calificationDto, CancellationToken cancellationToken)
+    {
+
+        var idUser = GetUserId();
+        return Ok(await _calification.UpdateAsync(idUser, calificationDto, cancellationToken));
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var idUser = GetUserId();
+        await _calification.DeleteAsync(id, idUser, cancellationToken);
+
+    }
 
     private Guid GetUserId()
     {
