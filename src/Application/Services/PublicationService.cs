@@ -8,16 +8,8 @@ using Application.DTOs.Publication.Request;
 using Application.Exceptions;
 namespace Application.Services;
 
-public class PublicationService : IPublicationService
+public class PublicationService(IPublicationRepository _Publication) : IPublicationService
 {
-    private readonly IPublicationRepository _Publication;
-
-    public PublicationService(IPublicationRepository publication)
-    {
-
-        _Publication = publication;
-    }
-
     public async Task<GetByIdResponse> GetByIdAsync(Guid Id, CancellationToken cancellationToken)
     {
         ValidateId(Id);
@@ -38,7 +30,7 @@ public class PublicationService : IPublicationService
 
         if (publicationDto is null)
         {
-            throw new Exception("despues relleno");
+            throw new NotFoundException("publication dto");
         }
         CheckField(publicationDto.Job_position, "Job_position");
         CheckField(publicationDto.Description, "Description");
