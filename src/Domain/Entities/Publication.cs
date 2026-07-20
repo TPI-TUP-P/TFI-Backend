@@ -30,11 +30,11 @@ public class Publication
     {
         if (job is null)
         {
-            throw new EmptyFieldException("Job");
+            throw new FieldEmptyException("Job");
         }
         if (description is null)
         {
-            throw new EmptyFieldException("Description");
+            throw new FieldEmptyException("Description");
         }
         if (salary < 0)
         {
@@ -55,11 +55,11 @@ public class Publication
         }
         if (string.IsNullOrEmpty(job))
         {
-            throw new EmptyFieldException("Job");
+            throw new FieldEmptyException("Job");
         }
         if (string.IsNullOrEmpty(description))
         {
-            throw new EmptyFieldException("Description");
+            throw new FieldEmptyException("Description");
         }
         Description = description;
         Job_position = job;
