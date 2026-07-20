@@ -35,8 +35,13 @@ public class PublicationController(IPublicationService _publication) : Controlle
         var idUser = GetUserId();
         return Ok(await _publication.UpdateAsync(idUser, publicationDto, cancellationToken));
     }
+    [HttpDelete("{id:guid}")]
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var idUser = GetUserId();
+        await _publication.DeleteAsync(id, idUser, cancellationToken);
 
-
+    }
     private Guid GetUserId()
     {
         var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
