@@ -4,6 +4,9 @@ using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Infrastructure.Configurations;
+using Application.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -35,6 +38,13 @@ builder.Services.AddAuthentication(
         ?? throw new InvalidOperationException("JWT Key not found")))
         };
     }); var app = builder.Build();
+
+builder.Services.Configure<SupabaseOptions>(
+    builder.Configuration.GetSection(SupabaseOptions.Section));
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IStorageService, SupabaseStorageService>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

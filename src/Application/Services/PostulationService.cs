@@ -34,6 +34,10 @@ namespace Application.Services
             {
                 throw new Exception("JobOfferId is required");
             }
+            if (request.CV == null || request.CV.Length == 0)
+            {
+                throw new Exception("CV file is required");
+            }
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user == null)
             {
@@ -44,22 +48,23 @@ namespace Application.Services
             {
                 throw new Exception("Job offer not found");
             }   
-            // esta es provisdoria, despues habria que validar que el usuario exista y que la oferta de trabajo exista 
+            
             if (idUser != request.UserId)
             {
                 throw new Exception("UserId does not match the authenticated user's ID");
             }
 
-            // falta traer el usuario entero y el jobOffer entero para validar que existan, y que el usuario no sea el mismo que creo la oferta de trabajo
+            
 
-            var postulation = new Postulation(request.UserId, request.JobOfferId);
+            var postulation = new Postulation(request.UserId, request.JobOfferId, request.CV);
             await _postulationRepository.Create(postulation, cancellationToken);
             return new CreateResponse(
                 postulation.Id,
                 postulation.UserId,
                 postulation.JobOfferId,
                 postulation.CreatedAt,
-                postulation.State
+                postulation.State,
+                postulation.CV
             );
         }
 
@@ -75,7 +80,8 @@ namespace Application.Services
                 postulation.UserId,
                 postulation.JobOfferId,
                 postulation.CreatedAt,
-                postulation.State
+                postulation.State,
+                postulation.CV
             );
         }
 
@@ -102,7 +108,8 @@ namespace Application.Services
                 postulation.UserId,
                 postulation.JobOfferId,
                 postulation.CreatedAt,
-                postulation.State
+                postulation.State,
+                postulation.CV
             );
         }
 
@@ -114,7 +121,8 @@ namespace Application.Services
                 p.UserId,
                 p.JobOfferId,
                 p.CreatedAt,
-                p.State
+                p.State,
+                p.CV
             )).ToList();
         }
 
