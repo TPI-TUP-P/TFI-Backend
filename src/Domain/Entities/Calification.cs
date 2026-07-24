@@ -36,7 +36,7 @@ public class Calification
         {
             throw new FieldEmptyException("idQualified");
         }
-        if (score < 1 || score > 5)
+        if (score < 0 || score > 5)
         {
             throw new NegativeNumbersException(); // momentaño
         }
