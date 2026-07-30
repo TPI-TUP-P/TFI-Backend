@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Application.DTOs.User.Request;
 using Application.DTOs.User.Response;
-using Application.Interfaces.Services;
+using Application.Interfaces;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
