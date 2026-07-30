@@ -13,15 +13,16 @@ namespace Application.Services
         private readonly IPostulationRepository _postulationRepository;
         private readonly IUserRepository _userRepository;
         private readonly IPublicationRepository _jobOfferRepository;
-        
+        private readonly IStorageService _storageService;
 
 
-        public PostulationService(IPostulationRepository postulationRepository, IUserRepository userRepository, IPublicationRepository jobOfferRepository)
+
+        public PostulationService(IPostulationRepository postulationRepository, IUserRepository userRepository, IPublicationRepository jobOfferRepository, IStorageService storageService)
         {
             _postulationRepository = postulationRepository;
             _userRepository = userRepository;
             _jobOfferRepository = jobOfferRepository;
-
+            _storageService = storageService;
         }
 
         public async Task<CreateResponse> Create(Guid idUser, CreateRequest request, CancellationToken cancellationToken)
@@ -47,25 +48,44 @@ namespace Application.Services
             if (jobOffer == null)
             {
                 throw new Exception("Job offer not found");
-            }   
-            
+            }
+
             if (idUser != request.UserId)
             {
                 throw new Exception("UserId does not match the authenticated user's ID");
             }
 
-            
+            var exists = await _postulationRepository.ExistsAsync(request.UserId, request.JobOfferId, cancellationToken);
+            if (exists)
+            {
+                throw new Exception("User has already applied to this job offer");
+            }
 
-            var postulation = new Postulation(request.UserId, request.JobOfferId, request.CV);
-            await _postulationRepository.Create(postulation, cancellationToken);
-            return new CreateResponse(
-                postulation.Id,
-                postulation.UserId,
-                postulation.JobOfferId,
-                postulation.CreatedAt,
-                postulation.State,
-                postulation.CV
-            );
+            string cvPath = null;
+
+            try
+            {
+
+                cvPath = await _storageService.UploadAsync(request.CV);
+                var postulation = new Postulation(request.UserId, request.JobOfferId, request.CV.FileName, cvPath);
+                await _postulationRepository.Create(postulation, cancellationToken);
+                return new CreateResponse(
+                    postulation.Id,
+                    postulation.UserId,
+                    postulation.JobOfferId,
+                    postulation.CreatedAt,
+                    postulation.State,
+                    postulation.CvFileName,
+                    postulation.CvFilePath
+                );
+            }
+            catch
+            {
+                if (cvPath != null)
+                    await _storageService.DeleteAsync(cvPath);
+
+                throw;
+            }
         }
 
         public async Task<GetByIdResponse> GetById(Guid id, CancellationToken cancellationToken)
@@ -81,12 +101,13 @@ namespace Application.Services
                 postulation.JobOfferId,
                 postulation.CreatedAt,
                 postulation.State,
-                postulation.CV
+                postulation.CvFileName,
+                postulation.CvFilePath
             );
         }
 
-//que el usuario que quiera postularse sea el mismo que inicio sesion
-// me genera un poco de dudas
+        //que el usuario que quiera postularse sea el mismo que inicio sesion
+        // me genera un poco de dudas
         public async Task<UpdateResponse> Update(Guid idUser, Guid id, UpdateRequest request, CancellationToken cancellationToken)
         {
             var postulation = await _postulationRepository.GetById(id, cancellationToken);
@@ -100,7 +121,7 @@ namespace Application.Services
             }
 
             postulation.UpdateState(request.State);
-        
+
 
             await _postulationRepository.Update(postulation, cancellationToken);
             return new UpdateResponse(
@@ -109,7 +130,8 @@ namespace Application.Services
                 postulation.JobOfferId,
                 postulation.CreatedAt,
                 postulation.State,
-                postulation.CV
+                postulation.CvFileName,
+                postulation.CvFilePath
             );
         }
 
@@ -122,11 +144,12 @@ namespace Application.Services
                 p.JobOfferId,
                 p.CreatedAt,
                 p.State,
-                p.CV
+                p.CvFileName,
+                p.CvFilePath
             )).ToList();
         }
 
-        
+
 
         public async Task Delete(Guid id, Guid idUser, CancellationToken cancellationToken)
         {
@@ -139,7 +162,7 @@ namespace Application.Services
             {
                 throw new Exception("UserId does not match the postulation's UserId");
             }
-        
+
 
             await _postulationRepository.Delete(id, cancellationToken);
         }

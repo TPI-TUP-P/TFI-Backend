@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Repositories;
 using Infrastructure.Data.Repositories;
 using Infrastructure.Services;
+using Domain.interfaces;
+using Infrastructure.Services.Storage;
 
 namespace Infrastructure;
 
@@ -32,6 +34,11 @@ public static class DependencyInjection
         services.AddScoped<IPublicationRepository, PublicationRepository>();
         services.AddScoped<ICalificationService, CalificationService>();
         services.AddScoped<ICalificationRepository, CalificationRepository>();
+        services.AddScoped<IPostulationService, PostulationService>();
+        services.AddScoped<IPostulationRepository, PostulationRepository>();
+        services.AddScoped<IStorageService, SupabaseStorageService>();
+        
+
 
 
 

@@ -10,5 +10,6 @@ namespace Domain.interfaces
         Task<List<Postulation>> GetAll(CancellationToken cancellationToken);
         Task<Postulation> Update(Postulation postulation, CancellationToken cancellationToken);
         Task Delete(Guid id, CancellationToken cancellationToken);
+        Task<bool> ExistsAsync(Guid userId, Guid jobOfferId, CancellationToken cancellationToken);
     }
 }

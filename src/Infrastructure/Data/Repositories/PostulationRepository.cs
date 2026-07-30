@@ -49,5 +49,11 @@ namespace Infrastructure.Data.Repositories
                 await _context.SaveChangesAsync(cancellationToken);
             }
         }
+
+        // para validar si ya se postulo a la oferta de trabajo, para no permitir que se postule dos veces a la misma oferta
+        public async Task<bool> ExistsAsync(Guid userId, Guid jobOfferId, CancellationToken cancellationToken)
+        {
+            return await _context.Postulations.AnyAsync(p => p.UserId == userId && p.JobOfferId == jobOfferId, cancellationToken);
+        }
     }
 }

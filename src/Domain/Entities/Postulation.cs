@@ -10,26 +10,29 @@ namespace Domain.Entities
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid JobOfferId { get; set; }
+        public string CvFileName { get; private set; }
+        public string CvFilePath { get; private set; }
         public DateTime CreatedAt { get; set; }
         public EnumState State { get; set; }
-        public IFormFile CV { get; set; } // propiedad para almacenar el archivo del CV, puede ser null si no se sube un CV
-        //faltaria una propiedad para subir el cv?
+        
+        
         
     
 
-        public Postulation(Guid userId, Guid jobOfferId, IFormFile cv)
+        public Postulation(Guid userId, Guid jobOfferId, string cvFileName, string cvFilePath)
         {
-            ValidateProperties(userId, jobOfferId, cv);
+            ValidateProperties(userId, jobOfferId, cvFileName, cvFilePath);
             Id = Guid.NewGuid();
             UserId = userId;
             JobOfferId = jobOfferId;
-            CV = cv;
+            CvFileName = cvFileName;
+            CvFilePath = cvFilePath;
             CreatedAt = DateTime.UtcNow;
             State = EnumState.Pending;
         }
         // el state no lo deberia manejar el que creo la oferta de trabajo
 
-        public void ValidateProperties(Guid userId, Guid jobOfferId, IFormFile cv)
+        public void ValidateProperties(Guid userId, Guid jobOfferId, string cvFileName, string cvFilePath)
         {
             if (userId==Guid.Empty)
             {
@@ -39,9 +42,13 @@ namespace Domain.Entities
             {
                 throw new Exception("JobOfferId is required");
             }
-            if (cv == null || cv.Length == 0)
+            if (cvFileName == null || cvFileName.Length == 0)
             {
-                throw new Exception("CV file is required");
+                throw new Exception("CV file name is required");
+            }
+            if (cvFilePath == null || cvFilePath.Length == 0)
+            {
+                throw new Exception("CV file path is required");
             }
         }
 
