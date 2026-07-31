@@ -23,7 +23,8 @@ public class PublicationController(IPublicationService _publication) : Controlle
 
     public async Task<ActionResult<CreateResponse>> AddAsync([FromBody] CreateRequest publicationDto, CancellationToken cancellationToken)
     {
-        var publication = await _publication.AddAsync(publicationDto, cancellationToken);
+        var UserId = GetUserId();
+        var publication = await _publication.AddAsync(UserId, publicationDto, cancellationToken);
 
         return CreatedAtAction(nameof(GetByIdAsync), new { id = publication.Id }, publication);
     }

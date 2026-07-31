@@ -25,9 +25,9 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             );
 
     }
-    public async Task<CreateResponse> AddAsync(CreateRequest publicationDto, CancellationToken cancellationToken)
+    public async Task<CreateResponse> AddAsync(Guid IdUser, CreateRequest publicationDto, CancellationToken cancellationToken)
     {
-
+        ValidateId(IdUser);
         if (publicationDto is null)
         {
             throw new NotFoundException("publication dto");
@@ -37,7 +37,7 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
 
         // el id creator lo tengo que traer desde el token
         var NewPublication = new Publication(
-            publicationDto.Creator,
+            IdUser,
             publicationDto.Job_position!,
             publicationDto.Description!,
             publicationDto.Salary,

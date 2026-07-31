@@ -9,7 +9,7 @@ public interface IPublicationService
 {
     Task<GetByIdResponse> GetByIdAsync(Guid Id, CancellationToken cancellationToken);
 
-    Task<CreateResponse> AddAsync(CreateRequest publication, CancellationToken cancellationToken);
+    Task<CreateResponse> AddAsync(Guid IdUser, CreateRequest publication, CancellationToken cancellationToken);
 
     Task<UpdateResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
 

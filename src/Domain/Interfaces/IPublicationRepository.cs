@@ -6,5 +6,4 @@ namespace Domain.Interfaces;
 public interface IPublicationRepository : IGenericRepository<Publication>
 {
 
-
 }
