@@ -3,6 +3,7 @@ namespace Web.Controllers;
 
 using Application.DTOs.Auth.Request;
 using Application.DTOs.Auth.Response;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 

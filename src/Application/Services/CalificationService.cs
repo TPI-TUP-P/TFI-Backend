@@ -6,7 +6,9 @@ namespace Application.Services;
 
 using Application.DTOs.Calification.Response;
 using Application.DTOs.Calification.Request;
-public class CalificationService(ICalificationRepository _Calification) : ICalificationService
+using Application.Interfaces.Services;
+
+public class CalificationService(ICalificationRepository _Calification, IUserService _User) : ICalificationService
 {
     public async Task<GetByIdResponse> GetByIdAsync(Guid Id, CancellationToken cancellationToken)
     {
@@ -28,6 +30,14 @@ public class CalificationService(ICalificationRepository _Calification) : ICalif
         {
             throw new NotFoundException("CalificationDto");
         }
+        // no make sense get all data if i dont use that, so we can create a method for get if user exist without get all data, need ask to agus
+        var qualified = await _User.GetByIdAsync(calificationDto.IdQualified, cancellationToken) ?? throw new NotFoundException("User");
+
+        if (calificationDto.Score < 0 || calificationDto.Score > 5)
+        {
+            throw new OutRangeException("Score");
+        }
+
         var NewCalification = new Calification(
             IdUser,
             calificationDto.IdQualified,
