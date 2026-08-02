@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.DTOs.Publication.Request;
 using Application.DTOs.Publication.Response;
-using Domain.Interfaces;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -9,7 +8,7 @@ namespace Web.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
+[Authorize(Roles = "Recruiter,Admin, SuperAdmin")]
 public class PublicationController(IPublicationService _publication) : ControllerBase
 {
     // im testing the new method to do inject dependecy
