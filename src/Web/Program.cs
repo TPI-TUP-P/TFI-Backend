@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAuthentication(
@@ -36,10 +39,20 @@ builder.Services.AddAuthentication(
         };
     }); var app = builder.Build();
 
+
+
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.Title = "Mi API en .NET 10";
+        options.Theme = ScalarTheme.Mars; 
+        options.ShowSidebar = true;
+    });
 }
 // Run migrations automatically
 using (var scope = app.Services.CreateScope())

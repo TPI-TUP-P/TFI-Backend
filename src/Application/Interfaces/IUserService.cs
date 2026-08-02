@@ -2,7 +2,7 @@ using Application.DTOs.User.Request;
 using Application.DTOs.User.Response;
 using Domain.Enums;
 
-namespace Application.Interfaces.Services;
+namespace Application.Interfaces;
 
 public interface IUserService
 {
