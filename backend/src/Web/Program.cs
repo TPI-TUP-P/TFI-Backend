@@ -4,8 +4,10 @@ using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Infrastructure.Configurations;
+using Application.Interfaces;
+using Infrastructure.Services.Storage;
 using Scalar.AspNetCore;
-// using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,6 +92,9 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
+
+app.UseDeveloperExceptionPage();
+
 
 app.UseHttpsRedirection();
 app.UseCors("ReactPolicy");
