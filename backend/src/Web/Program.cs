@@ -54,14 +54,14 @@ builder.Services.AddCors(options =>
     });
 });
 
-// builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();
 
-// builder.Services.Configure<SupabaseOptions>(
-// builder.Configuration.GetSection(SupabaseOptions.Section));
+builder.Services.Configure<SupabaseOptions>(
+builder.Configuration.GetSection(SupabaseOptions.Section));
 
-// builder.Services.AddHttpClient();
+builder.Services.AddHttpClient();
 
-// builder.Services.AddScoped<IStorageService, SupabaseStorageService>();
+builder.Services.AddScoped<IStorageService, SupabaseStorageService>();
 
 
 var app = builder.Build();
