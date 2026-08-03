@@ -12,6 +12,7 @@ using Infrastructure.Services;
 using Domain.interfaces;
 using Infrastructure.Services.Storage;
 
+
 namespace Infrastructure;
 
 public static class DependencyInjection
