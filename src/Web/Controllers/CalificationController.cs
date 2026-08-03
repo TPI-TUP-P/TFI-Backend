@@ -9,7 +9,7 @@ namespace Web.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
+[Authorize(Roles = "Candidate,Admin,SuperAdmin")]
 
 public class CalificationController(ICalificationService _calification) : ControllerBase
 {
