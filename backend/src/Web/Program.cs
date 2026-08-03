@@ -43,6 +43,27 @@ builder.Services.AddAuthentication(
         };
     }); 
     
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Solo si usás cookies o autenticación por cookies
+    });
+});
+
+builder.Services.AddAuthorization();
+
+builder.Services.Configure<SupabaseOptions>(
+builder.Configuration.GetSection(SupabaseOptions.Section));
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IStorageService, SupabaseStorageService>();
+
+
 var app = builder.Build();
 app.UseStaticFiles();
 
@@ -76,6 +97,8 @@ app.UseDeveloperExceptionPage();
 
 
 app.UseHttpsRedirection();
+app.UseCors("ReactPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 

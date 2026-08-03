@@ -23,7 +23,7 @@ public class AuthService(IUserRepository userRepository,IJwtService jwtService, 
             password: passwordHash,
             lastName: request.LastName,
             phone: request.Phone,
-            role: UserRole.Candidate
+            role: request.Role
         );
         await userRepository.AddAsync(user, cancellationToken);
 
