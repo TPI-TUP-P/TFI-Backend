@@ -7,7 +7,6 @@ namespace Application.Services;
 using Application.DTOs.Calification.Response;
 using Application.DTOs.Calification.Request;
 
-
 public class CalificationService(ICalificationRepository _Calification, IUserService _User) : ICalificationService
 {
     public async Task<GetByIdResponse> GetByIdAsync(Guid Id, CancellationToken cancellationToken)

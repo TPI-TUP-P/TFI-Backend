@@ -65,6 +65,33 @@ public class UserService(IUserRepository _userRepository) : IUserService
     }
 
 
+
+    public async Task<bool> ExistsUserEmail(string email, CancellationToken cancellationToken)
+    {
+        var existingUser = await _userRepository.GetByEmailAsync(email, cancellationToken);
+        if (existingUser != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> ExistsUserId(Guid id, CancellationToken cancellationToken)
+    {
+        var existingUser = await _userRepository.GetByIdAsync(id, cancellationToken);
+        if (existingUser != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public async Task<GetByIdResponse> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
@@ -143,7 +170,7 @@ public class UserService(IUserRepository _userRepository) : IUserService
         }
 
         user.Delete();
-       await _userRepository.UpdateAsync(user, cancellationToken);
+        await _userRepository.UpdateAsync(user, cancellationToken);
 
     }
 }

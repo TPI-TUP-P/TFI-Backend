@@ -10,6 +10,10 @@ public interface IUserService
 
     // Task<IEnumerable<UserResponse>> GetAllAsync();
 
+    Task<bool> ExistsUserEmail(string email, CancellationToken cancellationToken);
+
+    Task<bool> ExistsUserId(Guid id, CancellationToken cancellationToken);
+
     Task<GetByIdResponse> CreateAsync(CreateRequest request, CancellationToken cancellationToken);
 
     Task<GetByIdResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
