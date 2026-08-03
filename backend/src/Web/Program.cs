@@ -41,24 +41,10 @@ builder.Services.AddAuthentication(
         ?? builder.Configuration["Jwt:Key"]
         ?? throw new InvalidOperationException("JWT Key not found")))
         };
-        
-        //para ver error
-        
-    });
-
-builder.Services.AddAuthorization();
-
-builder.Services.Configure<SupabaseOptions>(
-builder.Configuration.GetSection(SupabaseOptions.Section));
-
-builder.Services.AddHttpClient();
-
-builder.Services.AddScoped<IStorageService, SupabaseStorageService>();
-
+    }); 
+    
 var app = builder.Build();
-
-
-
+app.UseStaticFiles();
 
 
 
@@ -72,6 +58,11 @@ if (app.Environment.IsDevelopment())
         options.Title = "Mi API en .NET 10";
         options.Theme = ScalarTheme.Mars; 
         options.ShowSidebar = true;
+        options.DefaultHttpClient = new(ScalarTarget.CSharp, ScalarClient.HttpClient);
+        options.AddPreferredSecuritySchemes("Bearer").AddHttpAuthentication("Bearer ",auth =>
+        {
+        }).EnablePersistentAuthentication();
+    options.CustomCss = "/css/scalar.css";
     });
 }
 // Run migrations automatically
