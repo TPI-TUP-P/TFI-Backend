@@ -22,7 +22,8 @@ public class User
     public string Phone { get; set; } = string.Empty;
 
     public bool IsActive { get; private set; } = true;
-    public UserRole Role { get; set; }
+    [Required]
+    public UserRole Role { get; set; } 
     public DateTime CreatedDate { get; set; }
 
 
