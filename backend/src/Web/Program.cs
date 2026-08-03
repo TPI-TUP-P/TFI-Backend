@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Scalar.AspNetCore;
+// using Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,7 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+// builder.Services.AddOpenApi(options =>
+// {
+//     // Registra el transformer limpio sin lambdas ni problemas de scope
+//     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+// });
 
 
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -37,8 +43,10 @@ builder.Services.AddAuthentication(
         ?? builder.Configuration["Jwt:Key"]
         ?? throw new InvalidOperationException("JWT Key not found")))
         };
-    }); var app = builder.Build();
-
+    }); 
+    
+var app = builder.Build();
+app.UseStaticFiles();
 
 
 
@@ -52,6 +60,12 @@ if (app.Environment.IsDevelopment())
         options.Title = "Mi API en .NET 10";
         options.Theme = ScalarTheme.Mars; 
         options.ShowSidebar = true;
+        options.DefaultHttpClient = new(ScalarTarget.CSharp, ScalarClient.HttpClient);
+        options.AddPreferredSecuritySchemes("Bearer").AddHttpAuthentication("Bearer ",auth =>
+        {
+            auth.Token ="";
+        }).EnablePersistentAuthentication();
+    options.CustomCss = "/css/scalar.css";
     });
 }
 // Run migrations automatically

@@ -1,0 +1,76 @@
+:root {
+    --scalar-background-1: #0f172a;
+    --scalar-background-2: #1e293b;
+    --scalar-background-3: #334155;
+
+    --scalar-color-1: #f8fafc;
+    --scalar-color-2: #cbd5e1;
+    --scalar-color-3: #94a3b8;
+
+    --scalar-primary: #22c55e;
+    --scalar-primary-hover: #16a34a;
+
+    --scalar-border-color: #334155;
+    --scalar-radius: 10px;
+}
+
+/* Barra lateral */
+.sidebar {
+    background: #020617;
+    border-right: 1px solid #334155;
+}
+
+/* Encabezado */
+.header {
+    background: #020617;
+    border-bottom: 1px solid #334155;
+}
+
+/* Tarjetas de endpoints */
+.operation-card {
+    border-radius: 10px;
+    border: 1px solid #334155;
+    transition: all .2s ease;
+}
+
+.operation-card:hover {
+    border-color: #22c55e;
+    box-shadow: 0 0 10px rgba(34,197,94,.25);
+}
+
+/* Botones */
+button {
+    border-radius: 8px !important;
+}
+
+/* Botón Execute */
+button[type="submit"] {
+    background: #22c55e !important;
+    color: white !important;
+}
+
+button[type="submit"]:hover {
+    background: #16a34a !important;
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+    border-radius: 8px !important;
+    border: 1px solid #475569 !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
