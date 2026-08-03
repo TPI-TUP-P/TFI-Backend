@@ -14,11 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-// builder.Services.AddOpenApi(options =>
-// {
-//     // Registra el transformer limpio sin lambdas ni problemas de scope
-//     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
-// });
+
 
 
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -63,7 +59,6 @@ if (app.Environment.IsDevelopment())
         options.DefaultHttpClient = new(ScalarTarget.CSharp, ScalarClient.HttpClient);
         options.AddPreferredSecuritySchemes("Bearer").AddHttpAuthentication("Bearer ",auth =>
         {
-            auth.Token ="";
         }).EnablePersistentAuthentication();
     options.CustomCss = "/css/scalar.css";
     });
