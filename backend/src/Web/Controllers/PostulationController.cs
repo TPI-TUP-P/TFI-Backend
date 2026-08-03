@@ -3,6 +3,7 @@ namespace Web.Controllers
     using System.Security.Claims;
     using Application.DTOs.Postulation.Request;
     using Application.DTOs.Postulation.Response;
+    using Application.Interfaces;
     using Application.Services;
     using Domain.Entities;
     using Microsoft.AspNetCore.Mvc;
@@ -11,15 +12,16 @@ namespace Web.Controllers
     [Route("api/[controller]")]
     public class PostulationController : ControllerBase
     {
-        private readonly PostulationService _postulationService;
+        private readonly IPostulationService _postulationService;
 
-        public PostulationController(PostulationService postulationService)
+        public PostulationController(IPostulationService postulationService)
         {
             _postulationService = postulationService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<CreateResponse>> Create([FromBody] CreateRequest request, CancellationToken cancellationToken)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<CreateResponse>> Create([FromForm] CreateRequest request, CancellationToken cancellationToken)
         {
             var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             ?? User.FindFirst("id")?.Value

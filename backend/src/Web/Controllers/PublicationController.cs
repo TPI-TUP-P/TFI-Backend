@@ -19,13 +19,16 @@ public class PublicationController(IPublicationService _publication) : Controlle
         return Ok(await _publication.GetByIdAsync(id, cancellationToken));
     }
 
+     
+
     [HttpPost()]
 
     public async Task<ActionResult<CreateResponse>> AddAsync([FromBody] CreateRequest publicationDto, CancellationToken cancellationToken)
     {
         var publication = await _publication.AddAsync(publicationDto, cancellationToken);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = publication.Id }, publication);
+        // return CreatedAtAction(nameof(GetByIdAsync), new { id = publication.Id }, publication);
+        return Ok();
     }
 
     [HttpPatch()]
