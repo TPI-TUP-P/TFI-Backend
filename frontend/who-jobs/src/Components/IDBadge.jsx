@@ -8,7 +8,7 @@ export default function IDBadge({ role }) {
   const Icon = data.badgeIcon;
 
   return (
-    <div className="relative mx-auto w-full max-w-[240px] lg:mx-0">
+    <div className="relative mx-auto w-full max-w-60 lg:mx-0">
       {/* halo */}
       <div
         className="absolute -inset-8 -z-10 rounded-full blur-3xl"
