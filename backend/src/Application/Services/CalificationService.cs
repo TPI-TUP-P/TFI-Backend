@@ -29,8 +29,12 @@ public class CalificationService(ICalificationRepository _Calification, IUserSer
         {
             throw new NotFoundException("CalificationDto");
         }
-        // no make sense get all data if i dont use that, so we can create a method for get if user exist without get all data, need ask to agus
-        var qualified = await _User.GetByIdAsync(calificationDto.IdQualified, cancellationToken) ?? throw new NotFoundException("User");
+
+        var qualified = await _User.ExistsUserId(calificationDto.IdQualified, cancellationToken);
+        if (qualified is false)
+        {
+            throw new NotFoundException("User");
+        }
 
         if (calificationDto.Score < 0 || calificationDto.Score > 5)
         {
