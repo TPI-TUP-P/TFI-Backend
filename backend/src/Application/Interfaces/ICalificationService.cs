@@ -1,6 +1,5 @@
 namespace Application.Interfaces;
 
-using Domain.Entities;
 using Application.DTOs.Calification.Request;
 using Application.DTOs.Calification.Response;
 

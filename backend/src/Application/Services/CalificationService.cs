@@ -1,4 +1,3 @@
-using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Application.Exceptions;
@@ -6,6 +5,7 @@ namespace Application.Services;
 
 using Application.DTOs.Calification.Response;
 using Application.DTOs.Calification.Request;
+using Application.Interfaces;
 
 public class CalificationService(ICalificationRepository _Calification, IUserService _User) : ICalificationService
 {
@@ -59,22 +59,26 @@ public class CalificationService(ICalificationRepository _Calification, IUserSer
         ValidateId(calificationDto.Id);
         ValidateId(IdUser);
 
-        var existingCalification = await GetByIdAsync(calificationDto.Id, cancellationToken);
+        var existingCalification = await _Calification.GetByIdAsync(calificationDto.Id, cancellationToken);
         if (calificationDto.Score > 0 && calificationDto.Score < 6)
         {
-            existingCalification.Score = calificationDto.Score;
+            existingCalification!.Score = calificationDto.Score;
         }
         else
         {
             throw new NegativeNumberException("Salary");
         }
-        return new UpdateResponse(
+
+        var newCalification = new UpdateResponse(
             existingCalification.Id,
             existingCalification.IdQualifier,
             existingCalification.IdQualified,
             existingCalification.CreateAt,
             existingCalification.Score
         );
+
+        await _Calification.UpdateAsync(existingCalification, cancellationToken);
+        return newCalification;
     }
 
     public async Task DeleteAsync(Guid id, Guid idUser, CancellationToken cancellationToken)

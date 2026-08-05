@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.DTOs.Publication.Request;
 using Application.DTOs.Publication.Response;
-using Domain.Interfaces;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -9,26 +8,31 @@ namespace Web.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
+[Authorize(Roles = "Recruiter,Admin, SuperAdmin")]
 public class PublicationController(IPublicationService _publication) : ControllerBase
 {
     // im testing the new method to do inject dependecy
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetPublicationById")]
     public async Task<ActionResult<GetByIdResponse>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _publication.GetByIdAsync(id, cancellationToken));
     }
 
-     
-
     [HttpPost()]
 
     public async Task<ActionResult<CreateResponse>> AddAsync([FromBody] CreateRequest publicationDto, CancellationToken cancellationToken)
     {
-        var publication = await _publication.AddAsync(publicationDto, cancellationToken);
+        var UserId = GetUserId();
+        var publication = await _publication.AddAsync(UserId, publicationDto, cancellationToken);
+        if (publication.Id == Guid.Empty)
+        {
+            throw new Exception("Publication.Id is empty");
+        }
 
-        // return CreatedAtAction(nameof(GetByIdAsync), new { id = publication.Id }, publication);
-        return Ok();
+        return CreatedAtRoute(
+        "GetPublicationById",
+        new { id = publication.Id },
+        publication);
     }
 
     [HttpPatch()]

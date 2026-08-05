@@ -25,9 +25,9 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             );
 
     }
-    public async Task<CreateResponse> AddAsync(CreateRequest publicationDto, CancellationToken cancellationToken)
+    public async Task<CreateResponse> AddAsync(Guid IdUser, CreateRequest publicationDto, CancellationToken cancellationToken)
     {
-
+        ValidateId(IdUser);
         if (publicationDto is null)
         {
             throw new NotFoundException("publication dto");
@@ -35,9 +35,9 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         CheckField(publicationDto.Job_position, "Job_position");
         CheckField(publicationDto.Description, "Description");
 
-        // el id creator lo tengo que traer desde el token
+
         var NewPublication = new Publication(
-            publicationDto.Creator,
+            IdUser,
             publicationDto.Job_position!,
             publicationDto.Description!,
             publicationDto.Salary,
@@ -62,9 +62,9 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         ValidateId(publicationDto.Id);
         ValidateId(IdUser);
 
-        var existingPublication = await GetByIdAsync(publicationDto.Id, cancellationToken);
+        var existingPublication = await _Publication.GetByIdAsync(publicationDto.Id, cancellationToken);
         //why fay are scared of needles
-        if (IdUser != existingPublication.Creator)
+        if (IdUser != existingPublication!.Creator)
         {
             throw new UnauthorizedException();
         }
@@ -84,6 +84,7 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         {
             throw new NegativeNumberException("Salary");
         }
+        await _Publication.UpdateAsync(existingPublication, cancellationToken);
         return new UpdateResponse(
             existingPublication.Id,
             existingPublication.Creator,
