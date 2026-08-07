@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import Button from '../Components/ui/Button';
 import { authService } from '../Services/auth.service';
-import { ArrowRight, LogIn, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Link, LogIn, ShieldCheck } from 'lucide-react';
 
 const LoginPage = () => {
 const navigate = useNavigate();
@@ -92,9 +92,9 @@ const navigate = useNavigate();
 
             <p className="mt-7 text-center text-sm text-brand-muted">
               ¿No tenés cuenta?{" "}
-              <a href="/register" className="font-semibold text-brand-title hover:text-sky-400 transition-colors">
+              <Link href="/register" className="font-semibold text-brand-title hover:text-sky-400 transition-colors">
                 Creá una
-              </a>
+              </Link>
             </p>
           </div>
         </div>
