@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import { COLORS, rgba } from "../../Utils/colors";
 
 const OPTIONS = [
-  { key: 0, label: "Soy Candidato" },
-  { key: 1, label: "Soy Reclutador" },
+  { key: "candidato", label: "Soy Candidato" },
+  { key: "reclutador", label: "Soy Reclutador" },
 ];
 
 export default function RoleToggle({ role, setRole, compact = false }) {

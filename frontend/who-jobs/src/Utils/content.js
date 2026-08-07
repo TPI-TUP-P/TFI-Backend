@@ -1,4 +1,4 @@
-import { Briefcase, UserRound, Code2, PenTool, Users } from "lucide-react";
+import { Briefcase, UserRound, Code2, PenTool, Users, User } from "lucide-react";
 
 // Copy que cambia según el rol seleccionado (Candidato / Reclutador).
 export const content = {
@@ -12,6 +12,7 @@ export const content = {
     ctaLabel: "Crear mi perfil",
     ctaSub: "Gratis para siempre · sin tarjeta",
     placeholder: "tu@email.com",
+    badgeIcon: User,
   },
   reclutador: {
     eyebrow: "SIN FEED · SIN SPAM · SIN RUIDO",
@@ -23,6 +24,7 @@ export const content = {
     ctaLabel: "Buscar talento",
     ctaSub: "Primera búsqueda sin costo",
     placeholder: "empresa@trabajo.com",
+    badgeIcon: Briefcase, 
   },
 };
 
