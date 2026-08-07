@@ -42,9 +42,11 @@ export default function IDBadge({ role }) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3 }}
             className="mt-4 flex flex-col items-center"
-          >
+        >
             <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ backgroundColor: rgba(COLORS.sky, 0.5) }}>
-              <Icon size={24} style={{ color: COLORS.ink }} strokeWidth={1.75} />
+              {Icon ? (
+                <Icon size={24} style={{ color: COLORS.ink }} strokeWidth={1.75} />
+              ) : null}
             </div>
             <p className="mt-3 font-display text-xl font-semibold" style={{ color: COLORS.ink }}>
               {data?.badgeRole}

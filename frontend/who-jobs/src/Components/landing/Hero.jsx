@@ -58,7 +58,7 @@ const {
           >
             <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: COLORS.sky }} />
             <span className="font-mono text-[11px] tracking-[0.15em]" style={{ color: COLORS.ink }}>
-              {data?.eyebrow}
+              {data.eyebrow}
             </span>
           </motion.div>
 
@@ -76,9 +76,9 @@ const {
               className="font-display text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl"
               style={{ color: COLORS.ink }}
             >
-              {data?.headline[0]}
+              {data.headline[0]}
               <br />
-              <span style={{ color: COLORS.steel }}>{data?.headline[1]}</span>
+              <span style={{ color: COLORS.steel }}>{data.headline[1]}</span>
             </motion.h1>
           </AnimatePresence>
 
@@ -111,7 +111,7 @@ const {
                 message: 'Ingresa un email valido',
               },
                 })}
-                placeholder={data?.placeholder}
+                placeholder={data.placeholder}
                 className="focus-ring w-full bg-transparent font-body text-sm outline-none"
                 style={{ color: COLORS.ink }}
               />
@@ -131,14 +131,14 @@ const {
                   transition={{ duration: 0.25 }}
                   className="flex items-center gap-2"
                 >
-                  {status === "loading" ? "Enviando..." : data?.ctaLabel}
+                  {status === "loading" ? "Enviando..." : data.ctaLabel}
                   <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </motion.span>
               </AnimatePresence>
             </button>
           </form>
           <p className="mt-3 font-mono text-xs" style={{ color: rgba(COLORS.ink, 0.5) }}>
-            {status === "done" ? "¡Listo! Te avisamos apenas abramos." : status === "error" ? "Algo falló, probá de nuevo." : data?.ctaSub}
+            {status === "done" ? "¡Listo! Te avisamos apenas abramos." : status === "error" ? "Algo falló, probá de nuevo." : data.ctaSub}
           </p>
         </div>
 
