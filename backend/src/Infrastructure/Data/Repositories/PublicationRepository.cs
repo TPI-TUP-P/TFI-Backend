@@ -41,5 +41,11 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
 
     }
 
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await context.Publications
+            .AnyAsync(p => p.Id == id, cancellationToken);
+    }
+
 
 }

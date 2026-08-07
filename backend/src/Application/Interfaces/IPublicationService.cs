@@ -14,4 +14,6 @@ public interface IPublicationService
     Task<UpdateResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
 
     Task DeleteAsync(Guid id, Guid idUser, CancellationToken cancellationToken);
+
+    Task<bool> PublicationExistsAsync(Guid idPublication, CancellationToken cancellationToken);
 }
