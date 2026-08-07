@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, useTransform } from "framer-motion";
-import { COLORS, rgba } from "../Utils/colors";
+import { COLORS, rgba } from "../../Utils/colors";
 
 const FloatingTag = ({ label, Icon, top, left, right, speed, delay, scrollYProgress, reduce }) => {
   //useTransform controla el movimiento vertical por scroll

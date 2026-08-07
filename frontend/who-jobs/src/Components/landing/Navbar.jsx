@@ -1,7 +1,8 @@
 import React from "react";
 import { LogIn } from "lucide-react";
+import { COLORS, rgba } from "../../Utils/colors";
 import RoleToggle from "./RoleToggle";
-import { COLORS, rgba } from "../Utils/colors";
+import { Link } from "react-router-dom";
 
 export default function Navbar({ role, setRole }) {
   return (
@@ -18,13 +19,14 @@ export default function Navbar({ role, setRole }) {
           <RoleToggle role={role} setRole={setRole} compact />
         </div>
 
-        <button
+        <Link
+        to="/login"
           className="focus-ring flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-white"
           style={{ borderColor: COLORS.ink, color: COLORS.ink }}
         >
           <LogIn size={15} strokeWidth={2} />
           Ingresar
-        </button>
+        </Link>
       </div>
       <div className="flex justify-center pb-3 md:hidden">
         <RoleToggle role={role} setRole={setRole} compact />
