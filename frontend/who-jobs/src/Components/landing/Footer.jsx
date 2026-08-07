@@ -1,13 +1,12 @@
 import React from "react";
-import { COLORS, rgba } from "../Utils/colors";
+import { COLORS, rgba } from "../../Utils/colors";
 
 const COLUMNS = [
   { title: "Producto", links: ["Candidatos", "Reclutadores", "Precios"] },
   { title: "Compañía", links: ["Nosotros", "Contacto"] },
   { title: "Legal", links: ["Privacidad", "Términos"] },
 ];
-
-export const Footer =() =>  {
+  const Footer =() =>  {
   return (
     <footer className="border-t px-6 py-14" style={{ borderColor: rgba(COLORS.steel, 0.3) }}>
       <div className="mx-auto flex max-w-6xl flex-col gap-10 sm:flex-row sm:justify-between">
@@ -48,3 +47,5 @@ export const Footer =() =>  {
     </footer>
   );
 }
+
+export default Footer;

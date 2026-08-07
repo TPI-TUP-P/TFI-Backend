@@ -1,11 +1,11 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { content } from "../Utils/content";
-import { COLORS, rgba } from "../Utils/colors";
+import { content } from "../../Utils/content";
+import { COLORS, rgba } from "../../Utils/colors";
 
 export default function IDBadge({ role }) {
   const data = content[role];
-  const Icon = data.badgeIcon;
+  const Icon = data?.badgeIcon;
 
   return (
     <div className="relative mx-auto w-full max-w-[240px] lg:mx-0">
@@ -47,10 +47,10 @@ export default function IDBadge({ role }) {
               <Icon size={24} style={{ color: COLORS.ink }} strokeWidth={1.75} />
             </div>
             <p className="mt-3 font-display text-xl font-semibold" style={{ color: COLORS.ink }}>
-              {data.badgeRole}
+              {data?.badgeRole}
             </p>
             <p className="font-mono text-[11px]" style={{ color: rgba(COLORS.ink, 0.6) }}>
-              {data.badgeSub}
+              {data?.badgeSub}
             </p>
           </motion.div>
         </AnimatePresence>

@@ -1,10 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { COLORS, rgba } from "../Utils/colors";
+import { COLORS, rgba } from "../../Utils/colors";
 
 const OPTIONS = [
-  { key: "candidato", label: "Soy Candidato" },
-  { key: "reclutador", label: "Soy Reclutador" },
+  { key: 0, label: "Soy Candidato" },
+  { key: 1, label: "Soy Reclutador" },
 ];
 
 export default function RoleToggle({ role, setRole, compact = false }) {
