@@ -5,11 +5,12 @@ using Domain.Interfaces;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+// esto es porque el visual se volvio loco y me importaba cualquier cosa
 namespace Web.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
+[Authorize(Roles = "Candidate,Admin,SuperAdmin")]
 
 public class CalificationController(ICalificationService _calification) : ControllerBase
 {
