@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { UserRound, Briefcase, Check } from "lucide-react";
-import { COLORS, rgba } from "../Utils/colors";
+import { COLORS, rgba } from "../../Utils/colors";
 
 function Benefits({ items }) {
   return (

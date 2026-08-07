@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Mail, ArrowRight } from "lucide-react";
-import { COLORS, rgba } from "../Utils/colors";
+import { COLORS, rgba } from "../../Utils/colors";
 
 export default function FinalCTA() {
   return (

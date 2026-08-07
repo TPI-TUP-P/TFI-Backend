@@ -1,8 +1,9 @@
-import FinalCTA from "../Components/FinalCTA";
-import { Footer } from "../Components/Footer";
-import Hero from "../Components/Hero";
-import Navbar from "../Components/Navbar";
-import ShowcaseSection from "../Components/ShowcaseSection";
+
+import Hero from "../Components/landing/Hero";
+import Navbar from "../Components/landing/Navbar";
+import ShowcaseSection from "../Components/landing/ShowcaseSection";
+import FinalCTA from "../Components/landing/FinalCTA";
+import Footer from "../Components/landing/Footer"
 import { useRole } from "../Hooks/useRole";
 import { COLORS } from "../Utils/colors";
 
