@@ -6,8 +6,10 @@ namespace Web.Controllers
     using Application.Interfaces;
     using Application.Services;
     using Domain.Entities;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class PostulationController : ControllerBase
@@ -39,7 +41,17 @@ namespace Web.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetByIdResponse>> GetById(Guid id, CancellationToken cancellationToken)
         {
-            var postulation = await _postulationService.GetById(id, cancellationToken);
+
+            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("id")?.Value
+            ?? User.FindFirst("sub")?.Value;
+
+            if (string.IsNullOrEmpty(idUserToken))
+                return Unauthorized("user id not found in token");
+
+            var userId = Guid.Parse(idUserToken);
+
+            var postulation = await _postulationService.GetById(id, userId, cancellationToken);
             if (postulation == null)
             {
                 return NotFound();
@@ -47,15 +59,47 @@ namespace Web.Controllers
             return Ok(postulation);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<GetAllResponse>>> GetAll(CancellationToken cancellationToken)
+        // [HttpGet]
+        // public async Task<ActionResult<List<GetAllResponse>>> GetAll(CancellationToken cancellationToken)
+        // {
+        //     var postulations = await _postulationService.GetAll(cancellationToken);
+        //     return Ok(postulations);
+        // }
+
+        [HttpGet("user/{Id}")]
+        public async Task<ActionResult<List<GetAllResponse>>> GetByUserId(Guid Id, CancellationToken cancellationToken)
         {
-            var postulations = await _postulationService.GetAll(cancellationToken);
+            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("id")?.Value
+            ?? User.FindFirst("sub")?.Value;
+
+            if (string.IsNullOrEmpty(idUserToken))
+                return Unauthorized("user id not found in token");
+
+            var userId = Guid.Parse(idUserToken);
+
+            var postulations = await _postulationService.GetByUserId(userId, Id, cancellationToken);
+            return Ok(postulations);
+        }
+
+        [HttpGet("joboffer/{jobOfferId}")]
+        public async Task<ActionResult<List<GetAllResponse>>> GetByJobOfferId(Guid jobOfferId, CancellationToken cancellationToken)
+        {
+            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("id")?.Value
+            ?? User.FindFirst("sub")?.Value;
+
+            if (string.IsNullOrEmpty(idUserToken))
+                return Unauthorized("user id not found in token");
+
+            var userId = Guid.Parse(idUserToken);
+
+            var postulations = await _postulationService.GetByJobOfferId(jobOfferId, userId, cancellationToken);
             return Ok(postulations);
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<UpdateResponse>> Update(Guid id, [FromBody] UpdateRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<UpdateResponse>> UpdateState(Guid id, [FromBody] UpdateRequest request, CancellationToken cancellationToken)
         {
             var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             ?? User.FindFirst("id")?.Value
@@ -66,7 +110,7 @@ namespace Web.Controllers
 
         var idUser = Guid.Parse(idUserToken);
 
-            await _postulationService.Update(idUser, id, request, cancellationToken);
+            await _postulationService.UpdateState(idUser, id, request, cancellationToken);
             return Ok();
         }
 
