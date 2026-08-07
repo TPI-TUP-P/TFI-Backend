@@ -6,6 +6,7 @@ using Domain.Interfaces;
 using Application.DTOs.Publication.Response;
 using Application.DTOs.Publication.Request;
 using Application.Exceptions;
+using System.ComponentModel;
 namespace Application.Services;
 
 public class PublicationService(IPublicationRepository _Publication) : IPublicationService
@@ -110,6 +111,10 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         await _Publication.DeleteAsync(publication, cancellationToken);
     }
 
+    public async Task<bool> PublicationExistsAsync(Guid idPublication, CancellationToken cancellationToken)
+    {
+        return await _Publication.ExistsAsync(idPublication, cancellationToken);
+    }
     private void ValidateId(Guid Id)
     {
         if (Id == Guid.Empty)
