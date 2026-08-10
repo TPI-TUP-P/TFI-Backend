@@ -28,7 +28,7 @@ namespace Infrastructure.Data.Repositories
         }
 
 
-        public async Task<Postulation> Update(Postulation postulation, CancellationToken cancellationToken)
+        public async Task<Postulation> UpdateState(Postulation postulation, CancellationToken cancellationToken)
         {
             _context.Postulations.Update(postulation);
             await _context.SaveChangesAsync(cancellationToken);
@@ -38,6 +38,20 @@ namespace Infrastructure.Data.Repositories
         public async Task<List<Postulation>> GetAll(CancellationToken cancellationToken)
         {
             return await _context.Postulations.ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<Postulation>> GetByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            return await _context.Postulations
+                .Where(p => p.UserId == userId)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<Postulation>> GetByJobOfferId(Guid jobOfferId, CancellationToken cancellationToken)
+        {
+            return await _context.Postulations
+                .Where(p => p.JobOfferId == jobOfferId)
+                .ToListAsync(cancellationToken);
         }
 
         public async Task Delete(Guid id, CancellationToken cancellationToken)

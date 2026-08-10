@@ -5,7 +5,7 @@ namespace Application.Interfaces;
 
 public interface IStorageService
 {
-    Task<string> UploadAsync(IFormFile file);
+    Task<string> UploadAsync(IFormFile file, Guid userId, Guid jobOfferId);
 
     Task DeleteAsync(string filePath);
 }
