@@ -41,10 +41,45 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
 
     }
 
+    public async Task<List<Publication>> GetAllAsync(
+    int page,
+    int pageSize,
+    CancellationToken cancellationToken)
+    {
+        return await context.Publications
+            .AsNoTracking()
+            .OrderByDescending(p => p.Created_Date)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
     {
         return await context.Publications
             .AnyAsync(p => p.Id == id, cancellationToken);
+    }
+
+    public async Task<List<Publication>> GetAllByCreatorAsync(
+    Guid creatorId,
+    int page,
+    int pageSize,
+    CancellationToken cancellationToken)
+    {
+        return await context.Publications
+            .AsNoTracking()
+            .Where(p => p.Creator == creatorId)
+            .OrderByDescending(p => p.Created_Date)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> CountByCreatorAsync(
+    Guid creatorId,
+    CancellationToken cancellationToken)
+    {
+        return await context.Publications
+            .CountAsync(p => p.Creator == creatorId, cancellationToken);
     }
 
 

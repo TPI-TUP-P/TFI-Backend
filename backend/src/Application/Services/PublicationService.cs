@@ -26,6 +26,32 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             );
 
     }
+    public async Task<List<GetByIdResponse>> GetAllByCreatorAsync(Guid creatorId, int page, int pageSize, CancellationToken cancellationToken)
+    {
+        if (creatorId == Guid.Empty)
+            throw new ArgumentException("CreatorId is invalid.");
+
+        if (page < 1)
+            throw new ArgumentException("Page must be greater than 0.");
+
+        if (pageSize < 1)
+            throw new ArgumentException("PageSize must be greater than 0.");
+
+        if (pageSize > 25)
+            pageSize = 25;
+
+        var publications = await _Publication.GetAllByCreatorAsync(creatorId, page, pageSize, cancellationToken);
+
+        return publications.Select(p => new GetByIdResponse(
+            p.Id,
+            p.Creator,
+            p.Job_position!,
+            p.Description!,
+            p.Salary,
+            p.Applicants,
+            p.Created_Date
+        )).ToList();
+    }
     public async Task<CreateResponse> AddAsync(Guid IdUser, CreateRequest publicationDto, CancellationToken cancellationToken)
     {
         ValidateId(IdUser);
@@ -98,6 +124,16 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         );
     }
 
+    public async Task<int> CountMyPublicationsAsync(Guid creatorId, CancellationToken cancellationToken)
+    {
+        if (creatorId == Guid.Empty)
+            throw new ArgumentException("CreatorId is invalid.");
+
+        return await _Publication.CountByCreatorAsync(
+            creatorId,
+            cancellationToken);
+    }
+
     public async Task DeleteAsync(Guid id, Guid idUser, CancellationToken cancellationToken)
     {
         ValidateId(id);
@@ -114,6 +150,33 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
     public async Task<bool> PublicationExistsAsync(Guid idPublication, CancellationToken cancellationToken)
     {
         return await _Publication.ExistsAsync(idPublication, cancellationToken);
+    }
+
+    public async Task<List<GetByIdResponse>> GetAllAsync(
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken)
+    {
+        if (page < 1)
+            throw new ArgumentException("Page must be greater than 0.");
+
+        if (pageSize < 1)
+            throw new ArgumentException("PageSize must be greater than 0.");
+
+        if (pageSize > 25)
+            pageSize = 25;
+
+        var publications = await _Publication.GetAllAsync(page, pageSize, cancellationToken);
+
+        return publications.Select(p => new GetByIdResponse(
+            p.Id,
+            p.Creator,
+            p.Job_position!,
+            p.Description!,
+            p.Salary,
+            p.Applicants,
+            p.Created_Date
+        )).ToList();
     }
     private void ValidateId(Guid Id)
     {
