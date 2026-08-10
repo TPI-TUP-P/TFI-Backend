@@ -7,8 +7,8 @@ using System.Security.Claims;
 namespace Web.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-[Authorize(Roles = "Recruiter,Admin, SuperAdmin")]
+[Route("api/[controller]")]
+[Authorize()]
 public class PublicationController(IPublicationService _publication) : ControllerBase
 {
     // im testing the new method to do inject dependecy
@@ -18,8 +18,9 @@ public class PublicationController(IPublicationService _publication) : Controlle
         return Ok(await _publication.GetByIdAsync(id, cancellationToken));
     }
 
-    [HttpPost()]
 
+    [Authorize(Roles = "Recruiter,Admin,SuperAdmin")]
+    [HttpPost()]
     public async Task<ActionResult<CreateResponse>> AddAsync([FromBody] CreateRequest publicationDto, CancellationToken cancellationToken)
     {
         var UserId = GetUserId();
@@ -34,7 +35,7 @@ public class PublicationController(IPublicationService _publication) : Controlle
         new { id = publication.Id },
         publication);
     }
-
+    [Authorize(Roles = "Recruiter,Admin,SuperAdmin")]
     [HttpPatch()]
     public async Task<ActionResult<UpdateResponse>> UpdateAsync([FromBody] UpdateRequest publicationDto, CancellationToken cancellationToken)
     {
@@ -42,12 +43,53 @@ public class PublicationController(IPublicationService _publication) : Controlle
         var idUser = GetUserId();
         return Ok(await _publication.UpdateAsync(idUser, publicationDto, cancellationToken));
     }
+    [Authorize(Roles = "Recruiter,Admin, SuperAdmin")]
     [HttpDelete("{id:guid}")]
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var idUser = GetUserId();
         await _publication.DeleteAsync(id, idUser, cancellationToken);
 
+    }
+    [HttpGet] // GET /api/Publication?page=2
+    public async Task<ActionResult<List<GetByIdResponse>>> GetAllAsync(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 25,
+        CancellationToken cancellationToken = default)
+    {
+        var publications = await _publication.GetAllAsync(
+            page,
+            pageSize,
+            cancellationToken);
+
+        return Ok(publications);
+    }
+
+    [HttpGet("my")]
+    [Authorize(Roles = "Recruiter,Admin,SuperAdmin")] //GET /api/Publication/my
+    public async Task<ActionResult<List<GetByIdResponse>>> GetMyPublicationsAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 25, CancellationToken cancellationToken = default)
+    {
+        var userId = GetUserId();
+
+        var publications = await _publication.GetAllByCreatorAsync(
+            userId,
+            page,
+            pageSize,
+            cancellationToken);
+
+        return Ok(publications);
+    }
+    [HttpGet("my/count")]
+    [Authorize(Roles = "Recruiter,Admin,SuperAdmin")]
+    public async Task<ActionResult<int>> CountMyPublicationsAsync(CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+
+        var count = await _publication.CountMyPublicationsAsync(
+            userId,
+            cancellationToken);
+
+        return Ok(count);
     }
     private Guid GetUserId()
     {
