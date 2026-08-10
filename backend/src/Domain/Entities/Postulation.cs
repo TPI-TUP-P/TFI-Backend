@@ -10,7 +10,9 @@ namespace Domain.Entities
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid JobOfferId { get; set; }
+        //es para ver en nombre real de archivo(el nombre que subio el usuario), no el path, para mostrarlo en la vista
         public string CvFileName { get; private set; }
+        //es el path del archivo, para poder eliminarlo en supabase, es el que se guarda en la base de datos
         public string CvFilePath { get; private set; }
         public DateTime CreatedAt { get; set; }
         public EnumState State { get; set; }

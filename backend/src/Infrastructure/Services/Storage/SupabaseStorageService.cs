@@ -19,12 +19,15 @@ public class SupabaseStorageService : IStorageService
         _options = options.Value;
     }
 
-    public async Task<string> UploadAsync(IFormFile file)
+    //se podria pensar que se cree una carpeta por cada usuario o por cada oferta de trabajo
+
+    public async Task<string> UploadAsync(IFormFile file, Guid userId, Guid jobOfferId)
     {
         // valido el archivo, que se seleccione uno, que no supere los 5 MB y que sea tipo .pdf 
         ValidateFile(file);
         // creo la ruta del archivo, genera una ruta unica en forma de string para guardar un archivo
-        var objectPath = GenerateObjectPath();
+        //var objectPath = GenerateObjectPath();
+        var objectPath = $"{jobOfferId}/{userId}.pdf";
         // esto es la ruta URL, con el url del supabase, la ruta fija del edpoint, nombre de buckt y la ruta unica del archivo
         var url =
             $"{_options.Url}/storage/v1/object/{_options.Bucket}/{objectPath}";
@@ -58,7 +61,7 @@ public class SupabaseStorageService : IStorageService
         request.Headers.Add("x-upsert", "false");
         request.Headers.Add("cache-control", "3600");
 
-        //se envia la peticion al servidor
+        //se envia la peticion al servidor  s
         var response = await _httpClient.SendAsync(request);
 
         if (!response.IsSuccessStatusCode)
@@ -107,10 +110,10 @@ public class SupabaseStorageService : IStorageService
             throw new ArgumentException("Solo se permiten archivos PDF.");
     }
 
-    private static string GenerateObjectPath()
-    {
-        var now = DateTime.UtcNow;
+    //private static string GenerateObjectPath()
+    //{
+       // var now = DateTime.UtcNow;
 
-        return $"{now:yyyy/MM}/postulations/{Guid.NewGuid()}.pdf";
-    }
+        //return $"{now:yyyy/MM}/postulations/{Guid.NewGuid()}.pdf";
+    //}
 }

@@ -8,17 +8,15 @@ namespace Application.DTOs.Postulation.Response
         public Guid JobOfferId { get; set; }
         public DateTime CreatedAt { get; set; }
         public EnumState State { get; set; }
-        public string CvFilePath { get; set; }
         public string CvFileName { get; set; }
 
-        public GetAllResponse(Guid id, Guid userId, Guid jobOfferId, DateTime createdAt, EnumState state, string cvFilePath, string cvFileName)
+        public GetAllResponse(Guid id, Guid userId, Guid jobOfferId, DateTime createdAt, EnumState state, string cvFileName)
         {
             Id = id;
             UserId = userId;
             JobOfferId = jobOfferId;
             CreatedAt = createdAt;
             State = state;
-            CvFilePath = cvFilePath;
             CvFileName = cvFileName;
         }
     }
