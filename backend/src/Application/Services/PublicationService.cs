@@ -178,6 +178,38 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             p.Created_Date
         )).ToList();
     }
+
+    public async Task<List<GetByIdResponse>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Search name cannot be empty.");
+
+        if (page < 1)
+            throw new ArgumentException("Page must be greater than 0.");
+
+        if (pageSize < 1)
+            throw new ArgumentException("PageSize must be greater than 0.");
+
+        if (pageSize > 25)
+            pageSize = 25;
+
+        var publications = await _Publication.SearchByNameAsync(
+            name.Trim(),
+            page,
+            pageSize,
+            cancellationToken);
+
+        return publications.Select(p => new GetByIdResponse(
+            p.Id,
+            p.Creator,
+            p.Job_position!,
+            p.Description!,
+            p.Salary,
+            p.Applicants,
+            p.Created_Date
+        )).ToList();
+    }
+
     private void ValidateId(Guid Id)
     {
         if (Id == Guid.Empty)

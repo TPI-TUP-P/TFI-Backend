@@ -12,4 +12,6 @@ public interface IPublicationRepository : IGenericRepository<Publication>
     Task<List<Publication>> GetAllByCreatorAsync(Guid creatorId, int page, int pageSize, CancellationToken cancellationToken);
 
     Task<int> CountByCreatorAsync(Guid creatorId, CancellationToken cancellationToken);
+
+    Task<List<Publication>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken);
 }

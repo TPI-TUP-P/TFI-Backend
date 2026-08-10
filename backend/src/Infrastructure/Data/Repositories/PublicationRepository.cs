@@ -82,5 +82,17 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
             .CountAsync(p => p.Creator == creatorId, cancellationToken);
     }
 
+    public async Task<List<Publication>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken)
+    {
+        return await context.Publications
+            .AsNoTracking()
+            .Where(p => p.Job_position != null &&
+                        p.Job_position.Contains(name))
+            .OrderByDescending(p => p.Created_Date)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
 
 }

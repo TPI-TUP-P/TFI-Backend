@@ -91,6 +91,18 @@ public class PublicationController(IPublicationService _publication) : Controlle
 
         return Ok(count);
     }
+
+    [HttpGet("search")] // GET /api/Publication/search?name=backend
+    public async Task<ActionResult<List<GetByIdResponse>>> SearchByNameAsync([FromQuery] string name, [FromQuery] int page = 1, [FromQuery] int pageSize = 25, CancellationToken cancellationToken = default)
+    {
+        var publications = await _publication.SearchByNameAsync(
+            name,
+            page,
+            pageSize,
+            cancellationToken);
+
+        return Ok(publications);
+    }
     private Guid GetUserId()
     {
         var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
