@@ -31,9 +31,9 @@ export default function Navbar({ role, setRole }) {
       </div>
 
       {/* Toggle para Mobile */}
-      <div className="flex justify-center pb-3 md:hidden">
+      {/* <div className="md:flex justify-center pb-3 hidden">
         <RoleToggle role={role} setRole={setRole} compact />
-      </div>
+      </div> */}
     </header>
   );
 }
