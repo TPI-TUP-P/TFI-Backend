@@ -22,4 +22,6 @@ public interface IPublicationService
     Task<List<GetByIdResponse>> GetAllByCreatorAsync(Guid creatorId, int page, int pageSize, CancellationToken cancellationToken);
 
     Task<int> CountMyPublicationsAsync(Guid creatorId, CancellationToken cancellationToken);
+
+    Task<List<GetByIdResponse>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken);
 }
