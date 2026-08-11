@@ -105,7 +105,7 @@ const LoginPage = () => {
             error={errors?.email?.message}
           />
           <Input
-            nameLabel={"password"}
+            nameLabel={"Contraseña"}
             type="password"
             {...register("password")}
             error={errors?.password?.message}
