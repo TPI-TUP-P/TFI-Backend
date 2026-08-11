@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import StatCard from './StatCard'
 import { useAuthStore } from '../../../Components/stores/useAuthStore'
 
-const API_URL = 'https://localhost:7256/api/User'
+const API_URL = 'https://localhost:7256/api'
+const USER_URL = `${API_URL}/User`
+const POSTULATION_URL = `${API_URL}/Postulation`
 
 const roleNames = {
   0: 'Candidato',
@@ -15,6 +17,9 @@ export default function CandidateView() {
   const { token, user, setAuth } = useAuthStore()
 
   const [saving, setSaving] = useState(false)
+  const [postulations, setPostulations] = useState([])
+  const [postulationCount, setPostulationCount] = useState(0)
+  const [loadingPostulations, setLoadingPostulations] = useState(true)
   const [error, setError] = useState('')
 
   const [openModal, setOpenModal] = useState(false)
@@ -25,6 +30,58 @@ export default function CandidateView() {
   // =========================
   // Abrir modal
   // =========================
+
+  useEffect(() => {
+  const loadPostulations = async () => {
+    if (!token || !user?.id) {
+      setLoadingPostulations(false)
+      return
+    }
+
+    try {
+      setLoadingPostulations(true)
+
+      // Cantidad de postulaciones
+      const countResponse = await fetch(
+        `${POSTULATION_URL}/count`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (countResponse.ok) {
+        const count = await countResponse.json()
+        setPostulationCount(count)
+      }
+
+      // Listado de postulaciones
+      const listResponse = await fetch(
+        `${POSTULATION_URL}/user/${user.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (listResponse.ok) {
+        const data = await listResponse.json()
+        setPostulations(data)
+      }
+
+    } catch (err) {
+      console.error('Error cargando postulaciones:', err)
+    } finally {
+      setLoadingPostulations(false)
+    }
+  }
+
+  loadPostulations()
+}, [token, user?.id])
 
   const openEditModal = (field, label, value) => {
     setEditingField(field)
@@ -53,18 +110,7 @@ export default function CandidateView() {
       setSaving(true)
       setError('')
 
-      /*
-       * El backend espera:
-       *
-       * {
-       *   Name: string,
-       *   LastName: string,
-       *   Phone: string?
-       * }
-       *
-       * El ID NO se manda porque el backend
-       * lo obtiene desde el JWT.
-       */
+
 
       const updateRequest = {
         Name:
@@ -83,14 +129,14 @@ export default function CandidateView() {
             : user.phone || null,
       }
 
-      const response = await fetch(API_URL, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateRequest),
-      })
+      const response = await fetch(USER_URL, {
+    method: 'PATCH',
+    headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updateRequest),
+})
 
       if (!response.ok) {
         throw new Error(
@@ -246,31 +292,35 @@ export default function CandidateView() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
-          <StatCard
-            title="Postulaciones"
-            value="12"
-            subtitle="En total"
-          />
+        <StatCard
+          title="Postulaciones"
+          value={loadingPostulations ? '...' : postulationCount}
+          subtitle="En total"
+        />
 
-          <StatCard
-            title="En revisión"
-            value="3"
-            subtitle="Esperando respuesta"
-          />
+        <StatCard
+          title="En revisión"
+          value={loadingPostulations
+            ? '...'
+            : postulations.filter(p => p.state === 'Pending').length}
+          subtitle="Esperando respuesta"
+        />
 
-          <StatCard
-            title="Entrevistas"
-            value="1"
-            subtitle="Próxima esta semana"
-          />
+        <StatCard
+          title="Aceptadas"
+          value={loadingPostulations
+            ? '...'
+            : postulations.filter(p => p.state === 'Accepted').length}
+          subtitle="Procesos avanzados"
+        />
 
-          <StatCard
-            title="CV actualizado"
-            value="Sí"
-            subtitle="Última subida"
-          />
+        <StatCard
+          title="CV actualizado"
+          value="Sí"
+          subtitle="Última subida"
+        />
 
-        </div>
+      </div>
 
         {/* =========================
             Acciones rápidas
@@ -420,63 +470,34 @@ export default function CandidateView() {
             Actividad reciente
         ========================= */}
 
-        <div className="bg-white rounded-2xl shadow p-4 sm:p-6 border border-gray-200 space-y-4">
+        <div className="space-y-3">
+  {postulations.length > 0 ? (
+    postulations.slice(0, 3).map((postulation) => (
+      <div
+        key={postulation.id}
+        className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4"
+      >
+        <div className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500" />
 
-          <div>
+        <div>
+          <p className="text-sm font-medium text-[#1f2a33]">
+            Postulación enviada
+          </p>
 
-            <h2 className="font-display text-2xl font-semibold text-[#1f2a33]">
-              Actividad reciente
-            </h2>
-
-            <p className="text-sm text-slate-500 mt-1">
-              Últimos movimientos registrados en tu cuenta.
-            </p>
-
-          </div>
-
-          <div className="space-y-3">
-
-            <div className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
-
-              <div className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500" />
-
-              <div>
-
-                <p className="text-sm font-medium text-[#1f2a33]">
-                  Cuenta creada
-                </p>
-
-                <p className="text-xs text-slate-500 mt-1">
-                  {user.createdDate
-                    ? new Date(user.createdDate).toLocaleString('es-AR')
-                    : 'Sin información'}
-                </p>
-
-              </div>
-
-            </div>
-
-            <div className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
-
-              <div className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500" />
-
-              <div>
-
-                <p className="text-sm font-medium text-[#1f2a33]">
-                  Información de perfil cargada
-                </p>
-
-                <p className="text-xs text-slate-500 mt-1">
-                  Datos sincronizados con tu cuenta
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
+          <p className="text-xs text-slate-500 mt-1">
+            Estado: {postulation.state || 'Pendiente'}
+          </p>
         </div>
+      </div>
+    ))
+  ) : (
+    <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-center">
+      <p className="text-sm text-slate-500">
+        Todavía no realizaste ninguna postulación.
+      </p>
+    </div>
+  )}
+</div>
 
       </div>
 
