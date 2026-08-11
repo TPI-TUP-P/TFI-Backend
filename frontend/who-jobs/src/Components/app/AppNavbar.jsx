@@ -18,14 +18,11 @@ const AppNavbar = () => {
      <header className="fixed left-1/2 top-4 z-50 w-[92%] max-w-5xl -translate-x-1/2">
       <div className="rounded-2xl border border-brand-border bg-brand-card/90 px-6 py-3 shadow-lg shadow-brand-title/5 backdrop-blur-md">
         
-        {/* Desktop Layout */}
         <div className="hidden items-center justify-between gap-6 md:flex">
-          {/* Logo */}
-          <Link to="/dashboard" className="flex-shrink-0 font-display text-base font-semibold text-brand-title">
+          <Link to="/dashboard" className="shrink-0 font-display text-base font-semibold text-brand-title">
             Who<span className="text-brand-accent">Jobs</span>
           </Link>
 
-          {/* Nav Links */}
           <nav className="flex items-center gap-6 text-sm font-medium">
             {NAV_LINKS.map(({ to, label }) => (
               <NavLink
@@ -40,19 +37,16 @@ const AppNavbar = () => {
             ))}
           </nav>
 
-          {/* Search */}
           <div className="relative w-full max-w-xs">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted" />
             <Input placeholder="Buscar..." classname="pl-9 py-2 text-xs rounded-full" />
           </div>
 
-          {/* Logout Button */}
-          <button className="flex-shrink-0 rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
+          <button onClick={logout} className="shrink-0 rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
             Salir
           </button>
         </div>
 
-        {/* Mobile Layout */}
         <div className="flex items-center justify-between gap-4 md:hidden">
           <Link to="/dashboard" className="font-display text-base font-semibold text-brand-title">
             Who<span className="text-brand-accent">Jobs</span>
@@ -62,7 +56,6 @@ const AppNavbar = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {open && (
           <div className="mt-4 flex flex-col gap-4 border-t border-brand-border pt-4 md:hidden">
             <nav className="flex flex-col gap-3 text-sm font-medium">
@@ -85,7 +78,7 @@ const AppNavbar = () => {
               <Input placeholder="Buscar..." classname="pl-9 py-2 text-xs rounded-full" />
             </div>
 
-            <button className="rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
+            <button onClick={logout} className="rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
               Salir
             </button>
           </div>
