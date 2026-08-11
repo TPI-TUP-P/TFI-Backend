@@ -27,6 +27,11 @@ namespace Infrastructure.Data.Repositories
             return await _context.Postulations.FindAsync(id, cancellationToken);
         }
 
+        public async Task<int> GetCountByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            return await _context.Postulations.CountAsync(p => p.UserId == userId, cancellationToken);
+        }
+
 
         public async Task<Postulation> UpdateState(Postulation postulation, CancellationToken cancellationToken)
         {
