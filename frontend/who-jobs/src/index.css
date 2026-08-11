@@ -1,18 +1,20 @@
 /* main.css */
 @import "tailwindcss";
-
-:root {
-  /* Paleta extraída de las capturas */
-  --color-brand-bg: #F7F7EE;        /* Fondo crema de la landing */
-  --color-brand-card: #FFFFFF;      /* Fondo blanco de las credenciales */
-  --color-brand-title: #2B4655;     /* Azul oscuro de títulos y botón candidato */
-  --color-brand-muted: #6B808C;     /* Gris azulado de párrafos */
-  --color-brand-accent: #6C9675;    /* Verde menta de reclutador */
-  --color-brand-border: #D3E0D7;    /* Bordes de las tarjetas */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 }
-
+:root {
+  --color-brand-bg: #F5F4F7;     /* Neutro gris-púrpura ultra suave */
+  --color-brand-card: #FFFFFF;   /* Blanco puro para las tarjetas */
+  --color-brand-title: #1E1B2E;  /* Berenjena/Púrpura oscuro profundo (Sustituye al negro/azul) */
+  --color-brand-muted: #6B657B;  /* Gris violeta para textos secundarios */
+  --color-brand-accent: #7C3AED; /* Púrpura eléctrico / Violeta brillante (Match, CTAs y detalles) */
+  --color-brand-border: #E4E1EA; /* Borde lila pastel muy suave */
+}
 @theme {
-  /* Mapeo de colores para usar clases como bg-brand-bg, text-brand-title, etc. */
+  /* Mapeo Tailwind CSS v4 idéntico al tuyo */
   --color-brand-bg: var(--color-brand-bg);
   --color-brand-card: var(--color-brand-card);
   --color-brand-title: var(--color-brand-title);

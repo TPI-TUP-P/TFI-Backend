@@ -6,4 +6,5 @@ namespace Domain.Interfaces;
 public interface IUserRepository : IGenericRepository<User>
 {
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<User?> GetByPhoneAsync(string phone, CancellationToken cancellationToken);
 }

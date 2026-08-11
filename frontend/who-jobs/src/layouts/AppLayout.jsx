@@ -1,21 +1,16 @@
 // AppLayout.jsx
 import React from "react";
 import { Outlet } from "react-router-dom";
-import AppNavbar from "../Components/app/AppNavbar";
 import AppFooter from "../Components/app/AppFooter";
-import AppSidebar from "../Components/app/AppSideBar";
-
+import AppNavbar from "../Components/app/AppNavbar";
 export default function AppLayout() {
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-brand-bg text-brand-title">
-      <AppSidebar />
-      <div className="flex flex-1 flex-col">
-        <AppNavbar />
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
-        </main>
-        <AppFooter />
-      </div>
+      <div className="flex min-h-screen w-full flex-col bg-brand-bg text-brand-title">
+      <AppNavbar />
+      <main className="flex-1 overflow-y-auto pt-24 px-4">
+        <Outlet />
+      </main>
+      <AppFooter />
     </div>
   );
 }
