@@ -66,6 +66,22 @@ namespace Web.Controllers
         //     return Ok(postulations);
         // }
 
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetCountByUserId(CancellationToken cancellationToken)
+        {
+            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("id")?.Value
+            ?? User.FindFirst("sub")?.Value;
+
+            if (string.IsNullOrEmpty(idUserToken))
+                return Unauthorized("user id not found in token");
+
+            var userId = Guid.Parse(idUserToken);
+
+            var count = await _postulationService.GetCountByUserId(userId, cancellationToken);
+            return Ok(count);
+        }
+
         [HttpGet("user/{Id}")]
         public async Task<ActionResult<List<GetAllResponse>>> GetByUserId(Guid Id, CancellationToken cancellationToken)
         {

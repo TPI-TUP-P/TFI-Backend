@@ -56,6 +56,10 @@ namespace Domain.Entities
 
         public void UpdateState(EnumState newState)
         {
+            if (newState == State)
+            {
+                throw new Exception("The state is already set to the specified value.");
+            }
             State = newState;
         }
 

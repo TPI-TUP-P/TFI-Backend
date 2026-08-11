@@ -8,11 +8,8 @@ namespace Application.DTOs.Postulation.Request
 
         public EnumState State { get; set; }
     
-        public UpdateRequest(EnumState state, IFormFile cv)
-        {
-            State = state;
-
-        }
+        public UpdateRequest(){}
+    
         
     }
 }

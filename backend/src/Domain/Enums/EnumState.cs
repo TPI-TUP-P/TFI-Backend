@@ -2,8 +2,8 @@ namespace Domain.Enums
 {
     public enum EnumState
     {
-        Pending,
-        Accepted,
-        Rejected
+        Pending= 0,
+        Accepted= 1,
+        Rejected= 2
     }
 }

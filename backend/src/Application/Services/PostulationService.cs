@@ -186,6 +186,17 @@ namespace Application.Services
         //     )).ToList();
         // }
 
+        public async Task<int> GetCountByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            var user = await _userService.GetByIdAsync(userId, cancellationToken);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+            var count = await _postulationRepository.GetCountByUserId(userId, cancellationToken);
+            return count;
+        }
+
         public async Task<List<GetAllResponse>> GetByUserId(Guid userId, Guid id, CancellationToken cancellationToken)
         {
             var user = await _userService.GetByIdAsync(userId, cancellationToken);
