@@ -9,7 +9,7 @@ const AppNavbar = () => {
   const [open, setOpen] = useState(false);
 
   const NAV_LINKS = [
-  { to: "/home", label: "Dashboard" },
+  { to: "/home", label: "Inicio" },
   { to: "/jobs", label: "Empleos" },
 ];
 
@@ -19,7 +19,7 @@ const AppNavbar = () => {
       <div className="rounded-2xl border border-brand-border bg-brand-card/90 px-6 py-3 shadow-lg shadow-brand-title/5 backdrop-blur-md">
         
         <div className="hidden items-center justify-between gap-6 md:flex">
-          <Link to="/dashboard" className="shrink-0 font-display text-base font-semibold text-brand-title">
+          <Link to="/home" className="shrink-0 font-display text-base font-semibold text-brand-title">
             Who<span className="text-brand-accent">Jobs</span>
           </Link>
 
