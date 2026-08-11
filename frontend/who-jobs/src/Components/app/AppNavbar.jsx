@@ -45,7 +45,7 @@ const AppNavbar = () => {
         </div>
 
         {/* Logout Button */}
-        <button className="flex-shrink-0 rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
+        <button onClick={logout} className="flex-shrink-0 on rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
           Salir
         </button>
       </div>
