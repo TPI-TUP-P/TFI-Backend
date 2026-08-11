@@ -8,7 +8,13 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FindAsync(id, cancellationToken);
+        var user = await context.Users.FindAsync(id, cancellationToken );
+        return user;
+    }
+
+    public async Task<User?> GetByPhoneAsync (string phone, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u=> u.Phone == phone, cancellationToken);
         return user;
     }
 

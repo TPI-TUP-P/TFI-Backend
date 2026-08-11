@@ -79,6 +79,19 @@ public class UserService(IUserRepository _userRepository) : IUserService
         }
     }
 
+    public async Task<bool> ExistsUserPhone(string phone, CancellationToken cancellationToken)
+    {
+        var existingUser = await _userRepository.GetByPhoneAsync(phone, cancellationToken);
+        if (existingUser != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public async Task<bool> ExistsUserId(Guid id, CancellationToken cancellationToken)
     {
         var existingUser = await _userRepository.GetByIdAsync(id, cancellationToken);

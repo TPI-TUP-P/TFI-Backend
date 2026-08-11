@@ -2,11 +2,12 @@ using Application.DTOs.Auth.Request;
 using Application.DTOs.Auth.Response;
 using Application.Interfaces;
 using Domain.Entities;
-using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
 
-public class AuthService(IUserRepository userRepository,IJwtService jwtService, IPasswordHasherService passwordHasher) : IAuthService
+namespace Application.Services;
+
+public class AuthService(IUserRepository userRepository, IJwtService jwtService, IPasswordHasherService passwordHasher) : IAuthService
 {
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
@@ -16,6 +17,13 @@ public class AuthService(IUserRepository userRepository,IJwtService jwtService, 
         {
             throw new EmailAlredyExistsException();
         }
+
+        var existingPhone = await userRepository.GetByPhoneAsync(request.Phone, cancellationToken);
+        if (existingPhone != null)
+        {
+            throw new EmailAlredyExistsException();
+        }
+
         var passwordHash = passwordHasher.Hash(request.Password);
         var user = new User(
             name: request.Name,
@@ -44,14 +52,14 @@ public class AuthService(IUserRepository userRepository,IJwtService jwtService, 
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByEmailAsync(request.Email,cancellationToken );
-        if(user == null)
+        var user = await userRepository.GetByEmailAsync(request.Email, cancellationToken);
+        if (user == null)
         {
             throw new InvalidCredentialsException();
         }
 
-        bool isEquals =  passwordHasher.ComparePassword(request.Password, user.Password);
-        if(isEquals == false)
+        bool isEquals = passwordHasher.ComparePassword(request.Password, user.Password);
+        if (isEquals == false)
         {
             throw new InvalidCredentialsException();
         }
