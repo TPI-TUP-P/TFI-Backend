@@ -33,7 +33,9 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
             Email = user.Email,
             Phone = user.Phone,
             Role = user.Role,
-            CreatedDate = user.CreatedDate
+            CreatedDate = user.CreatedDate,
+            CvFileName = user.CVFileName,
+            CvFilePath = user.CVFilePath
         };
     }
 
@@ -150,7 +152,9 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
             Email = user.Email,
             Phone = user.Phone,
             Role = user.Role,
-            CreatedDate = user.CreatedDate
+            CreatedDate = user.CreatedDate,
+            CvFileName = user.CVFileName,
+            CvFilePath = user.CVFilePath
         };
 
 
@@ -174,16 +178,18 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
 
         await _userRepository.UpdateAsync(user, cancellationToken);
 
-        return new GetByIdResponse
-        {
-            Id = user.Id,
-            Name = user.Name,
-            LastName = user.LastName,
-            Email = user.Email,
-            Phone = user.Phone,
-            Role = user.Role,
-            CreatedDate = user.CreatedDate
-        };
+    return new GetByIdResponse
+{
+    Id = user.Id,
+    Name = user.Name,
+    LastName = user.LastName,
+    Email = user.Email,
+    Phone = user.Phone,
+    Role = user.Role,
+    CreatedDate = user.CreatedDate,
+    CvFileName = user.CVFileName,
+    CvFilePath = user.CVFilePath
+};
     }
 
     public async Task DeleteAsync(Guid idTarget, Guid id, UserRole role, CancellationToken cancellationToken)
