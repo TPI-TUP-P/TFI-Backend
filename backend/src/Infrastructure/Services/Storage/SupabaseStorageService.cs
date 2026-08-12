@@ -32,8 +32,8 @@ public class SupabaseStorageService : IStorageService
         var url =
             $"{_options.Url}/storage/v1/object/{_options.Bucket}/{objectPath}";
         //URL completa que apunta al archivo dentro del bucket.
-        
-        
+
+
         //guardo el archivo 
         using var stream = file.OpenReadStream();
         //lo preparo para enviarlo
@@ -112,8 +112,39 @@ public class SupabaseStorageService : IStorageService
 
     //private static string GenerateObjectPath()
     //{
-       // var now = DateTime.UtcNow;
+    // var now = DateTime.UtcNow;
 
-        //return $"{now:yyyy/MM}/postulations/{Guid.NewGuid()}.pdf";
+    //return $"{now:yyyy/MM}/postulations/{Guid.NewGuid()}.pdf";
     //}
+
+    public async Task<string> UploadProfileCvAsync(IFormFile file, Guid idUser)
+    {
+        ValidateFile(file);
+        var objectPath = $"profiles/{idUser}.pdf";
+        var url = $"{_options.Url}/storage/v1/object/{_options.Bucket}/{objectPath}";
+
+        using var stream = file.OpenReadStream();
+        using var content = new StreamContent(stream);
+        content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = content
+        };
+
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _options.Key);
+        request.Headers.Add("apikey", _options.Key);
+        request.Headers.Add("x-upsert", "true");
+        request.Headers.Add("cache-control", "3600");
+
+        var response = await _httpClient.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error al subir el CV a Supabase: {error}");
+        }
+
+        return objectPath;
+    }
 }

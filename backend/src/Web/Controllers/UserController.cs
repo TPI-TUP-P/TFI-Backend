@@ -20,6 +20,20 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(user);
     }
 
+    [HttpPost("cv")]
+    [Authorize]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<UpdloadCVResponse>> UploadCv([FromForm] UploadCVRequest request, CancellationToken cancellationToken)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim is null)
+            return Unauthorized();
+
+        var userId = Guid.Parse(userIdClaim);
+        var result = await userService.UploadCvAsync(userId, request, cancellationToken);
+        return Ok(result);
+    }
 
     [HttpPatch]
     [Authorize]

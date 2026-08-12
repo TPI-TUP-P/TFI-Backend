@@ -10,6 +10,8 @@ public interface IUserService
 
     // Task<IEnumerable<UserResponse>> GetAllAsync();
 
+    Task<UpdloadCVResponse> UploadCvAsync(Guid idUser, UploadCVRequest request, CancellationToken cancellationToken);
+
     Task<bool> ExistsUserEmail(string email, CancellationToken cancellationToken);
 
     Task<bool> ExistsUserId(Guid id, CancellationToken cancellationToken);
