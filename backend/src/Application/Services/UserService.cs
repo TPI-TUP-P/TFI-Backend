@@ -129,28 +129,20 @@ public class UserService(IUserRepository _userRepository) : IUserService
 
     }
 
-    public async Task<GetByIdResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken)
+    public async Task<GetByIdResponse> UpdateAsync(
+    Guid id,
+    UpdateRequest request,
+    CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(id, cancellationToken);
 
         if (user is null)
-        {
             throw new Exception("User not found.");
-        }
 
-        if (request.Name != null)
-        {
-            user.Name = request.Name;
-        }
-        if (request.LastName != null)
-        {
-            user.LastName = request.LastName;
-        }
-
-        if (request.Phone != null)
-        {
-            user.Phone = request.Phone;
-        }
+        user.Update(
+            request.Name,
+            request.LastName,
+            request.Phone);
 
         await _userRepository.UpdateAsync(user, cancellationToken);
 
