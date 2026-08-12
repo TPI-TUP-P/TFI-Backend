@@ -14,7 +14,8 @@ export default function RecruiterView() {
     name: '',
     lastName: '',
   })
-
+console.log('TOKEN:', token)
+console.log('USER:', user)
   const [jobs, setJobs] = useState([])
   const [totalPublications, setTotalPublications] = useState(0)
 
@@ -95,6 +96,7 @@ export default function RecruiterView() {
 
           throw new Error(
             'No se pudieron obtener tus búsquedas.'
+            
           )
         }
 
@@ -133,7 +135,7 @@ export default function RecruiterView() {
         setTotalPublications(countData)
 
       } catch (err) {
-        console.error(err)
+          console.error(err)
 
         setError(
           err.message ||
@@ -141,6 +143,7 @@ export default function RecruiterView() {
         )
       } finally {
         setLoading(false)
+            
       }
     }
 
