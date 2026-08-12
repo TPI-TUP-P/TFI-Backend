@@ -17,4 +17,7 @@ public class GetByIdResponse
     public UserRole Role { get; set; }
 
     public DateTime CreatedDate { get; set; }
+    public string? CvFileName { get; set; }
+
+    public string? CvFilePath { get; set; }
 }
