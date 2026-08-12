@@ -12,7 +12,7 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class UserService(IUserRepository _userRepository) : IUserService
+public class UserService(IUserRepository _userRepository, IStorageService _storageService) : IUserService
 {
 
 
@@ -104,6 +104,34 @@ public class UserService(IUserRepository _userRepository) : IUserService
             return false;
         }
     }
+    public async Task<UpdloadCVResponse> UploadCvAsync(Guid idUser, UploadCVRequest request, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetByIdAsync(idUser, cancellationToken);
+
+        // CORRECCIÓN: Lanzar excepción si es NULL (no si existe)
+        if (user == null)
+        {
+            throw new NotFoundException("user");
+        }
+
+        if (request.CV == null || request.CV.Length == 0)
+            throw new Exception("CV file is required.");
+
+        if (user.CVFilePath != null)
+            await _storageService.DeleteAsync(user.CVFilePath);
+
+        var cvPath = await _storageService.UploadProfileCvAsync(request.CV, idUser);
+        user.UpdateCv(request.CV.FileName, cvPath);
+        await _userRepository.UpdateAsync(user, cancellationToken);
+
+        return new UpdloadCVResponse
+        {
+            IdUser = idUser,
+            CvFileName = request.CV.FileName,
+            CvFilePath = cvPath
+        };
+    }
+
 
     public async Task<GetByIdResponse> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
