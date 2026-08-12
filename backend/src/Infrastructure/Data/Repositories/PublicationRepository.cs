@@ -2,7 +2,7 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-
+using Domain.DTOs;
 namespace Infrastructure.Repositories;
 
 public class PublicationRepository(AppDbContext context) : IPublicationRepository
@@ -41,17 +41,29 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
 
     }
 
-    public async Task<List<Publication>> GetAllAsync(
-    int page,
-    int pageSize,
-    CancellationToken cancellationToken)
+    public async Task<PagedResult<Publication>> GetAllAsync(
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken)
     {
-        return await context.Publications
-            .AsNoTracking()
+        var query = context.Publications.AsNoTracking();
+
+        var totalItems = await query.CountAsync(cancellationToken);
+
+        var items = await query
             .OrderByDescending(p => p.Created_Date)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
+
+        return new PagedResult<Publication>
+        {
+            Items = items,
+            TotalItems = totalItems,
+            TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+            CurrentPage = page,
+            PageSize = pageSize
+        };
     }
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
     {

@@ -52,10 +52,10 @@ public class PublicationController(IPublicationService _publication) : Controlle
 
     }
     [HttpGet] // GET /api/Publication?page=2
-    public async Task<ActionResult<List<GetByIdResponse>>> GetAllAsync(
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 25,
-        CancellationToken cancellationToken = default)
+    public async Task<ActionResult<GetAllPublicationsResponse>> GetAllAsync(
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 25,
+    CancellationToken cancellationToken = default)
     {
         var publications = await _publication.GetAllAsync(
             page,
