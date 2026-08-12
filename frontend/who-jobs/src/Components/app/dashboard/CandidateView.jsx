@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import StatCard from './StatCard'
 import { useAuthStore } from '../../../Components/stores/useAuthStore'
 import api from '../../../services/api'
+import { updateUserSchema } from '../../../Components/schemas/userschema'
+
 
 const roleNames = {
   0: 'Candidato',
@@ -72,67 +74,59 @@ export default function CandidateView() {
   // Actualizar usuario
   // =========================
 
-  const handleSave = async () => {
-    if (!user) {
-      setError('No se encontró la información del usuario.')
-      return
-    }
-
-    try {
-      setSaving(true)
-      setError('')
-
-      const updateRequest = {
-        Name:
-          editingField === 'name'
-            ? editingValue
-            : user.name,
-
-        LastName:
-          editingField === 'lastName'
-            ? editingValue
-            : user.lastName,
-
-        Phone:
-          editingField === 'phone'
-            ? editingValue
-            : user.phone || null,
-      }
-
-      await api.patch('/User', updateRequest)
-
-      // Actualizar Zustand
-      setAuth(token, {
-        ...user,
-        name:
-          editingField === 'name'
-            ? editingValue
-            : user.name,
-
-        lastName:
-          editingField === 'lastName'
-            ? editingValue
-            : user.lastName,
-
-        phone:
-          editingField === 'phone'
-            ? editingValue
-            : user.phone,
-      })
-
-      setOpenModal(false)
-    } catch (err) {
-      console.error(err)
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'No se pudieron guardar los cambios.'
-      )
-    } finally {
-      setSaving(false)
-    }
+const handleSave = async () => {
+  if (!user) {
+    setError('No se encontró la información del usuario.')
+    return
   }
+
+  try {
+    setSaving(true)
+    setError('')
+
+    const updateRequest = {
+      Name:
+        editingField === 'name'
+          ? editingValue
+          : user.name,
+
+      LastName:
+        editingField === 'lastName'
+          ? editingValue
+          : user.lastName,
+
+      Phone:
+        editingField === 'phone'
+          ? editingValue || null
+          : user.phone || null,
+    }
+
+    // VALIDACIÓN
+    const validatedData = updateUserSchema.parse(updateRequest)
+
+    await api.patch('/User', validatedData)
+
+    setAuth(token, {
+      ...user,
+      name: validatedData.Name,
+      lastName: validatedData.LastName,
+      phone: validatedData.Phone,
+    })
+
+    setOpenModal(false)
+
+  } catch (err) {
+    console.error(err)
+
+    if (err.name === 'ZodError') {
+      setError(err.issues[0].message)
+    } else {
+      setError(err.message || 'No se pudieron guardar los cambios.')
+    }
+  } finally {
+    setSaving(false)
+  }
+}
 
   // =========================
   // Si todavía no hay usuario

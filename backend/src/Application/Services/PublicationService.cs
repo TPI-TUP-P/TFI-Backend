@@ -152,10 +152,10 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         return await _Publication.ExistsAsync(idPublication, cancellationToken);
     }
 
-    public async Task<List<GetByIdResponse>> GetAllAsync(
-            int page,
-            int pageSize,
-            CancellationToken cancellationToken)
+    public async Task<GetAllPublicationsResponse> GetAllAsync(
+     int page,
+     int pageSize,
+     CancellationToken cancellationToken)
     {
         if (page < 1)
             throw new ArgumentException("Page must be greater than 0.");
@@ -166,19 +166,29 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         if (pageSize > 25)
             pageSize = 25;
 
-        var publications = await _Publication.GetAllAsync(page, pageSize, cancellationToken);
+        var publications = await _Publication.GetAllAsync(
+            page,
+            pageSize,
+            cancellationToken);
 
-        return publications.Select(p => new GetByIdResponse(
-            p.Id,
-            p.Creator,
-            p.Job_position!,
-            p.Description!,
-            p.Salary,
-            p.Applicants,
-            p.Created_Date
-        )).ToList();
+        return new GetAllPublicationsResponse
+        {
+            Items = publications.Items.Select(p => new GetByIdResponse(
+                p.Id,
+                p.Creator,
+                p.Job_position!,
+                p.Description!,
+                p.Salary,
+                p.Applicants,
+                p.Created_Date
+            )).ToList(),
+
+            TotalItems = publications.TotalItems,
+            TotalPages = publications.TotalPages,
+            CurrentPage = publications.CurrentPage,
+            PageSize = publications.PageSize
+        };
     }
-
     public async Task<List<GetByIdResponse>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(name))
