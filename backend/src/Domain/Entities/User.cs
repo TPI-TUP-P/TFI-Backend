@@ -48,53 +48,103 @@ public class User
 
     public User() { }
 
-    private static void ValidateProperties(string name, string lastName, string phone, string email, string password)
+   private static void ValidateProperties(
+    string name,
+    string lastName,
+    string phone,
+    string email,
+    string password)
+{
+    ValidateName(name);
+    ValidateLastName(lastName);
+    ValidatePhone(phone);
+    ValidateEmail(email);
+    ValidatePassword(password);
+}
+
+public void Update(
+    string? name,
+    string? lastName,
+    string? phone)
+{
+    if (name is not null)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new FieldEmptyException("Name");
-        }
-        else if (name.Length < 3 || name.Length > 100)
-        {
-            throw new InvalidLegthException(3, 100, name);
-        }
-        else if (!Regex.IsMatch(name, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
-        {
-            throw new InvalidFormatException(name);
-        }
-
-
-
-        if (string.IsNullOrWhiteSpace(lastName))
-        {
-            throw new FieldEmptyException("Last name");
-        }
-        else if (lastName.Length < 3 || lastName.Length > 100)
-        {
-            throw new InvalidLegthException(3, 100, lastName);
-        }
-        else if (!Regex.IsMatch(lastName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
-        {
-            throw new InvalidFormatException(lastName);
-
-        }
-
-
-        if (!string.IsNullOrWhiteSpace(phone) && phone.Length < 8)
-        {
-            throw new InvalidLegthException(phone, 8);
-
-        }
-        else if (!Regex.IsMatch(phone, @"^\+?[0-9]{8,15}$"))
-        {
-
-            throw new InvalidFormatException(nameof(phone));
-        }
-
-
-        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
-        {
-            throw new FieldEmptyException(email);
-        }
+        ValidateName(name);
+        Name = name;
     }
+
+    if (lastName is not null)
+    {
+        ValidateLastName(lastName);
+        LastName = lastName;
+    }
+
+    if (phone is not null)
+    {
+        ValidatePhone(phone);
+        Phone = phone;
+    }
+}
+
+private static void ValidateName(string name)
+{
+    if (string.IsNullOrWhiteSpace(name))
+        throw new FieldEmptyException(nameof(name));
+
+    if (name.Length < 3 || name.Length > 100)
+        throw new InvalidLegthException(3, 100, name);
+
+    if (!Regex.IsMatch(name, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+        throw new InvalidFormatException(name);
+}
+
+private static void ValidateLastName(string lastName)
+{
+    if (string.IsNullOrWhiteSpace(lastName))
+        throw new FieldEmptyException(nameof(lastName));
+
+    if (lastName.Length < 3 || lastName.Length > 100)
+        throw new InvalidLegthException(3, 100, lastName);
+
+    if (!Regex.IsMatch(lastName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+        throw new InvalidFormatException(lastName);
+}
+
+private static void ValidatePhone(string phone)
+{
+    if (string.IsNullOrWhiteSpace(phone))
+        throw new FieldEmptyException(nameof(phone));
+
+    if (!Regex.IsMatch(phone, @"^\+?[0-9]{8,15}$"))
+        throw new InvalidFormatException(phone);
+}
+private static void ValidateEmail(string email)
+{
+    if (string.IsNullOrWhiteSpace(email))
+        throw new FieldEmptyException(nameof(email));
+
+    if (!Regex.IsMatch(
+        email,
+        @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+    {
+        throw new InvalidFormatException(email);
+    }
+}
+
+private static void ValidatePassword(string password)
+{
+    if (string.IsNullOrWhiteSpace(password))
+        throw new FieldEmptyException(nameof(password));
+
+    if (password.Length < 8 || password.Length > 100)
+        throw new InvalidLegthException(8, 100, password);
+
+    // Ejemplo de regla de dominio:
+    if (!Regex.IsMatch(password, @"[A-Z]") ||
+        !Regex.IsMatch(password, @"[a-z]") ||
+        !Regex.IsMatch(password, @"[0-9]"))
+    {
+        throw new InvalidFormatException(password);
+    }
+}
 }
