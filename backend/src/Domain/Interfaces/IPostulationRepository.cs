@@ -1,5 +1,7 @@
 
 using Domain.Entities;
+using Domain.DTOs;
+
 
 namespace Domain.interfaces
 {
