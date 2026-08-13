@@ -79,6 +79,8 @@ namespace Application.Services
             
         }
 
+    
+
         public async Task<GetByIdResponse> GetById(Guid id, Guid userId, CancellationToken cancellationToken)
         {
             var postulation = await _postulationRepository.GetById(id, cancellationToken);
