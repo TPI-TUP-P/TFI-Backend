@@ -27,10 +27,6 @@ export default function CandidateView() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  // =========================
-  // Cargar postulaciones
-  // =========================
-
   useEffect(() => {
     const loadPostulations = async () => {
       if (!user?.id) {
@@ -57,10 +53,6 @@ export default function CandidateView() {
     loadPostulations()
   }, [user?.id])
 
-  // =========================
-  // Modal
-  // =========================
-
   const openEditModal = (field, label, value) => {
     setEditingField(field)
     setEditingLabel(label)
@@ -76,10 +68,6 @@ export default function CandidateView() {
     setError('')
   }
 
-  // =========================
-  // Actualizar usuario
-  // =========================
-
   const handleSave = async () => {
     if (!user) {
       setError('No se encontró la información del usuario.')
@@ -91,10 +79,7 @@ export default function CandidateView() {
       setError('')
 
       const updateRequest = {
-        Name:
-          editingField === 'name'
-            ? editingValue
-            : user.name,
+        Name: editingField === 'name' ? editingValue : user.name,
 
         LastName:
           editingField === 'lastName'
@@ -119,7 +104,6 @@ export default function CandidateView() {
       })
 
       setOpenModal(false)
-
     } catch (err) {
       console.error(err)
 
@@ -135,14 +119,10 @@ export default function CandidateView() {
     }
   }
 
-  // =========================
-  // Usuario
-  // =========================
-
   if (!user) {
     return (
       <div className="flex items-center justify-center p-8">
-        <p className="text-slate-500">
+        <p className="text-brand-muted">
           Cargando información del usuario...
         </p>
       </div>
@@ -154,20 +134,22 @@ export default function CandidateView() {
       <div className="space-y-6">
 
         {/* Header */}
-        <div className="rounded-2xl bg-[#355872] p-6 text-white shadow">
+        <div className="rounded-2xl bg-brand-accent p-6 text-white shadow-sm">
+
           <p className="text-sm text-white/70">
             Panel principal
           </p>
 
-          <h1 className="font-display text-3xl font-semibold mt-1">
+          <h1 className="font-display mt-1 text-3xl font-semibold">
             ¡Hola, {user.name || 'usuario'}!
           </h1>
 
-          <p className="text-sm text-white/80 mt-2 max-w-2xl">
+          <p className="mt-2 max-w-2xl text-sm text-white/80">
             Desde acá podés mantener tus datos actualizados,
             administrar tu currículum y revisar el estado de tus
             postulaciones.
           </p>
+
         </div>
 
         {/* Estadísticas */}

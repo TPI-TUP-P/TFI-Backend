@@ -13,9 +13,9 @@ export default function EditUserModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
 
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl bg-brand-card p-6 shadow-2xl">
 
-        <h3 className="font-display text-2xl font-semibold text-[#1f2a33] mb-4">
+        <h3 className="font-display text-2xl font-semibold text-brand-title mb-4">
           Actualizar {label}
         </h3>
 
@@ -24,8 +24,10 @@ export default function EditUserModal({
           value={value}
           onChange={e => setValue(e.target.value)}
           disabled={saving}
-          className="w-full rounded-lg border border-gray-300 p-3
-                     disabled:bg-gray-100"
+          className="w-full rounded-lg border border-brand-border
+                     bg-brand-card p-3 text-brand-title
+                     outline-none focus:border-brand-accent
+                     disabled:bg-brand-bg"
         />
 
         {error && (
@@ -39,9 +41,11 @@ export default function EditUserModal({
           <button
             onClick={onClose}
             disabled={saving}
-            className="w-full sm:w-auto rounded-lg border border-gray-300
-                       px-4 py-2 text-slate-700 hover:bg-gray-100
-                       transition-colors duration-200 disabled:opacity-50"
+            className="w-full sm:w-auto rounded-lg border border-brand-border
+                       px-4 py-2 text-brand-title
+                       hover:bg-brand-bg
+                       transition-colors duration-200
+                       disabled:opacity-50"
           >
             Cancelar
           </button>
@@ -49,10 +53,10 @@ export default function EditUserModal({
           <button
             onClick={onSave}
             disabled={saving}
-            className="w-full sm:w-auto rounded-lg bg-[#355872]
+            className="w-full sm:w-auto rounded-lg bg-brand-accent
                        px-5 py-2 text-white font-medium
-                       hover:bg-[#2b475c]
-                       transition-colors duration-200
+                       hover:opacity-90
+                       transition-opacity duration-200
                        disabled:opacity-50"
           >
             {saving ? 'Guardando...' : 'Guardar cambios'}
