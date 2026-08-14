@@ -20,6 +20,25 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(user);
     }
 
+  [HttpGet]
+[Authorize(Roles = "Admin,SuperAdmin")]
+public async Task<ActionResult<IEnumerable<GetAllResponse>>> GetAll(
+    [FromQuery] UserRole? userRole,
+    CancellationToken cancellationToken)
+{
+    var users = await userService.GetAllAsync(
+        userRole,
+        cancellationToken);
+
+    return Ok(users);
+}
+    [HttpGet("email/{email}")]
+    public async Task<ActionResult<GetByIdResponse>> GetByEmail(string email, CancellationToken cancellationToken)
+    {
+        var user = await userService.GetByEmailAsync(email, cancellationToken);
+        return Ok(user);
+    }
+
     [HttpPost("cv")]
     [Authorize]
     [Consumes("multipart/form-data")]
