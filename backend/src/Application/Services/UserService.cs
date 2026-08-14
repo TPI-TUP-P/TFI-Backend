@@ -39,6 +39,30 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
         };
     }
 
+
+
+    public async Task<GetByIdResponse> GetByEmail(string email, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+        if (user == null)
+        {
+            throw new NotFoundException("user");
+        }
+
+        return new GetByIdResponse
+        {
+            Id = user.Id,
+            Name = user.Name,
+            LastName = user.LastName,
+            Email = user.Email,
+            Phone = user.Phone,
+            Role = user.Role,
+            CreatedDate = user.CreatedDate,
+            CvFileName = user.CVFileName,
+            CvFilePath = user.CVFilePath
+        };
+    }
+
     public async Task<GetByIdResponse> CreateAsync(CreateRequest request, CancellationToken cancellationToken)
     {
 
@@ -135,6 +159,22 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
     }
 
 
+    public async Task<IEnumerable<GetAllResponse>> GetAllAsync(
+    UserRole? userRole,
+    CancellationToken cancellationToken)
+{
+    var users = await _userRepository.GetAllAsync(
+        userRole,
+        cancellationToken);
+
+    return users.Select(user => new GetAllResponse(
+        user.Id,
+        user.Name,
+        user.Email,
+        user.Role
+    ));
+}
+
     public async Task<GetByIdResponse> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
@@ -178,18 +218,18 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
 
         await _userRepository.UpdateAsync(user, cancellationToken);
 
-    return new GetByIdResponse
-{
-    Id = user.Id,
-    Name = user.Name,
-    LastName = user.LastName,
-    Email = user.Email,
-    Phone = user.Phone,
-    Role = user.Role,
-    CreatedDate = user.CreatedDate,
-    CvFileName = user.CVFileName,
-    CvFilePath = user.CVFilePath
-};
+        return new GetByIdResponse
+        {
+            Id = user.Id,
+            Name = user.Name,
+            LastName = user.LastName,
+            Email = user.Email,
+            Phone = user.Phone,
+            Role = user.Role,
+            CreatedDate = user.CreatedDate,
+            CvFileName = user.CVFileName,
+            CvFilePath = user.CVFilePath
+        };
     }
 
     public async Task DeleteAsync(Guid idTarget, Guid id, UserRole role, CancellationToken cancellationToken)

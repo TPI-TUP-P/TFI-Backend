@@ -8,7 +8,9 @@ public interface IUserService
 {
     Task<GetByIdResponse> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    // Task<IEnumerable<UserResponse>> GetAllAsync();
+    Task<GetByIdResponse> GetByEmailAsync(string email, CancellationToken cancellationToken);
+ 
+    Task<IEnumerable<GetAllResponse>> GetAllAsync(UserRole? userRole, CancellationToken cancellationToken);
 
     Task<UpdloadCVResponse> UploadCvAsync(Guid idUser, UploadCVRequest request, CancellationToken cancellationToken);
 
