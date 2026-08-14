@@ -10,5 +10,17 @@ export const jobService = {
       throw error;
     }
   },
+  
+create: async (data) => {
+    try {
+      const response = await api.post("Publication", data);
+      return response;
+    } catch (error) {
+      console.error("Error creating publication:", error);
+      throw error;
+    }
+  },
+
+
 };
 
