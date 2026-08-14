@@ -13,7 +13,7 @@ public interface IPublicationService
 
     Task<CreateResponse> AddAsync(Guid IdUser, CreateRequest publication, CancellationToken cancellationToken);
 
-    Task<GetAllPublicationsResponse> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken);
+    Task<GetAllPublicationsResponse> GetAllAsync(int page, int pageSize, string search,CancellationToken cancellationToken);
 
     Task<UpdateResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
 
