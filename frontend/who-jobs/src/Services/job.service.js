@@ -2,19 +2,19 @@ import api from "./api";
 
 export const jobService = {
 
-  getJobsBySearch: async ()=> {
-    try {
-        const response = await api.get("Publication")
-        return response;
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-      throw error
-    }
-  },
+  // getJobsBySearch: async (searchValue)=> {
+  //   try {
+  //       const response = await api.get("Publication")
+  //       return response;
+  //   } catch (error) {
+  //     console.error("Error fetching jobs:", error);
+  //     throw error
+  //   }
+  // },
 
-  getJobs: async (page = 1) => {
+  getJobs: async (page = 1, searchValue = "") => {
     try {
-      const response = await api.get(`Publication?page=${page}`);
+      const response = await api.get(`Publication?page=${page}&search=${searchValue}`);
       return response;
     } catch (error) {
       console.error("Error fetching jobs:", error);

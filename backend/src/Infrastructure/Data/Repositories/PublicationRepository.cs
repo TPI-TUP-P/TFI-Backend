@@ -72,8 +72,10 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
 
     if (!string.IsNullOrWhiteSpace(search))
     {
+            search = search.Trim().ToLower();
+
         query = query.Where(p =>
-            p.Job_position.Contains(search));
+            p.Job_position.ToLower().Contains(search));
     }
         var totalItems = await query.CountAsync(cancellationToken);
 

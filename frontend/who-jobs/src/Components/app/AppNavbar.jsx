@@ -75,11 +75,12 @@ const AppNavbar = () => {
               ))}
             </nav>
 
-            <div className="relative">
+            {/* <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted" />
               <Input placeholder="Buscar..." classname="pl-9 py-2 text-xs rounded-full" />
-            </div>
+            </div> */}
 
+              <AppSearch/>
             <button onClick={logout} className="rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
               Salir
             </button>
