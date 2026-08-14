@@ -36,10 +36,14 @@ export default function AdminView() {
       setPostulationCount(postulationsResponse ?? 0)
 
     } catch (error) {
+      console.error('Error cargando estadísticas:', error)
     } finally {
       setLoadingStats(false)
     }
   }
+
+  const deletedPublications =
+    publicationCount.total - publicationCount.active
 
   return (
     <div className="space-y-6">
@@ -62,7 +66,7 @@ export default function AdminView() {
         <StatCard
           title="Publicaciones"
           value={loadingStats ? '...' : publicationCount.total}
-          subtitle={`${publicationCount.active} activas`}
+          subtitle="Ofertas registradas"
         />
 
         <StatCard
@@ -72,15 +76,15 @@ export default function AdminView() {
         />
 
         <StatCard
-          title="Postulaciones"
-          value={loadingStats ? '...' : postulationCount}
-          subtitle="Postulaciones registradas"
+          title="Publicaciones eliminadas"
+          value={loadingStats ? '...' : deletedPublications}
+          subtitle="Ofertas desactivadas"
         />
 
         <StatCard
-          title="Administración"
-          value="Activa"
-          subtitle="Panel operativo"
+          title="Postulaciones"
+          value={loadingStats ? '...' : postulationCount}
+          subtitle="Postulaciones registradas"
         />
 
       </div>
