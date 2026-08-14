@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import api from '../../../../Services/api'
 
 export default function CandidateCV({
@@ -27,15 +28,12 @@ export default function CandidateCV({
 
       const result = await api.post('/User/cv', formData)
 
-      console.log('CV subido:', result)
 
       setCvFile(null)
 
       // Mensaje de éxito
       setCvSuccess('¡CV subido correctamente!')
     } catch (err) {
-      console.error('Error subiendo CV:', err)
-
       setError(err.message || 'No se pudo subir el CV.')
       setCvSuccess('')
     } finally {
