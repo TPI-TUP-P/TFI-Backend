@@ -8,6 +8,9 @@ using Infrastructure.Configurations;
 using Application.Interfaces;
 using Infrastructure.Services.Storage;
 using Scalar.AspNetCore;
+using Infrastructure.Data.Seed;
+using Microsoft.AspNetCore.Identity;
+using Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,7 +93,12 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var passwordHasher = scope.ServiceProvider
+        .GetRequiredService<IPasswordHasherService>();
+
     db.Database.Migrate();
+
+    await DbInitializer.InitializeAsync(db, passwordHasher);
 }
 
 app.UseDeveloperExceptionPage();
