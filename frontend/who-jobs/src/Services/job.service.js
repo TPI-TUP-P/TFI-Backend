@@ -1,6 +1,17 @@
 import api from "./api";
 
 export const jobService = {
+
+  getJobsBySearch: async ()=> {
+    try {
+        const response = await api.get("Publication")
+        return response;
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      throw error
+    }
+  },
+
   getJobs: async (page = 1) => {
     try {
       const response = await api.get(`Publication?page=${page}`);

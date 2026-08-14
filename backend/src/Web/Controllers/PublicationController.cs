@@ -59,11 +59,13 @@ public class PublicationController(IPublicationService _publication) : Controlle
     public async Task<ActionResult<GetAllPublicationsResponse>> GetAllAsync(
     [FromQuery] int page = 1,
     [FromQuery] int pageSize = 25,
+    [FromQuery] string search = "",
     CancellationToken cancellationToken = default)
     {
         var publications = await _publication.GetAllAsync(
             page,
             pageSize,
+            search,
             cancellationToken);
 
         return Ok(publications);

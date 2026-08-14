@@ -62,12 +62,19 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
     public async Task<PagedResult<Publication>> GetAllAsync(
     int page,
     int pageSize,
+    string? search,
     CancellationToken cancellationToken)
     {
         var query = context.Publications
             .AsNoTracking()
             .Where(p => p.State);
 
+
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        query = query.Where(p =>
+            p.Job_position.Contains(search));
+    }
         var totalItems = await query.CountAsync(cancellationToken);
 
         var items = await query
