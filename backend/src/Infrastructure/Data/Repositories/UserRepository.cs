@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Data.Repositories;
@@ -11,6 +12,20 @@ public class UserRepository(AppDbContext context) : IUserRepository
         var user = await context.Users.FindAsync(id, cancellationToken );
         return user;
     }
+
+    public async Task<IEnumerable<User?>> GetAllAsync(
+    UserRole? userRole,
+    CancellationToken cancellationToken)
+{
+    var query = context.Users.AsQueryable();
+
+    if (userRole.HasValue)
+    {
+        query = query.Where(u => u.Role == userRole.Value);
+    }
+
+    return await query.ToListAsync(cancellationToken);
+}
 
     public async Task<User?> GetByPhoneAsync (string phone, CancellationToken cancellationToken)
     {
