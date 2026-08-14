@@ -159,21 +159,28 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
     }
 
 
-    public async Task<IEnumerable<GetAllResponse>> GetAllAsync(
+    public async Task<GetAllWithCountResponse> GetAllAsync(
     UserRole? userRole,
     CancellationToken cancellationToken)
 {
-    var users = await _userRepository.GetAllAsync(
+    var (user, userCount) = await _userRepository.GetAllAsync(
         userRole,
         cancellationToken);
 
-    return users.Select(user => new GetAllResponse(
+    var users = user.Select(user => new GetAllResponse(
         user.Id,
         user.Name,
         user.Email,
         user.Role
-    ));
+    )).ToList();
+
+    return new GetAllWithCountResponse(
+        users,
+        userCount
+    );
 }
+
+
 
     public async Task<GetByIdResponse> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {

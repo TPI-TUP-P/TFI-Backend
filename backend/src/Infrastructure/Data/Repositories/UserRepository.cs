@@ -9,27 +9,28 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FindAsync(id, cancellationToken );
+        var user = await context.Users.FindAsync(id, cancellationToken);
         return user;
     }
 
-    public async Task<IEnumerable<User?>> GetAllAsync(
-    UserRole? userRole,
-    CancellationToken cancellationToken)
-{
-    var query = context.Users.AsQueryable();
-
-    if (userRole.HasValue)
+    public async Task<(IReadOnlyList<User> Users, int TotalCount)> GetAllAsync(
+       UserRole? userRole,
+       CancellationToken cancellationToken)
     {
-        query = query.Where(u => u.Role == userRole.Value);
+        var query = context.Users.AsQueryable();
+
+        if (userRole.HasValue)
+        {
+            query = query.Where(u => u.Role == userRole.Value);
+        }
+        var users = await query.ToListAsync(cancellationToken);
+
+        return (users, users.Count);
     }
 
-    return await query.ToListAsync(cancellationToken);
-}
-
-    public async Task<User?> GetByPhoneAsync (string phone, CancellationToken cancellationToken)
+    public async Task<User?> GetByPhoneAsync(string phone, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FirstOrDefaultAsync(u=> u.Phone == phone, cancellationToken);
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Phone == phone, cancellationToken);
         return user;
     }
 
@@ -42,7 +43,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<User> UpdateAsync(User user, CancellationToken cancellationToken)
     {
-        var userToUpdate = await context.Users.FindAsync(user.Id, cancellationToken );
+        var userToUpdate = await context.Users.FindAsync(user.Id, cancellationToken);
         userToUpdate!.Name = user.Name;
         userToUpdate.LastName = user.LastName;
         userToUpdate.Email = user.Email;
@@ -50,17 +51,17 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
         await context.SaveChangesAsync(cancellationToken);
         return user;
-        
+
     }
 
-    public  Task DeleteAsync(User user, CancellationToken cancellationToken)
+    public Task DeleteAsync(User user, CancellationToken cancellationToken)
     {
         user.Delete();
         return Task.CompletedTask;
-        
+
     }
 
-   public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var user = await context.Users.FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
         return user;

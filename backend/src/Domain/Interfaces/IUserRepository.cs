@@ -7,6 +7,7 @@ namespace Domain.Interfaces;
 public interface IUserRepository : IGenericRepository<User>
 {
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken);
-    Task<IEnumerable<User?>> GetAllAsync(UserRole? userRole, CancellationToken cancellationToken);
-    Task<User?> GetByPhoneAsync(string phone, CancellationToken cancellationToken);
+    Task<(IReadOnlyList<User> Users, int TotalCount)> GetAllAsync(
+           UserRole? role,
+           CancellationToken cancellationToken); Task<User?> GetByPhoneAsync(string phone, CancellationToken cancellationToken);
 }
