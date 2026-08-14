@@ -8,7 +8,8 @@ namespace Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize()]
+[Produces("application/json")] // All my endpoints return JSON
+[Authorize]
 public class PublicationController(IPublicationService _publication) : ControllerBase
 {
     // im testing the new method to do inject dependecy
@@ -27,7 +28,7 @@ public class PublicationController(IPublicationService _publication) : Controlle
         var publication = await _publication.AddAsync(UserId, publicationDto, cancellationToken);
         if (publication.Id == Guid.Empty)
         {
-            throw new Exception("Publication.Id is empty");
+            return NotFound();
         }
 
         return CreatedAtRoute(
@@ -110,7 +111,7 @@ public class PublicationController(IPublicationService _publication) : Controlle
                         ?? User.FindFirst("sub")?.Value;
         if (idUserToken is null)
         {
-            throw new Exception("Id From token");
+            throw new UnauthorizedAccessException("User identifier not found in token.");
         }
         if (!Guid.TryParse(idUserToken, out var userId))
         {

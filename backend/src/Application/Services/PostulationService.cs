@@ -48,7 +48,7 @@ namespace Application.Services
             {
                 throw new Exception("User is not a candidate");
             }
-            var jobOfferExist = await _PublicationService.PublicationExistsAsync(request.JobOfferId,  cancellationToken);
+            var jobOfferExist = await _PublicationService.PublicationExistsAsync(request.JobOfferId, cancellationToken);
             if (!jobOfferExist)
             {
                 throw new Exception("Job offer not found");
@@ -64,27 +64,27 @@ namespace Application.Services
             {
                 throw new Exception("User has already applied to this job offer");
             }
-            
-                var cvPath = await _storageService.UploadAsync(request.CV, idUser, request.JobOfferId);
-                var postulation = new Postulation(idUser, request.JobOfferId, request.CV.FileName, cvPath);
-                await _postulationRepository.Create(postulation, cancellationToken);
-                return new CreateResponse(
-                    postulation.Id,
-                    postulation.UserId,
-                    postulation.JobOfferId,
-                    postulation.CreatedAt,
-                    postulation.State,
-                    postulation.CvFileName
-                );
-            
+
+            var cvPath = await _storageService.UploadAsync(request.CV, idUser, request.JobOfferId);
+            var postulation = new Postulation(idUser, request.JobOfferId, request.CV.FileName, cvPath);
+            await _postulationRepository.Create(postulation, cancellationToken);
+            return new CreateResponse(
+                postulation.Id,
+                postulation.UserId,
+                postulation.JobOfferId,
+                postulation.CreatedAt,
+                postulation.State,
+                postulation.CvFileName
+            );
+
         }
 
-    
+
 
         public async Task<GetByIdResponse> GetById(Guid id, Guid userId, CancellationToken cancellationToken)
         {
             var postulation = await _postulationRepository.GetById(id, cancellationToken);
-            
+
             if (postulation == null)
             {
                 throw new Exception("Postulation not found");
@@ -92,17 +92,17 @@ namespace Application.Services
 
             var user = await _userService.GetByIdAsync(userId, cancellationToken);
 
-                if (user == null)
-                {
-                    throw new Exception("User not found");
-                }
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
 
             var jobOfferExist = await _PublicationService.PublicationExistsAsync(postulation.JobOfferId, cancellationToken);
 
-                if (!jobOfferExist)
-                {
-                    throw new Exception("Job offer not found");
-                }
+            if (!jobOfferExist)
+            {
+                throw new Exception("Job offer not found");
+            }
 
             var jobOffer = await _PublicationService.GetByIdAsync(postulation.JobOfferId, cancellationToken);
 
@@ -110,25 +110,25 @@ namespace Application.Services
             {
                 if (userId != postulation.UserId)
                 {
-                    if(jobOffer.Creator != userId)
+                    if (jobOffer.Creator != userId)
                     {
                         throw new Exception("User is not authorized to view this postulation");
                     }
-                    
+
                 }
             }
 
 
-                return new GetByIdResponse(
-                    postulation.Id,
-                    postulation.UserId,
-                    postulation.JobOfferId,
-                    postulation.CreatedAt,
-                    postulation.State,
-                    postulation.CvFileName
-                );
-            }
-        
+            return new GetByIdResponse(
+                postulation.Id,
+                postulation.UserId,
+                postulation.JobOfferId,
+                postulation.CreatedAt,
+                postulation.State,
+                postulation.CvFileName
+            );
+        }
+
 
         //que el usuario que quiera postularse sea el mismo que inicio sesion
         // me genera un poco de dudas
@@ -159,7 +159,7 @@ namespace Application.Services
                     throw new Exception("User is not authorized to update this postulation");
                 }
             }
-            
+
 
             postulation.UpdateState(request.State);
 
@@ -198,6 +198,24 @@ namespace Application.Services
             var count = await _postulationRepository.GetCountByUserId(userId, cancellationToken);
             return count;
         }
+        public async Task<GetCountByStateResponse> GetCountByInterviewerId(Guid interviewerId, CancellationToken cancellationToken)
+        {
+            var user = await _userService.GetByIdAsync(interviewerId, cancellationToken);
+
+            if (user == null)
+                throw new Exception("User not found");
+
+            var counts = await _postulationRepository
+                .GetCountByInterviewerId(interviewerId, cancellationToken);
+
+            return new GetCountByStateResponse
+            {
+                Pending = counts.GetValueOrDefault(EnumState.Pending),
+                Accepted = counts.GetValueOrDefault(EnumState.Accepted),
+                Rejected = counts.GetValueOrDefault(EnumState.Rejected)
+            };
+        }
+
 
         public async Task<List<GetAllResponse>> GetByUserId(Guid userId, Guid id, CancellationToken cancellationToken)
         {
@@ -213,7 +231,7 @@ namespace Application.Services
                     throw new Exception("User is not authorized to view this postulation");
                 }
             }
-            
+
             var postulations = await _postulationRepository.GetByUserId(id, cancellationToken);
             return postulations.Select(p => new GetAllResponse(
                 p.Id,
@@ -238,7 +256,7 @@ namespace Application.Services
                 throw new Exception("User not found");
             }
             var JobOffer = await _PublicationService.GetByIdAsync(jobOfferId, cancellationToken);
-            
+
             if (user.Role != UserRole.Admin)
             {
                 if (userId != JobOffer.Creator)
