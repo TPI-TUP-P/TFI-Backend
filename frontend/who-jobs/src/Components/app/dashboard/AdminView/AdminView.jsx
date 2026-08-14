@@ -6,9 +6,12 @@ import AdminCreatePublication from './AdminCreatePublication'
 import api from '../../../../Services/api'
 
 export default function AdminView() {
-  const [publicationCount, setPublicationCount] = useState(0)
-  const [postulationCount, setPostulationCount] = useState(0)
+  const [publicationCount, setPublicationCount] = useState({
+    total: 0,
+    active: 0,
+  })
 
+  const [postulationCount, setPostulationCount] = useState(0)
   const [loadingStats, setLoadingStats] = useState(true)
 
   useEffect(() => {
@@ -21,28 +24,18 @@ export default function AdminView() {
 
       const [publicationsResponse, postulationsResponse] =
         await Promise.all([
-          api.get('/Publication'),
+          api.get('/Publication/count'),
           api.get('/Postulation/count'),
         ])
 
-      const publications = publicationsResponse.data
+      setPublicationCount({
+        total: publicationsResponse?.total ?? 0,
+        active: publicationsResponse?.active ?? 0,
+      })
 
-      // Si tu endpoint devuelve directamente una lista
-      if (Array.isArray(publications)) {
-        setPublicationCount(publications.length)
-      } else {
-        // Si devuelve un objeto paginado
-        setPublicationCount(
-          publications.totalCount ??
-          publications.total ??
-          publications.count ??
-          0
-        )
-      }
+      setPostulationCount(postulationsResponse ?? 0)
 
-      setPostulationCount(postulationsResponse.data)
     } catch (error) {
-      console.error('Error cargando estadísticas:', error)
     } finally {
       setLoadingStats(false)
     }
@@ -64,11 +57,18 @@ export default function AdminView() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
         <StatCard
           title="Publicaciones"
-          value={loadingStats ? '...' : publicationCount}
-          subtitle="Ofertas laborales"
+          value={loadingStats ? '...' : publicationCount.total}
+          subtitle={`${publicationCount.active} activas`}
+        />
+
+        <StatCard
+          title="Publicaciones activas"
+          value={loadingStats ? '...' : publicationCount.active}
+          subtitle="Ofertas disponibles"
         />
 
         <StatCard
@@ -82,15 +82,13 @@ export default function AdminView() {
           value="Activa"
           subtitle="Panel operativo"
         />
+
       </div>
 
       {/* Gestión */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-
         <AdminPublications />
-
         <AdminUserLookup />
-
       </div>
 
       {/* Crear publicación */}

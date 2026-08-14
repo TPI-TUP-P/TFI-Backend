@@ -4,6 +4,7 @@ using Application.DTOs.Publication.Response;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Domain.Enums;
+using Domain.DTOs;
 using System.Security.Claims;
 namespace Web.Controllers;
 
@@ -105,6 +106,16 @@ public class PublicationController(IPublicationService _publication) : Controlle
             cancellationToken);
 
         return Ok(publications);
+    }
+
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    [HttpGet("count")] // GET /api/Publication/count
+    public async Task<ActionResult<PublicationCountDto>> GetCountAsync(
+        CancellationToken cancellationToken)
+    {
+        var result = await _publication.GetCountAsync(cancellationToken);
+
+        return Ok(result);
     }
     private Guid GetUserId()
     {

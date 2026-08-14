@@ -4,6 +4,7 @@ using Domain.Entities;
 using Application.DTOs.Publication.Request;
 using Domain.Enums;
 using Application.DTOs.Publication.Response;
+using Domain.DTOs;
 
 
 public interface IPublicationService
@@ -25,4 +26,6 @@ public interface IPublicationService
     Task<int> CountMyPublicationsAsync(Guid creatorId, CancellationToken cancellationToken);
 
     Task<List<GetByIdResponse>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken);
+
+    Task<PublicationCountDto> GetCountAsync(CancellationToken cancellationToken);
 }

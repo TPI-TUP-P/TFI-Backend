@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Enums;
+using Domain.DTOs;
 
 
 using Application.DTOs.Publication.Response;
@@ -225,6 +226,11 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             p.Applicants,
             p.Created_Date
         )).ToList();
+    }
+    public async Task<PublicationCountDto> GetCountAsync(
+    CancellationToken cancellationToken)
+    {
+        return await _Publication.GetCountAsync(cancellationToken);
     }
 
     private void ValidateId(Guid Id)
