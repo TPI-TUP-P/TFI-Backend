@@ -49,7 +49,7 @@ export default function AdminView() {
     <div className="space-y-6">
 
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-r from-[#355872] to-[#2b475c] p-6 text-white shadow-lg">
+      <div className="rounded-2xl bg-brand-accent p-6 text-white shadow-lg">
         <h1 className="font-display text-3xl font-semibold">
           Panel administrativo
         </h1>

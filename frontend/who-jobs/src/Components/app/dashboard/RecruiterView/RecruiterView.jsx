@@ -19,11 +19,17 @@ export default function RecruiterView() {
     return (
       <div className="flex min-h-[300px] items-center justify-center">
         <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#355872]" />
 
-          <p className="mt-3 text-sm text-slate-500">
+          <div
+            className="mx-auto h-8 w-8 animate-spin rounded-full
+                       border-4 border-brand-border
+                       border-t-brand-accent"
+          />
+
+          <p className="mt-3 text-sm text-brand-muted">
             Preparando tu panel...
           </p>
+
         </div>
       </div>
     )
