@@ -4,8 +4,6 @@ namespace Web.Controllers
     using Application.DTOs.Postulation.Request;
     using Application.DTOs.Postulation.Response;
     using Application.Interfaces;
-    using Application.Services;
-    using Domain.Entities;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -21,19 +19,13 @@ namespace Web.Controllers
             _postulationService = postulationService;
         }
 
+        [Authorize(Roles = "Candidate,Admin,SuperAdmin")]
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<CreateResponse>> Create([FromForm] CreateRequest request, CancellationToken cancellationToken)
         {
-            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? User.FindFirst("id")?.Value
-            ?? User.FindFirst("sub")?.Value;
+            var userId = GetUserId();
 
-            if (string.IsNullOrEmpty(idUserToken))
-                return Unauthorized("user id not found in token");
-
-            var userId = Guid.Parse(idUserToken);
-        
             await _postulationService.Create(userId, request, cancellationToken);
             return Ok();
         }
@@ -41,15 +33,7 @@ namespace Web.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetByIdResponse>> GetById(Guid id, CancellationToken cancellationToken)
         {
-
-            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? User.FindFirst("id")?.Value
-            ?? User.FindFirst("sub")?.Value;
-
-            if (string.IsNullOrEmpty(idUserToken))
-                return Unauthorized("user id not found in token");
-
-            var userId = Guid.Parse(idUserToken);
+            var userId = GetUserId();
 
             var postulation = await _postulationService.GetById(id, userId, cancellationToken);
             if (postulation == null)
@@ -59,24 +43,10 @@ namespace Web.Controllers
             return Ok(postulation);
         }
 
-        // [HttpGet]
-        // public async Task<ActionResult<List<GetAllResponse>>> GetAll(CancellationToken cancellationToken)
-        // {
-        //     var postulations = await _postulationService.GetAll(cancellationToken);
-        //     return Ok(postulations);
-        // }
-
         [HttpGet("count")]
         public async Task<ActionResult<int>> GetCountByUserId(CancellationToken cancellationToken)
         {
-            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? User.FindFirst("id")?.Value
-            ?? User.FindFirst("sub")?.Value;
-
-            if (string.IsNullOrEmpty(idUserToken))
-                return Unauthorized("user id not found in token");
-
-            var userId = Guid.Parse(idUserToken);
+            var userId = GetUserId();
 
             var count = await _postulationService.GetCountByUserId(userId, cancellationToken);
             return Ok(count);
@@ -85,64 +55,64 @@ namespace Web.Controllers
         [HttpGet("user/{Id}")]
         public async Task<ActionResult<List<GetAllResponse>>> GetByUserId(Guid Id, CancellationToken cancellationToken)
         {
-            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? User.FindFirst("id")?.Value
-            ?? User.FindFirst("sub")?.Value;
-
-            if (string.IsNullOrEmpty(idUserToken))
-                return Unauthorized("user id not found in token");
-
-            var userId = Guid.Parse(idUserToken);
-
+            var userId = GetUserId();
             var postulations = await _postulationService.GetByUserId(userId, Id, cancellationToken);
             return Ok(postulations);
         }
-
+        [Authorize(Roles = "Recruiter,Admin,SuperAdmin")]
         [HttpGet("joboffer/{jobOfferId}")]
         public async Task<ActionResult<List<GetAllResponse>>> GetByJobOfferId(Guid jobOfferId, CancellationToken cancellationToken)
         {
-            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? User.FindFirst("id")?.Value
-            ?? User.FindFirst("sub")?.Value;
-
-            if (string.IsNullOrEmpty(idUserToken))
-                return Unauthorized("user id not found in token");
-
-            var userId = Guid.Parse(idUserToken);
-
+            var userId = GetUserId();
             var postulations = await _postulationService.GetByJobOfferId(jobOfferId, userId, cancellationToken);
             return Ok(postulations);
         }
 
+
+        [Authorize(Roles = "Recruiter,Admin,SuperAdmin")]
         [HttpPatch("{id}")]
         public async Task<ActionResult<UpdateResponse>> UpdateState(Guid id, [FromBody] UpdateRequest request, CancellationToken cancellationToken)
         {
-            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? User.FindFirst("id")?.Value
-            ?? User.FindFirst("sub")?.Value;
-
-            if (string.IsNullOrEmpty(idUserToken))
-            return Unauthorized("user id not found in token");
-
-        var idUser = Guid.Parse(idUserToken);
+            var idUser = GetUserId();
 
             await _postulationService.UpdateState(idUser, id, request, cancellationToken);
             return Ok();
         }
 
+        [Authorize(Roles = "Recruiter,Admin,SuperAdmin")]
+        [HttpGet("interviewer/count-by-state")] ///api/Postulation/interviewer/count-by-state
+        public async Task<ActionResult<GetCountByStateResponse>> GetCountByInterviewer(CancellationToken cancellationToken)
+        {
+            // It obtains the total number of applications grouped by state for all posts created by the authenticated interviewer.
+            var userId = GetUserId();
+
+            var result = await _postulationService.GetCountByInterviewerId(userId, cancellationToken);
+            return Ok(result);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? User.FindFirst("id")?.Value
-            ?? User.FindFirst("sub")?.Value;
-
-            if (string.IsNullOrEmpty(idUserToken))
-                return Unauthorized("user id not found in token");
-
-            var idUser = Guid.Parse(idUserToken);
+            var idUser = GetUserId();
             await _postulationService.Delete(id, idUser, cancellationToken);
             return NoContent();
+        }
+        private Guid GetUserId() //obtain the id through the token
+        {
+            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                            ?? User.FindFirst("id")?.Value
+                            ?? User.FindFirst("sub")?.Value;
+            if (idUserToken is null)
+            {
+                throw new UnauthorizedAccessException("User identifier not found in token.");
+            }
+            if (!Guid.TryParse(idUserToken, out var userId))
+            {
+                throw new UnauthorizedAccessException("Invalid user identifier.");
+            }
+
+            return userId;
+
         }
     }
 }

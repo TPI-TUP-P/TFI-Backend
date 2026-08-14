@@ -20,6 +20,8 @@ export default function CandidateView() {
   const [postulationCount, setPostulationCount] = useState(0)
   const [loadingPostulations, setLoadingPostulations] = useState(true)
   const [error, setError] = useState('')
+  const [cvFile, setCvFile] = useState(null)
+  const [uploadingCv, setUploadingCv] = useState(false)
 
   const [openModal, setOpenModal] = useState(false)
   const [editingField, setEditingField] = useState('')
@@ -101,6 +103,7 @@ const handleSave = async () => {
           : user.phone || null,
     }
 
+
     // VALIDACIÓN
     const validatedData = updateUserSchema.parse(updateRequest)
 
@@ -127,6 +130,7 @@ const handleSave = async () => {
     setSaving(false)
   }
 }
+
 
   // =========================
   // Si todavía no hay usuario
@@ -186,6 +190,36 @@ const handleSave = async () => {
       editable: false,
     },
   ]
+  const handleUploadCv = async () => {
+  if (!cvFile) {
+    setError('Seleccioná un archivo PDF.')
+    return
+  }
+
+  try {
+    setUploadingCv(true)
+    setError('')
+
+    const formData = new FormData()
+
+    // IMPORTANTE:
+    // "cv" debe coincidir con el nombre de la propiedad
+    // de UploadCVRequest en tu backend.
+    formData.append('cv', cvFile)
+
+    const result = await api.post('/User/cv', formData)
+
+    console.log('CV subido:', result)
+
+    setCvFile(null)
+
+  } catch (err) {
+    console.error('Error subiendo CV:', err)
+    setError(err.message || 'No se pudo subir el CV.')
+  } finally {
+    setUploadingCv(false)
+  }
+}
 
   return (
     <>
@@ -238,6 +272,55 @@ const handleSave = async () => {
             subtitle="Última subida"
           />
         </div>
+
+        <div className="bg-white rounded-2xl shadow p-4 sm:p-6 border border-gray-200">
+  <div>
+    <h2 className="font-display text-2xl font-semibold text-[#1f2a33]">
+      Currículum
+    </h2>
+
+    <p className="text-sm text-slate-500 mt-1">
+      Subí tu currículum para utilizarlo en tus postulaciones.
+    </p>
+  </div>
+
+  <div className="mt-5 flex flex-col gap-4">
+    <input
+      type="file"
+      accept=".pdf"
+      onChange={(e) => setCvFile(e.target.files[0] || null)}
+      disabled={uploadingCv}
+      className="block w-full text-sm text-slate-600
+                 file:mr-4 file:rounded-lg file:border-0
+                 file:bg-[#355872] file:px-4 file:py-2
+                 file:text-white hover:file:bg-[#2b475c]"
+    />
+
+    {cvFile && (
+      <p className="text-sm text-slate-600">
+        Archivo seleccionado: <strong>{cvFile.name}</strong>
+      </p>
+    )}
+
+    <button
+      onClick={handleUploadCv}
+      disabled={!cvFile || uploadingCv}
+      className="w-full sm:w-auto self-start rounded-lg
+                 bg-[#355872] px-5 py-2 text-white font-medium
+                 hover:bg-[#2b475c]
+                 transition-colors duration-200
+                 disabled:opacity-50"
+    >
+      {uploadingCv ? 'Subiendo...' : 'Subir CV'}
+    </button>
+
+    {error && (
+      <p className="text-sm text-red-600">
+        {error}
+      </p>
+    )}
+  </div>
+</div>
 
         {/* Información de cuenta */}
         <div className="bg-white rounded-2xl shadow p-4 sm:p-6 border border-gray-200 space-y-6">
