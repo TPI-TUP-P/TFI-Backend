@@ -30,6 +30,15 @@ const JobsPage = () => {
     fetchJobs(1);
   };
 
+  const handleDeleteJob = async (id) => {
+    try {
+      await jobService.remove(id);
+      setJobs((prev) => prev.filter((job) => job.id !== id));
+    } catch (error) {
+      alert("No se pudo eliminar la publicación. Intentá de nuevo.");
+    }
+  };
+
   return (
     <main className="min-h-screen bg-brand-bg py-8">
       <div className="mx-auto flex w-full max-w-6xl gap-6 px-6">
@@ -54,7 +63,7 @@ const JobsPage = () => {
             </button>
           </div>
 
-          <JobCardList jobs={jobs} />
+          <JobCardList jobs={jobs} onDelete={handleDeleteJob} />
 
           <Pagination
             currentPage={currentPage}

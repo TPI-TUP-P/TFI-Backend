@@ -38,6 +38,7 @@ const ProfileCard = () => {
 
   const fullName = `${name || ""} ${lastName || ""}`.trim() || "Usuario";
   const roleLabel = roleLabels[role] || role || null;
+  const isCandidate = role === 0 || role === "Candidate";
 
   return (
     <aside className="flex w-full flex-col rounded-xl border border-brand-border bg-brand-card p-6 shadow-sm">
@@ -92,10 +93,11 @@ const ProfileCard = () => {
       </div>
 
       {/* CV */}
-      <div className="mt-6 border-t border-brand-border pt-5">
-        <p className="text-[11px] uppercase tracking-wide text-brand-muted">
-          Curriculum
-        </p>
+      {isCandidate && (
+        <div className="mt-6 border-t border-brand-border pt-5">
+          <p className="text-[11px] uppercase tracking-wide text-brand-muted">
+            Curriculum
+          </p>
 
         {cvFileName ? (
             <a
@@ -113,7 +115,7 @@ const ProfileCard = () => {
           </p>
         )}
       </div>
-
+      )}
       {/* CTA */}
       <button 
       className="mt-6 w-full rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-title"
