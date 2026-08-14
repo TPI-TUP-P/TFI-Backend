@@ -1,6 +1,8 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
+using Domain.Enums;
+using Domain.DTOs;
 
 
 using Application.DTOs.Publication.Response;
@@ -134,7 +136,7 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id, Guid idUser, CancellationToken cancellationToken)
+    public async Task DeleteAsync(UserRole? role, Guid id, Guid idUser, CancellationToken cancellationToken)
     {
         ValidateId(id);
         ValidateId(idUser);
@@ -142,6 +144,12 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         var publication = await _Publication.GetByIdAsync(id, cancellationToken) ?? throw new NotFoundException("Publication");
         if (publication.Creator != idUser)
         {
+            if (role == UserRole.Admin || role == UserRole.SuperAdmin)
+            {
+                await _Publication.DeleteAsync(publication, cancellationToken);
+                return;
+            }
+
             throw new UnauthorizedAccessException();
         }
         await _Publication.DeleteAsync(publication, cancellationToken);
@@ -218,6 +226,11 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             p.Applicants,
             p.Created_Date
         )).ToList();
+    }
+    public async Task<PublicationCountDto> GetCountAsync(
+    CancellationToken cancellationToken)
+    {
+        return await _Publication.GetCountAsync(cancellationToken);
     }
 
     private void ValidateId(Guid Id)

@@ -3,12 +3,15 @@ using Application.DTOs.Publication.Request;
 using Application.DTOs.Publication.Response;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Domain.Enums;
+using Domain.DTOs;
 using System.Security.Claims;
 namespace Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize()]
+[Produces("application/json")] // All my endpoints return JSON
+[Authorize]
 public class PublicationController(IPublicationService _publication) : ControllerBase
 {
     // im testing the new method to do inject dependecy
@@ -27,7 +30,7 @@ public class PublicationController(IPublicationService _publication) : Controlle
         var publication = await _publication.AddAsync(UserId, publicationDto, cancellationToken);
         if (publication.Id == Guid.Empty)
         {
-            throw new Exception("Publication.Id is empty");
+            return NotFound();
         }
 
         return CreatedAtRoute(
@@ -47,8 +50,9 @@ public class PublicationController(IPublicationService _publication) : Controlle
     [HttpDelete("{id:guid}")]
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
+        var role = GetUserRole();
         var idUser = GetUserId();
-        await _publication.DeleteAsync(id, idUser, cancellationToken);
+        await _publication.DeleteAsync(role, id, idUser, cancellationToken);
 
     }
     [HttpGet] // GET /api/Publication?page=2
@@ -103,6 +107,16 @@ public class PublicationController(IPublicationService _publication) : Controlle
 
         return Ok(publications);
     }
+
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    [HttpGet("count")] // GET /api/Publication/count
+    public async Task<ActionResult<PublicationCountDto>> GetCountAsync(
+        CancellationToken cancellationToken)
+    {
+        var result = await _publication.GetCountAsync(cancellationToken);
+
+        return Ok(result);
+    }
     private Guid GetUserId()
     {
         var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
@@ -110,7 +124,7 @@ public class PublicationController(IPublicationService _publication) : Controlle
                         ?? User.FindFirst("sub")?.Value;
         if (idUserToken is null)
         {
-            throw new Exception("Id From token");
+            throw new UnauthorizedAccessException("User identifier not found in token.");
         }
         if (!Guid.TryParse(idUserToken, out var userId))
         {
@@ -118,7 +132,18 @@ public class PublicationController(IPublicationService _publication) : Controlle
         }
 
         return userId;
+    }
+    private UserRole? GetUserRole()
+    {
+        var roleValue = User.FindFirst(ClaimTypes.Role)?.Value
+                     ?? User.FindFirst("role")?.Value;
 
+        if (string.IsNullOrWhiteSpace(roleValue))
+            return null;
 
+        if (Enum.TryParse<UserRole>(roleValue, true, out var role))
+            return role;
+
+        return null;
     }
 }

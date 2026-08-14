@@ -40,13 +40,33 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
         await context.SaveChangesAsync();
 
     }
+    public async Task<PublicationCountDto> GetCountAsync(
+    CancellationToken cancellationToken)
+    {
+        var result = await context.Publications
+            .GroupBy(p => 1)
+            .Select(g => new PublicationCountDto
+            {
+                Total = g.Count(),
+                Active = g.Count(p => p.State)
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return result ?? new PublicationCountDto
+        {
+            Total = 0,
+            Active = 0
+        };
+    }
 
     public async Task<PagedResult<Publication>> GetAllAsync(
-            int page,
-            int pageSize,
-            CancellationToken cancellationToken)
+    int page,
+    int pageSize,
+    CancellationToken cancellationToken)
     {
-        var query = context.Publications.AsNoTracking();
+        var query = context.Publications
+            .AsNoTracking()
+            .Where(p => p.State);
 
         var totalItems = await query.CountAsync(cancellationToken);
 
@@ -71,6 +91,8 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
             .AnyAsync(p => p.Id == id, cancellationToken);
     }
 
+
+
     public async Task<List<Publication>> GetAllByCreatorAsync(
     Guid creatorId,
     int page,
@@ -94,11 +116,16 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
             .CountAsync(p => p.Creator == creatorId, cancellationToken);
     }
 
-    public async Task<List<Publication>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken)
+    public async Task<List<Publication>> SearchByNameAsync(
+        string name,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken)
     {
         return await context.Publications
             .AsNoTracking()
-            .Where(p => p.Job_position != null &&
+            .Where(p => p.State &&
+                        p.Job_position != null &&
                         p.Job_position.Contains(name))
             .OrderByDescending(p => p.Created_Date)
             .Skip((page - 1) * pageSize)

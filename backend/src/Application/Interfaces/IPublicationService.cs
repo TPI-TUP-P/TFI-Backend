@@ -2,7 +2,9 @@ namespace Application.Interfaces;
 
 using Domain.Entities;
 using Application.DTOs.Publication.Request;
+using Domain.Enums;
 using Application.DTOs.Publication.Response;
+using Domain.DTOs;
 
 
 public interface IPublicationService
@@ -15,7 +17,7 @@ public interface IPublicationService
 
     Task<UpdateResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
 
-    Task DeleteAsync(Guid id, Guid idUser, CancellationToken cancellationToken);
+    Task DeleteAsync(UserRole? role, Guid id, Guid idUser, CancellationToken cancellationToken);
 
     Task<bool> PublicationExistsAsync(Guid idPublication, CancellationToken cancellationToken);
 
@@ -24,4 +26,6 @@ public interface IPublicationService
     Task<int> CountMyPublicationsAsync(Guid creatorId, CancellationToken cancellationToken);
 
     Task<List<GetByIdResponse>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken);
+
+    Task<PublicationCountDto> GetCountAsync(CancellationToken cancellationToken);
 }

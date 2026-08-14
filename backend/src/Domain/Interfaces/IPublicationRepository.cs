@@ -16,4 +16,6 @@ public interface IPublicationRepository : IGenericRepository<Publication>
     Task<int> CountByCreatorAsync(Guid creatorId, CancellationToken cancellationToken);
 
     Task<List<Publication>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken);
+
+    Task<PublicationCountDto> GetCountAsync(CancellationToken cancellationToken);
 }

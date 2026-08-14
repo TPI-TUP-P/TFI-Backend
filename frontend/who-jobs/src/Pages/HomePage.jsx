@@ -1,9 +1,9 @@
 
 import { useEffect, useState } from 'react'
 
-import CandidateView from '../Components/app/dashboard/CandidateView'
-import RecruiterView from '../Components/app/dashboard/RecruiterView'
-import AdminView from '../Components/app/dashboard/AdminView'
+import CandidateView from '../Components/app/dashboard/CandidateView/CandidateView'
+import RecruiterView from '../Components/app/dashboard/RecruiterView/RecruiterView'
+import AdminView from '../Components/app/dashboard/AdminView/AdminView'
 
 import { useAuthStore } from '../Components/stores/useAuthStore'
 
@@ -51,7 +51,6 @@ const HomePage = () => {
 
         const data = await response.json()
 
-        // Guardamos el usuario completo
         setAuth(token, data)
 
       } catch (err) {
