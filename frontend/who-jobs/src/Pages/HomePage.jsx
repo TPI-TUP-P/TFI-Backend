@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 
 import CandidateView from '../Components/app/dashboard/CandidateView'
-import RecruiterView from '../Components/app/dashboard/RecruiterView'
+import RecruiterView from '../Components/app/dashboard/RecruiterView/RecruiterView'
 import AdminView from '../Components/app/dashboard/AdminView'
 
 import { useAuthStore } from '../Components/stores/useAuthStore'
