@@ -4,12 +4,15 @@ import Pagination from "../Components/jobs/Pagination";
 import ProfileCard from "../Components/profile/ProfileCard";
 import CreateJobModal from "../Components/jobs/CreateJobModal";
 import { jobService } from "../Services/job.service";
+import { usePostulatedJobs } from "../hooks/usePostulatedJobs";
 
 const JobsPage = () => {
   const [jobs, setJobs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const { appliedJobIds, markApplied } = usePostulatedJobs();
 
   const fetchJobs = async (page = 1) => {
     try {
@@ -63,7 +66,12 @@ const JobsPage = () => {
             </button>
           </div>
 
-          <JobCardList jobs={jobs} onDelete={handleDeleteJob} />
+          <JobCardList
+            jobs={jobs}
+            onDelete={handleDeleteJob}
+            appliedJobIds={appliedJobIds}
+            onApplied={markApplied}
+          />
 
           <Pagination
             currentPage={currentPage}

@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
 import ApplyModal from "./ApplyModal";
 
-const MANAGER_ROLES = [1, 2, 3];
+const MANAGER_ROLES = [1, 2, 3]; // Recruiter, Admin, SuperAdmin
+const APPLY_ROLES = [0, 2, 3]; // Candidate, Admin, SuperAdmin (igual que el backend)
 
-function JobCard({ job, onDelete }) {
+function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
   const [showModal, setShowModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
@@ -13,6 +14,9 @@ function JobCard({ job, onDelete }) {
 
   const canManage =
     user && MANAGER_ROLES.includes(user.role) && job.creator === user.id;
+
+  const canApply = user && APPLY_ROLES.includes(user.role);
+  const alreadyApplied = appliedJobIds?.has(job.id);
 
   const handleCardClick = () => {
     navigate(`/jobs/${job.id}`);
@@ -36,6 +40,10 @@ function JobCard({ job, onDelete }) {
   const handleApplyClick = (e) => {
     e.stopPropagation();
     setShowModal(true);
+  };
+
+  const handleApplySuccess = () => {
+    onApplied?.(job.id);
   };
 
   return (
@@ -75,12 +83,20 @@ function JobCard({ job, onDelete }) {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <button
-              onClick={handleApplyClick}
-              className="shrink-0 rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-title"
-            >
-              Postularme
-            </button>
+            {canApply && (
+              alreadyApplied ? (
+                <span className="rounded-lg bg-brand-bg px-4 py-2 text-sm font-semibold text-brand-muted">
+                  ✓ Ya postulado
+                </span>
+              ) : (
+                <button
+                  onClick={handleApplyClick}
+                  className="shrink-0 rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-title"
+                >
+                  Postularme
+                </button>
+              )
+            )}
 
             {canManage && (
               <button
@@ -98,7 +114,11 @@ function JobCard({ job, onDelete }) {
       </article>
 
       {showModal && (
-        <ApplyModal job={job} onClose={() => setShowModal(false)} />
+        <ApplyModal
+          job={job}
+          onClose={() => setShowModal(false)}
+          onSuccess={handleApplySuccess}
+        />
       )}
     </>
   );

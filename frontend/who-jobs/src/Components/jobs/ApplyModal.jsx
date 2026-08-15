@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { postulationService } from "../../Services/postulation.service";
 
-const ApplyModal = ({ job, onClose }) => {
+const ApplyModal = ({ job, onClose, onSuccess }) => {
   const [cvFile, setCvFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null); // { type: "success" | "error", message: string }
@@ -34,6 +34,7 @@ const ApplyModal = ({ job, onClose }) => {
         "¡Postulación enviada con éxito!";
 
       setResult({ type: "success", message: `¡Postulación enviada con éxito! Estado: ${stateLabels[response.state] ?? "Pendiente"}.`, });
+      onSuccess?.();
     } catch (error) {
       const message =
       error?.response?.data?.detail ||

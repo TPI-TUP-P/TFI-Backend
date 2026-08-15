@@ -8,23 +8,33 @@ export const postulationService = {
 
     try {
       const response = await api.post("Postulation", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      return response; // o response.data, según lo que devuelva tu interceptor (ver conversación anterior)
+      return response;
     } catch (error) {
       console.error("Error applying to job:", error);
       throw error;
     }
   },
 
-  getByJobOffer: async (jobOfferId) => {
+  getByJobOffer: async (jobOfferId, page = 1, pageSize = 5) => {
     try {
-      const response = await api.get(`Postulation/joboffer/${jobOfferId}`);
-      return response;
+      const response = await api.get(
+        `Postulation/${jobOfferId}/postulations?page=${page}&pageSize=${pageSize}`
+      );
+      return response; // { items, totalItems, totalPages, currentPage, pageSize }
     } catch (error) {
       console.error("Error fetching postulations:", error);
+      throw error;
+    }
+  },
+
+  getByUser: async (userId) => {
+    try {
+      const response = await api.get(`Postulation/user/${userId}`);
+      return response;
+    } catch (error) {
+      console.error("Error fetching user postulations:", error);
       throw error;
     }
   },
@@ -39,7 +49,6 @@ export const postulationService = {
     }
   },
 
-
   getCvUrl: async (postulationId) => {
     try {
       const response = await api.get(`Postulation/${postulationId}/cv`);
@@ -49,6 +58,4 @@ export const postulationService = {
       throw error;
     }
   },
-
-  
 };
