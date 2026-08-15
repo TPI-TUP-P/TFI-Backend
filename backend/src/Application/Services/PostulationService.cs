@@ -201,44 +201,44 @@ namespace Application.Services
 
 
         public async Task<string> GetCvDownloadUrl(Guid id, Guid idUser, CancellationToken cancellationToken)
-{
-    var postulation = await _postulationRepository.GetById(id, cancellationToken);
-    if (postulation == null)
-    {
-        throw new Exception("Postulation not found");
-    }
-
-    var user = await _userService.GetByIdAsync(idUser, cancellationToken);
-    if (user == null)
-    {
-        throw new Exception("User not found");
-    }
-
-    var jobOfferExist = await _PublicationService.PublicationExistsAsync(postulation.JobOfferId, cancellationToken);
-    if (!jobOfferExist)
-    {
-        throw new Exception("Job offer not found");
-    }
-
-    var jobOffer = await _PublicationService.GetByIdAsync(postulation.JobOfferId, cancellationToken);
-
-    if (user.Role != UserRole.Admin)
-    {
-        // Puede descargar: el dueño del job, o el propio postulante
-        if (idUser != jobOffer.Creator && idUser != postulation.UserId)
         {
-            throw new Exception("User is not authorized to download this CV");
+            var postulation = await _postulationRepository.GetById(id, cancellationToken);
+            if (postulation == null)
+            {
+                throw new Exception("Postulation not found");
+            }
+
+            var user = await _userService.GetByIdAsync(idUser, cancellationToken);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var jobOfferExist = await _PublicationService.PublicationExistsAsync(postulation.JobOfferId, cancellationToken);
+            if (!jobOfferExist)
+            {
+                throw new Exception("Job offer not found");
+            }
+
+            var jobOffer = await _PublicationService.GetByIdAsync(postulation.JobOfferId, cancellationToken);
+
+            if (user.Role != UserRole.Admin)
+            {
+                // Puede descargar: el dueño del job, o el propio postulante
+                if (idUser != jobOffer.Creator && idUser != postulation.UserId)
+                {
+                    throw new Exception("User is not authorized to download this CV");
+                }
+            }
+
+            if (string.IsNullOrEmpty(postulation.CvFilePath))
+            {
+                throw new Exception("CV not found for this postulation");
+            }
+
+            var url = await _storageService.GetSignedUrlAsync(postulation.CvFilePath);
+            return url;
         }
-    }
-
-    if (string.IsNullOrEmpty(postulation.CvFilePath))
-    {
-        throw new Exception("CV not found for this postulation");
-    }
-
-    var url = await _storageService.GetSignedUrlAsync(postulation.CvFilePath);
-    return url;
-}
 
 
 
@@ -287,36 +287,100 @@ namespace Application.Services
             )).ToList();
         }
 
-        public async Task<List<GetAllResponse>> GetByJobOfferId(Guid jobOfferId, Guid userId, CancellationToken cancellationToken)
+         public async Task<GetByJobOfferIdPagedResponse> GetByJobOfferId(
+            Guid jobOfferId,
+            int page,
+            int pageSize,
+            Guid userId,
+            CancellationToken cancellationToken)
         {
-            var JobOfferExsist = await _PublicationService.PublicationExistsAsync(jobOfferId, cancellationToken);
-            if (!JobOfferExsist)
+            if (page < 1)
+            {
+                throw new ArgumentException(
+                    "Page must be greater than 0.");
+            }
+
+            if (pageSize < 1)
+            {
+                throw new ArgumentException(
+                    "PageSize must be greater than 0.");
+            }
+
+            // Máximo 20 postulaciones por página
+            if (pageSize > 20)
+            {
+                pageSize = 20;
+            }
+
+            // Verificar que exista la oferta
+            var jobOfferExists =
+                await _PublicationService.PublicationExistsAsync(
+                    jobOfferId,
+                    cancellationToken);
+
+            if (!jobOfferExists)
             {
                 throw new Exception("Job offer not found");
             }
-            var user = await _userService.GetByIdAsync(userId, cancellationToken);
+
+            // Buscar usuario
+            var user = await _userService.GetByIdAsync(
+                userId,
+                cancellationToken);
+
             if (user == null)
             {
                 throw new Exception("User not found");
             }
-            var JobOffer = await _PublicationService.GetByIdAsync(jobOfferId, cancellationToken);
 
+            // Buscar oferta
+            var jobOffer = await _PublicationService.GetByIdAsync(
+                jobOfferId,
+                cancellationToken);
+
+            // Verificar autorización
             if (user.Role != UserRole.Admin)
             {
-                if (userId != JobOffer.Creator)
+                if (userId != jobOffer.Creator)
                 {
-                    throw new Exception("User is not authorized to view this postulation");
+                    throw new UnauthorizedAccessException(
+                        "User is not authorized to view this postulation");
                 }
             }
-            var postulations = await _postulationRepository.GetByJobOfferId(jobOfferId, cancellationToken);
-            return postulations.Select(p => new GetAllResponse(
-                p.Id,
-                p.UserId,
-                p.JobOfferId,
-                p.CreatedAt,
-                p.State,
-                p.CvFileName
-            )).ToList();
+
+            // Obtener postulaciones paginadas
+            var postulations =
+                await _postulationRepository.GetByJobOfferId(
+                    jobOfferId,
+                    page,
+                    pageSize,
+                    cancellationToken);
+
+            // Convertir Postulation -> GetByIdResponse
+            var items = postulations.Items
+                .Select(p => new GetByIdResponse(
+                    p.Id,
+                    p.UserId,
+                    p.JobOfferId,
+                    p.CreatedAt,
+                    p.State,
+                    p.CvFileName
+                ))
+                .ToList();
+
+            // Crear respuesta paginada
+            return new GetByJobOfferIdPagedResponse
+            {
+                Items = items,
+
+                TotalItems = postulations.TotalItems,
+
+                TotalPages = postulations.TotalPages,
+
+                CurrentPage = postulations.CurrentPage,
+
+                PageSize = postulations.PageSize
+            };
         }
 
         public async Task Delete(Guid id, Guid idUser, CancellationToken cancellationToken)

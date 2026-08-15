@@ -5,6 +5,7 @@ namespace Infrastructure.Data.Repositories
     using Domain.Entities;
     using Domain.interfaces;
     using Microsoft.EntityFrameworkCore;
+    using Domain.DTOs;
 
     public class PostulationRepository : IPostulationRepository
     {
@@ -53,11 +54,38 @@ namespace Infrastructure.Data.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<Postulation>> GetByJobOfferId(Guid jobOfferId, CancellationToken cancellationToken)
+        public async Task<PagedResult<Postulation>> GetByJobOfferId(
+            Guid jobOfferId,
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken)
         {
-            return await _context.Postulations
-                .Where(p => p.JobOfferId == jobOfferId)
+            var query = _context.Postulations
+                .Where(p => p.JobOfferId == jobOfferId);
+
+            // Cantidad total de postulaciones
+            var totalItems = await query
+                .CountAsync(cancellationToken);
+
+            // Cantidad total de páginas
+            var totalPages = (int)Math.Ceiling(
+                totalItems / (double)pageSize);
+
+            // Postulaciones de la página solicitada
+            var items = await query
+                .OrderByDescending(p => p.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync(cancellationToken);
+
+            return new PagedResult<Postulation>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                CurrentPage = page,
+                PageSize = pageSize
+            };
         }
 
         public async Task Delete(Guid id, CancellationToken cancellationToken)
