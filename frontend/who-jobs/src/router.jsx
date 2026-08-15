@@ -8,6 +8,7 @@ import JobsPage from "./Pages/JobsPage";
 import ProtectedRoute from "./Components/guards/ProtectedRoute";
 import PublicRoute from "./Components/guards/PublicRoute";
 import AppLayout from "./layouts/AppLayout";
+import JobDetailPage from "./Pages/Jobs/JobDetailPage";
 
 export const router = createBrowserRouter([
  {
@@ -34,6 +35,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "/home", element: <HomePage /> },
           { path: "/jobs", element: <JobsPage /> },
+          { path: "/jobs/:id", element: <JobDetailPage /> }
         ],
       },
     ],

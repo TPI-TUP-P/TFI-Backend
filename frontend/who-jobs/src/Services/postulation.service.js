@@ -18,4 +18,37 @@ export const postulationService = {
       throw error;
     }
   },
+
+  getByJobOffer: async (jobOfferId) => {
+    try {
+      const response = await api.get(`Postulation/joboffer/${jobOfferId}`);
+      return response;
+    } catch (error) {
+      console.error("Error fetching postulations:", error);
+      throw error;
+    }
+  },
+
+  updateState: async (id, state) => {
+    try {
+      const response = await api.patch(`Postulation/${id}`, { state });
+      return response;
+    } catch (error) {
+      console.error("Error updating postulation state:", error);
+      throw error;
+    }
+  },
+
+
+  getCvUrl: async (postulationId) => {
+    try {
+      const response = await api.get(`Postulation/${postulationId}/cv`);
+      return response.url;
+    } catch (error) {
+      console.error("Error fetching CV url:", error);
+      throw error;
+    }
+  },
+
+  
 };

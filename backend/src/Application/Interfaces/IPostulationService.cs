@@ -8,6 +8,7 @@ namespace Application.Interfaces
         Task<CreateResponse> Create(Guid idUser, CreateRequest request, CancellationToken cancellationToken);
         Task<GetByIdResponse> GetById(Guid id, Guid userId, CancellationToken cancellationToken);
         Task<int> GetCountByUserId(Guid userId, CancellationToken cancellationToken);
+        Task<string> GetCvDownloadUrl(Guid id, Guid idUser, CancellationToken cancellationToken);
 
         Task<List<GetAllResponse>> GetByUserId(Guid userId, Guid id, CancellationToken cancellationToken);
         Task<List<GetAllResponse>> GetByJobOfferId(Guid jobOfferId, Guid userId, CancellationToken cancellationToken);

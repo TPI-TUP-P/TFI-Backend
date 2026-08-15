@@ -1,5 +1,5 @@
 import React from 'react'
-import JobCard from './CardJob'
+import JobCard from './JobCard'
 
 const JobCardList = ({jobs, onDelete}) => {
 

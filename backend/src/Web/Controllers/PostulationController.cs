@@ -52,6 +52,18 @@ namespace Web.Controllers
             return Ok(count);
         }
 
+
+        [HttpGet("{id}/cv")]
+        public async Task<ActionResult<string>> GetCvUrl(Guid id, CancellationToken cancellationToken)
+        {
+            var idUser = GetUserId();
+            var url = await _postulationService.GetCvDownloadUrl(id, idUser, cancellationToken);
+            return Ok(new { url });
+        }
+
+
+
+
         [HttpGet("user/{Id}")]
         public async Task<ActionResult<List<GetAllResponse>>> GetByUserId(Guid Id, CancellationToken cancellationToken)
         {

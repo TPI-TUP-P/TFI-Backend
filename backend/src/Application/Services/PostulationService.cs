@@ -198,6 +198,50 @@ namespace Application.Services
             var count = await _postulationRepository.GetCountByUserId(userId, cancellationToken);
             return count;
         }
+
+
+        public async Task<string> GetCvDownloadUrl(Guid id, Guid idUser, CancellationToken cancellationToken)
+{
+    var postulation = await _postulationRepository.GetById(id, cancellationToken);
+    if (postulation == null)
+    {
+        throw new Exception("Postulation not found");
+    }
+
+    var user = await _userService.GetByIdAsync(idUser, cancellationToken);
+    if (user == null)
+    {
+        throw new Exception("User not found");
+    }
+
+    var jobOfferExist = await _PublicationService.PublicationExistsAsync(postulation.JobOfferId, cancellationToken);
+    if (!jobOfferExist)
+    {
+        throw new Exception("Job offer not found");
+    }
+
+    var jobOffer = await _PublicationService.GetByIdAsync(postulation.JobOfferId, cancellationToken);
+
+    if (user.Role != UserRole.Admin)
+    {
+        // Puede descargar: el dueño del job, o el propio postulante
+        if (idUser != jobOffer.Creator && idUser != postulation.UserId)
+        {
+            throw new Exception("User is not authorized to download this CV");
+        }
+    }
+
+    if (string.IsNullOrEmpty(postulation.CvFilePath))
+    {
+        throw new Exception("CV not found for this postulation");
+    }
+
+    var url = await _storageService.GetSignedUrlAsync(postulation.CvFilePath);
+    return url;
+}
+
+
+
         public async Task<GetCountByStateResponse> GetCountByInterviewerId(Guid interviewerId, CancellationToken cancellationToken)
         {
             var user = await _userService.GetByIdAsync(interviewerId, cancellationToken);

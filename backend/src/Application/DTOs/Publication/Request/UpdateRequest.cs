@@ -9,7 +9,7 @@ public class UpdateRequest
 
 
 
-    public UpdateRequest(Guid id, string job_position, string description, float salary, int applicants)
+    public UpdateRequest(Guid id, string job_position, string description, float salary)
     {
         Id = id;
         Job_position = job_position;
