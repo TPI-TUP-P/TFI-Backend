@@ -7,7 +7,7 @@ export default function GlobalLoader() {
   const reduceMotion = useReducedMotion();
   
   // Derivamos el estado booleano para AnimatePresence
-  const isLoading = activeRequests >= 0;
+  const isLoading = activeRequests > 0;
 
   return (
     <AnimatePresence>
