@@ -7,8 +7,8 @@ import { useNavigate } from "react-router-dom";
 import Button from "../Components/ui/Button";
 import { authService } from "../Services/auth.service";
 import { ArrowRight, LogIn, ShieldCheck } from "lucide-react";
-import { useAuthStore } from "../Components/stores/useAuthStore";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../Components/stores/useAuthStore";
 const LoginPage = () => {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
