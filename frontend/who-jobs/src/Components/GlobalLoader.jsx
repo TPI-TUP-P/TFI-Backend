@@ -6,7 +6,6 @@ export default function GlobalLoader() {
   const activeRequests = useLoaderStore((state) => state.activeRequests);
   const reduceMotion = useReducedMotion();
   
-  // Derivamos el estado booleano para AnimatePresence
   const isLoading = activeRequests > 0;
 
   return (
@@ -22,11 +21,7 @@ export default function GlobalLoader() {
           aria-live="polite"
           aria-label="Cargando"
         >
-          {/* Si ya cargás una tipografía display en tu app, borrá este <style> */}
-          <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600&display=swap');
-            .font-display { font-family: 'Fraunces', serif; }
-          `}</style>
+     
 
           <div className="absolute w-72 h-72 rounded-full blur-3xl bg-brand-accent/25 pointer-events-none" />
 
