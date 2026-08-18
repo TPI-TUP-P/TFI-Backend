@@ -6,10 +6,20 @@ import { userService } from "../../Services/user.service";
 import { useAuthStore } from "../../Components/stores/useAuthStore";
 import PostulationCard from "../../Components/postulations/PostulationCard";
 import ApplyModal from "../../Components/jobs/ApplyModal";
+import ConfirmDialog from "../../Components/common/ConfirmDialog";
+import Toast from "../../Components/common/Toast";
 import Pagination from "../../Components/jobs/Pagination";
 
 const APPLY_ROLES = [0, 2, 3]; // Candidate, Admin, SuperAdmin
+const ADMIN_ROLES = [2, 3]; // Admin, SuperAdmin
 const POSTULATIONS_PAGE_SIZE = 5;
+
+const roleLabels = {
+  0: "Candidato",
+  1: "Reclutador",
+  2: "Administrador",
+  3: "Super Administrador",
+};
 
 const JobDetailPage = () => {
   const { id } = useParams();
@@ -17,6 +27,7 @@ const JobDetailPage = () => {
   const user = useAuthStore((state) => state.user);
 
   const [job, setJob] = useState(null);
+  const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -28,13 +39,24 @@ const JobDetailPage = () => {
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [alreadyApplied, setAlreadyApplied] = useState(false);
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [toast, setToast] = useState(null);
+
   const [postulations, setPostulations] = useState([]);
   const [postulationsPage, setPostulationsPage] = useState(1);
   const [postulationsTotalPages, setPostulationsTotalPages] = useState(1);
   const [postulationsLoading, setPostulationsLoading] = useState(false);
 
-  const isOwner = job && user && job.creator === user.id;
-  const canApply = user && APPLY_ROLES.includes(user.role) && !isOwner;
+  const isCreator = job && user && job.creator === user.id;
+  const isOwner = job && user && ((user.role === 1 && isCreator) || ADMIN_ROLES.includes(user.role));
+  const canEdit =
+  job &&
+  user &&
+  ((user.role === 1 && isCreator) ||
+    (user.role === 2 && isCreator) ||
+    user.role === 3);
+  const canApply = job && user && APPLY_ROLES.includes(user.role) && !isCreator;
 
   const fetchPostulations = useCallback(
     async (page) => {
@@ -85,7 +107,17 @@ const JobDetailPage = () => {
           salary: jobData.salary ?? "",
         });
 
-        if (user && jobData.creator === user.id) {
+        userService
+          .getById(jobData.creator)
+          .then(setCreator)
+          .catch(() => setCreator(null));
+
+        const canManageThisJob =
+          user &&
+          ((user.role === 1 && jobData.creator === user.id) ||
+            ADMIN_ROLES.includes(user.role));
+
+        if (canManageThisJob) {
           await fetchPostulations(1);
         } else if (user && APPLY_ROLES.includes(user.role)) {
           const myPostulations = await postulationService.getByUser(user.id);
@@ -150,6 +182,20 @@ const JobDetailPage = () => {
     }
   };
 
+  const handleConfirmDeleteJob = async () => {
+    setDeleting(true);
+    try {
+      await jobService.remove(job.id);
+      setToast({ type: "success", message: "Publicación eliminada correctamente." });
+      setTimeout(() => navigate("/jobs"), 1200);
+    } catch {
+      setToast({ type: "error", message: "No se pudo eliminar la publicación." });
+      setShowDeleteConfirm(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-brand-bg">
@@ -169,6 +215,10 @@ const JobDetailPage = () => {
   const pendingCount = postulations.filter((p) => p.state === 0).length;
   const acceptedCount = postulations.filter((p) => p.state === 1).length;
   const rejectedCount = postulations.filter((p) => p.state === 2).length;
+
+  const creatorInitials = creator
+    ? `${(creator.name || "").charAt(0)}${(creator.lastName || "").charAt(0)}`.toUpperCase()
+    : "?";
 
   return (
     <main className="min-h-screen bg-brand-bg py-10">
@@ -272,14 +322,25 @@ const JobDetailPage = () => {
                   </div>
 
                   <div className="flex shrink-0 flex-col items-end gap-2">
-                    {isOwner && (
-                      <button
-                        onClick={() => setIsEditing(true)}
-                        className="rounded-lg border border-brand-border bg-brand-card px-4 py-2 text-sm font-semibold text-brand-title transition hover:border-brand-accent hover:text-brand-accent"
-                      >
-                        Editar
-                      </button>
-                    )}
+                    <div className="flex gap-2">
+                      {canEdit && (
+                        <button
+                          onClick={() => setIsEditing(true)}
+                          className="rounded-lg border border-brand-border bg-brand-card px-4 py-2 text-sm font-semibold text-brand-title transition hover:border-brand-accent hover:text-brand-accent"
+                        >
+                          Editar
+                        </button>
+                      )}
+
+                      {isOwner && (
+                        <button
+                          onClick={() => setShowDeleteConfirm(true)}
+                          className="rounded-lg border border-brand-border bg-brand-card px-4 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
+                        >
+                          Eliminar
+                        </button>
+                      )}
+                    </div>
 
                     {canApply && (
                       alreadyApplied ? (
@@ -317,7 +378,7 @@ const JobDetailPage = () => {
                     <div className="rounded-lg bg-brand-bg px-4 py-3">
                       <p className="text-[11px] text-brand-muted">Salario</p>
                       <p className="mt-0.5 font-mono text-base font-bold text-brand-title">
-                        ${job.salary}
+                        ${Number(job.salary).toLocaleString("es-AR")}
                       </p>
                     </div>
 
@@ -335,6 +396,34 @@ const JobDetailPage = () => {
                       </p>
                     </div>
                   </div>
+                </div>
+
+                {/* Info del creador */}
+                <div>
+                  <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-brand-muted">
+                    Publicado por
+                  </h3>
+
+                  {creator ? (
+                    <div className="flex items-center gap-4 rounded-lg bg-brand-bg px-4 py-3.5">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-accent text-sm font-bold text-white">
+                        {creatorInitials}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-brand-title">
+                          {creator.name} {creator.lastName}
+                        </p>
+                        <p className="truncate text-xs text-brand-muted">
+                          {creator.email}
+                          {roleLabels[creator.role] ? ` · ${roleLabels[creator.role]}` : ""}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-brand-muted">
+                      No se pudo cargar la información del creador.
+                    </p>
+                  )}
                 </div>
               </div>
             </>
@@ -410,6 +499,27 @@ const JobDetailPage = () => {
           job={job}
           onClose={() => setShowApplyModal(false)}
           onSuccess={() => setAlreadyApplied(true)}
+        />
+      )}
+
+      {showDeleteConfirm && (
+        <ConfirmDialog
+          title="Eliminar publicación"
+          message={`¿Seguro que querés eliminar "${job.job_position}"? Esta acción no se puede deshacer.`}
+          confirmLabel="Eliminar"
+          cancelLabel="Cancelar"
+          danger
+          loading={deleting}
+          onConfirm={handleConfirmDeleteJob}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
+
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
         />
       )}
     </main>

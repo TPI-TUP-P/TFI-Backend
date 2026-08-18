@@ -1,40 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
+import { userService } from "../../Services/user.service";
 import ApplyModal from "./ApplyModal";
+import ConfirmDialog from "../common/ConfirmDialog";
+import Toast from "../common/Toast";
 
-const MANAGER_ROLES = [1, 2, 3]; // Recruiter, Admin, SuperAdmin
-const APPLY_ROLES = [0, 2, 3]; // Candidate, Admin, SuperAdmin (igual que el backend)
+const APPLY_ROLES = [0, 2, 3]; // Candidate, Admin, SuperAdmin
+const ADMIN_ROLES = [2, 3]; // Admin, SuperAdmin
 
 function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
   const [showModal, setShowModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [creator, setCreator] = useState(null);
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
-  const canManage =
-    user && MANAGER_ROLES.includes(user.role) && job.creator === user.id;
+  useEffect(() => {
+    let active = true;
+    userService
+      .getById(job.creator)
+      .then((data) => {
+        if (active) setCreator(data);
+      })
+      .catch(() => {
+        if (active) setCreator(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [job.creator]);
 
-  const canApply = user && APPLY_ROLES.includes(user.role);
+  const isCreator = user && job.creator === user.id;
+  const canManage =
+    user && ((user.role === 1 && isCreator) || ADMIN_ROLES.includes(user.role));
+
+  const canApply = user && APPLY_ROLES.includes(user.role) && !isCreator;
   const alreadyApplied = appliedJobIds?.has(job.id);
 
   const handleCardClick = () => {
     navigate(`/jobs/${job.id}`);
   };
 
-  const handleDelete = async (e) => {
+  const handleDeleteClick = (e) => {
     e.stopPropagation();
-    const confirmed = window.confirm(
-      `¿Seguro que querés eliminar "${job.job_position}"?`
-    );
-    if (!confirmed) return;
+    setShowConfirm(true);
+  };
 
+  const handleConfirmDelete = async () => {
     setDeleting(true);
     try {
       await onDelete(job.id);
+      setShowConfirm(false);
+      setToast({ type: "success", message: "Publicación eliminada correctamente." });
+    } catch {
+      setToast({ type: "error", message: "No se pudo eliminar la publicación." });
     } finally {
       setDeleting(false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirm(false);
   };
 
   const handleApplyClick = (e) => {
@@ -45,6 +74,10 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
   const handleApplySuccess = () => {
     onApplied?.(job.id);
   };
+
+  const creatorName = creator
+    ? [creator.name, creator.lastName].filter(Boolean).join(" ")
+    : null;
 
   return (
     <>
@@ -68,6 +101,12 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
             <p className="mt-1 line-clamp-1 break-words text-xs text-brand-muted">
               {job.description}
             </p>
+
+            {creatorName && (
+              <p className="mt-1 text-[11px] text-brand-muted">
+                Creada por <span className="font-medium text-brand-title">{creatorName}</span>
+              </p>
+            )}
 
             <div className="mt-2 flex items-center gap-4">
               <span className="font-mono text-sm font-semibold text-brand-title">
@@ -100,12 +139,11 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
 
             {canManage && (
               <button
-                onClick={handleDelete}
-                disabled={deleting}
+                onClick={handleDeleteClick}
                 aria-label="Eliminar publicación"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-brand-border text-brand-muted transition hover:border-red-300 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-brand-border text-brand-muted transition hover:border-red-300 hover:bg-red-50 hover:text-red-600"
               >
-                {deleting ? "…" : "✕"}
+                ✕
               </button>
             )}
           </div>
@@ -118,6 +156,27 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
           job={job}
           onClose={() => setShowModal(false)}
           onSuccess={handleApplySuccess}
+        />
+      )}
+
+      {showConfirm && (
+        <ConfirmDialog
+          title="Eliminar publicación"
+          message={`¿Seguro que querés eliminar "${job.job_position}"? Esta acción no se puede deshacer.`}
+          confirmLabel="Eliminar"
+          cancelLabel="Cancelar"
+          danger
+          loading={deleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
+
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
         />
       )}
     </>
