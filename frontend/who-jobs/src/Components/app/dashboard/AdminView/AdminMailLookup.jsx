@@ -1,17 +1,12 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import api from '../../../../Services/api'
 
-export default function AdminPublications() {
-   const navigate = useNavigate()
-  const [query, setQuery] = useState('')
-
-  const [publications, setPublications] = useState([])
+export default function AdminUserSearch() {
+  const [email, setEmail] = useState('')
+  const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [searched, setSearched] = useState(false)
   const [deleting, setDeleting] = useState(false)
-
-  const [publicationToDelete, setPublicationToDelete] = useState(null)
+  const [searched, setSearched] = useState(false)
 
   const [modal, setModal] = useState({
     open: false,
@@ -38,88 +33,74 @@ export default function AdminPublications() {
     })
   }
 
-  const searchPublications = async () => {
-    if (!query.trim()) {
+  const searchUser = async () => {
+    if (!email.trim()) {
       showModal(
-        'Búsqueda vacía',
-        'Ingresá un puesto para realizar la búsqueda.'
+        'Email vacío',
+        'Ingresá un email para realizar la búsqueda.'
       )
       return
     }
 
     try {
       setLoading(true)
+      setUser(null)
+      setSearched(false)
 
-      const data = await api.get('/Publication/search', {
-        params: {
-          name: query,
-          page: 1,
-          pageSize: 10,
-        },
-      })
+      const data = await api.get(
+        `/User/email/${encodeURIComponent(email.trim())}`
+      )
 
-      setPublications(Array.isArray(data) ? data : [])
+      setUser(data)
       setSearched(true)
-
-      if (!Array.isArray(data) || data.length === 0) {
-        showModal(
-          'Sin resultados',
-          'No se encontraron publicaciones para el puesto ingresado.'
-        )
-      }
     } catch (error) {
-      console.error('Error buscando publicaciones:', error)
+      console.error('Error buscando usuario:', error)
 
-      setPublications([])
+      setUser(null)
       setSearched(true)
 
       showModal(
-        'Error de búsqueda',
-        error.message || 'Ocurrió un error al buscar publicaciones.'
+        'Usuario no encontrado',
+        error.message || 'No se encontró un usuario con ese email.'
       )
     } finally {
       setLoading(false)
     }
   }
 
-  const openDeleteModal = (publication) => {
-    setPublicationToDelete(publication)
+  const openDeleteModal = () => {
+    if (!user) return
 
     showModal(
-      'Eliminar publicación',
-      `¿Estás seguro de que querés eliminar la publicación “${
-        publication.job_position ?? 'Sin título'
+      'Eliminar usuario',
+      `¿Estás seguro de que querés eliminar al usuario “${
+        user.name ?? 'Sin nombre'
       }”? Esta acción no se puede deshacer.`,
       'confirm'
     )
   }
 
-  const deletePublication = async () => {
-    if (!publicationToDelete) return
+  const deleteUser = async () => {
+    if (!user) return
 
     try {
       setDeleting(true)
 
-      await api.delete(`/Publication/${publicationToDelete.id}`)
+      await api.delete(`/User/${user.id}`)
 
-      setPublications((current) =>
-        current.filter(
-          (publication) => publication.id !== publicationToDelete.id
-        )
-      )
-
-      setPublicationToDelete(null)
+      setUser(null)
+      setEmail('')
 
       showModal(
-        'Publicación eliminada',
-        'La publicación fue eliminada correctamente.'
+        'Usuario eliminado',
+        'El usuario fue eliminado correctamente.'
       )
     } catch (error) {
-      console.error('Error eliminando publicación:', error)
+      console.error('Error eliminando usuario:', error)
 
       showModal(
         'Error',
-        error.message || 'No se pudo eliminar la publicación.'
+        error.message || 'No se pudo eliminar el usuario.'
       )
     } finally {
       setDeleting(false)
@@ -132,106 +113,122 @@ export default function AdminPublications() {
 
         <div className="space-y-1">
           <h2 className="text-xl font-semibold text-brand-title">
-            Gestionar búsquedas
+            Buscar usuario
           </h2>
 
           <p className="text-sm text-brand-muted">
-            Buscá y administrá publicaciones laborales.
+            Buscá un usuario por su dirección de email.
           </p>
         </div>
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <input
-            type="text"
-            placeholder="Buscar por puesto..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            type="email"
+            placeholder="usuario@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                searchPublications()
+                searchUser()
               }
             }}
             className="flex-1 rounded-lg border border-brand-border
                        bg-brand-card p-3 text-brand-title
                        placeholder:text-brand-muted
-                       focus:outline-none focus:border-brand-accent
+                       focus:border-brand-accent
+                       focus:outline-none
                        focus:ring-2 focus:ring-brand-accent/20"
           />
 
           <button
-            onClick={searchPublications}
+            onClick={searchUser}
             disabled={loading}
             className="rounded-lg bg-brand-accent px-5 py-3
                        text-sm font-medium text-white
                        transition hover:opacity-90
-                       disabled:cursor-not-allowed disabled:opacity-50"
+                       disabled:cursor-not-allowed
+                       disabled:opacity-50"
           >
             {loading ? 'Buscando...' : 'Buscar'}
           </button>
         </div>
 
-        <div className="mt-5 space-y-3">
+        <div className="mt-5">
 
           {!searched && (
             <p className="text-sm text-brand-muted">
-              Ingresá un puesto para comenzar una búsqueda.
+              Ingresá un email para comenzar una búsqueda.
             </p>
           )}
 
-          {searched && publications.length === 0 && (
+          {searched && !user && (
             <p className="rounded-xl border border-brand-border
                           bg-brand-bg p-4 text-sm text-brand-muted">
-              No se encontraron publicaciones.
+              No se encontró ningún usuario con ese email.
             </p>
           )}
 
-          {publications.map((publication) => (
-            <div
-              key={publication.id}
-              className="rounded-xl border border-brand-border
-                         bg-brand-bg p-4"
-            >
-              <div>
-                <p className="font-medium text-brand-title">
-                  {publication.job_position ?? 'Sin título'}
-                </p>
+          {user && (
+            <div className="rounded-xl border border-brand-border bg-brand-bg p-4">
 
-                <p className="mt-1 break-all text-sm text-brand-muted">
-                  ID: {publication.id}
-                </p>
-
-                {publication.description && (
-                  <p className="mt-2 line-clamp-2 text-sm text-brand-muted">
-                    {publication.description}
+              <div className="space-y-2">
+                <div>
+                  <p className="text-xs text-brand-muted">
+                    Nombre
                   </p>
-                )}
+
+                  <p className="font-medium text-brand-title">
+                    {user.name ?? 'Sin nombre'}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-brand-muted">
+                    Email
+                  </p>
+
+                  <p className="break-all text-sm text-brand-title">
+                    {user.email}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-brand-muted">
+                    ID
+                  </p>
+
+                  <p className="break-all text-sm text-brand-title">
+                    {user.id}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-brand-muted">
+                    Rol
+                  </p>
+
+                  <p className="text-sm text-brand-title">
+                    {user.role}
+                  </p>
+                </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2">
-
+              <div className="mt-4">
                 <button
-                onClick={() => navigate(`/jobs/${publication.id}`)}
-                className="rounded-lg border border-brand-border
-                          px-3 py-2 text-sm text-brand-title
-                          transition hover:bg-brand-card"
-              >
-                Ver
-                </button>
-
-                <button
-                  onClick={() => openDeleteModal(publication)}
+                  onClick={openDeleteModal}
                   disabled={deleting}
                   className="rounded-lg border border-red-200
                              bg-red-50 px-3 py-2 text-sm text-red-700
                              transition hover:bg-red-100
+                             disabled:cursor-not-allowed
                              disabled:opacity-50"
                 >
-                  Eliminar
+                  Eliminar usuario
                 </button>
-
               </div>
+
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -287,7 +284,6 @@ export default function AdminPublications() {
 
                 <button
                   onClick={() => {
-                    setPublicationToDelete(null)
                     closeModal()
                   }}
                   disabled={deleting}
@@ -301,7 +297,7 @@ export default function AdminPublications() {
                 </button>
 
                 <button
-                  onClick={deletePublication}
+                  onClick={deleteUser}
                   disabled={deleting}
                   className="rounded-lg bg-red-600 px-4 py-2.5
                              text-sm font-medium text-white
