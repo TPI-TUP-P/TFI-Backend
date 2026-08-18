@@ -4,12 +4,19 @@ import Pagination from "../Components/jobs/Pagination";
 import ProfileCard from "../Components/profile/ProfileCard";
 import CreateJobModal from "../Components/jobs/CreateJobModal";
 import { jobService } from "../Services/job.service";
+import { usePostulatedJobs } from "../hooks/usePostulatedJobs";
+import { useAuthStore } from "../Components/stores/useAuthStore";
+
+const ROLE_PERMITIDOS=[1, 2, 3]; // Recluter, Admin, SuperAdmin
 
 const JobsPage = () => {
   const [jobs, setJobs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  
+
+  const { appliedJobIds, markApplied } = usePostulatedJobs();
 
   const fetchJobs = async (page = 1) => {
     try {
@@ -54,16 +61,23 @@ const JobsPage = () => {
             <h1 className="text-3xl font-bold text-brand-title">
               Ofertas de trabajo
             </h1>
-
+            {ROLE_PERMITIDOS.includes(useAuthStore.getState().user?.role) && (
             <button
               onClick={() => setShowCreateModal(true)}
               className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-title"
             >
               + Crear publicación
             </button>
+            )}
+          
           </div>
 
-          <JobCardList jobs={jobs} onDelete={handleDeleteJob} />
+          <JobCardList
+            jobs={jobs}
+            onDelete={handleDeleteJob}
+            appliedJobIds={appliedJobIds}
+            onApplied={markApplied}
+          />
 
           <Pagination
             currentPage={currentPage}

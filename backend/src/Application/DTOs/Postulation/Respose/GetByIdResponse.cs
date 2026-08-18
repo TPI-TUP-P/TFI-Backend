@@ -11,6 +11,9 @@ namespace Application.DTOs.Postulation.Response
         public EnumState State { get; set; }
         public string CvFileName { get; set; }
 
+
+        public GetByIdResponse() { }
+        
         public GetByIdResponse(Guid id, Guid userId, Guid jobOfferId, DateTime createdAt, EnumState state, string cvFileName)
         {
             Id = id;

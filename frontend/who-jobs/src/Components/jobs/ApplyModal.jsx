@@ -1,17 +1,46 @@
 import React, { useState } from "react";
 import { postulationService } from "../../Services/postulation.service";
+import { userService } from "../../Services/user.service";
 
-const ApplyModal = ({ job, onClose }) => {
+const stateLabels = {
+  0: "Pendiente",
+  1: "Aceptada",
+  2: "Rechazada",
+};
+
+const ApplyModal = ({ job, onClose, onSuccess }) => {
   const [cvFile, setCvFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null); // { type: "success" | "error", message: string }
-  const stateLabels = {
-    0: "Pendiente",
-    1: "Aceptada",
-    2: "Rechazada",
-   };
+  const [loadingSavedCv, setLoadingSavedCv] = useState(false);
+  const [result, setResult] = useState(null);
+
   const handleFileChange = (e) => {
     setCvFile(e.target.files[0] || null);
+  };
+
+  const handleUseSavedCv = async () => {
+    setLoadingSavedCv(true);
+    setResult(null);
+    try {
+      const url = await userService.getMyCvUrl();
+
+      const fileResponse = await fetch(url);
+      if (!fileResponse.ok) {
+        throw new Error("No se pudo descargar el CV guardado.");
+      }
+
+      const blob = await fileResponse.blob();
+      const file = new File([blob], "cv.pdf", { type: "application/pdf" });
+
+      setCvFile(file);
+    } catch (err) {
+      const message =
+        err?.response?.data?.detail ||
+        "No tenés un CV guardado en tu perfil, o no se pudo obtener.";
+      setResult({ type: "error", message });
+    } finally {
+      setLoadingSavedCv(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -28,18 +57,17 @@ const ApplyModal = ({ job, onClose }) => {
     try {
       const response = await postulationService.apply(job.id, cvFile);
 
-      const message =
-        response?.message ||
-        response?.data?.message ||
-        "¡Postulación enviada con éxito!";
-
-      setResult({ type: "success", message: `¡Postulación enviada con éxito! Estado: ${stateLabels[response.state] ?? "Pendiente"}.`, });
+      setResult({
+        type: "success",
+        message: `¡Postulación enviada con éxito! Estado: ${stateLabels[response.state] ?? "Pendiente"}.`,
+      });
+      onSuccess?.();
     } catch (error) {
       const message =
-      error?.response?.data?.detail ||
-      error?.response?.data?.title ||
-      error?.response?.data?.message ||
-      "No se pudo completar la postulación. Intentá de nuevo.";
+        error?.response?.data?.detail ||
+        error?.response?.data?.title ||
+        error?.response?.data?.message ||
+        "No se pudo completar la postulación. Intentá de nuevo.";
 
       setResult({ type: "error", message });
     } finally {
@@ -79,10 +107,25 @@ const ApplyModal = ({ job, onClose }) => {
               </label>
               <input
                 type="file"
-                accept=".pdf,.doc,.docx"
+                accept="application/pdf"
                 onChange={handleFileChange}
                 className="block w-full text-sm text-brand-muted file:mr-3 file:rounded-lg file:border-0 file:bg-brand-accent file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-title"
               />
+
+              <button
+                type="button"
+                onClick={handleUseSavedCv}
+                disabled={loadingSavedCv}
+                className="mt-2 w-full rounded-lg border border-brand-border px-3 py-2 text-sm font-medium text-brand-title transition hover:border-brand-accent hover:text-brand-accent disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loadingSavedCv ? "Cargando..." : "Usar mi CV guardado"}
+              </button>
+
+              {cvFile && (
+                <p className="mt-2 truncate text-xs text-brand-muted">
+                  Seleccionado: {cvFile.name}
+                </p>
+              )}
             </div>
 
             {result?.type === "error" && (

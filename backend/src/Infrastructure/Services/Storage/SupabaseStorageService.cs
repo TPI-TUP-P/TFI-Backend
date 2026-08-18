@@ -1,4 +1,6 @@
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using Application.Interfaces;
 using Infrastructure.Configurations;
 using Microsoft.AspNetCore.Http;
@@ -74,6 +76,36 @@ public class SupabaseStorageService : IStorageService
 
         return objectPath;
     }
+
+
+    public async Task<string> GetSignedUrlAsync(string objectPath, int expiresInSeconds = 300)
+{
+    var url = $"{_options.Url}/storage/v1/object/sign/{_options.Bucket}/{objectPath}";
+
+    var request = new HttpRequestMessage(HttpMethod.Post, url)
+    {
+        Content = new StringContent(
+            JsonSerializer.Serialize(new { expiresIn = expiresInSeconds }),
+            Encoding.UTF8,
+            "application/json")
+    };
+
+    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _options.Key);
+    request.Headers.Add("apikey", _options.Key);
+
+    var response = await _httpClient.SendAsync(request);
+    var body = await response.Content.ReadAsStringAsync();
+
+    if (!response.IsSuccessStatusCode)
+    {
+        throw new Exception($"Error al generar URL firmada: {body}");
+    }
+
+    using var doc = JsonDocument.Parse(body);
+    var signedPath = doc.RootElement.GetProperty("signedURL").GetString();
+
+    return $"{_options.Url}/storage/v1{signedPath}";
+}
 
     public async Task DeleteAsync(string path)
     {

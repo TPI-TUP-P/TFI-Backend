@@ -52,6 +52,18 @@ namespace Web.Controllers
             return Ok(count);
         }
 
+
+        [HttpGet("{id}/cv")]
+        public async Task<ActionResult<string>> GetCvUrl(Guid id, CancellationToken cancellationToken)
+        {
+            var idUser = GetUserId();
+            var url = await _postulationService.GetCvDownloadUrl(id, idUser, cancellationToken);
+            return Ok(new { url });
+        }
+
+
+
+
         [HttpGet("user/{Id}")]
         public async Task<ActionResult<List<GetAllResponse>>> GetByUserId(Guid Id, CancellationToken cancellationToken)
         {
@@ -59,12 +71,26 @@ namespace Web.Controllers
             var postulations = await _postulationService.GetByUserId(userId, Id, cancellationToken);
             return Ok(postulations);
         }
+
+
         [Authorize(Roles = "Recruiter,Admin,SuperAdmin")]
-        [HttpGet("joboffer/{jobOfferId}")]
-        public async Task<ActionResult<List<GetAllResponse>>> GetByJobOfferId(Guid jobOfferId, CancellationToken cancellationToken)
+        [HttpGet("{jobOfferId}/postulations")]
+        public async Task<ActionResult<GetByJobOfferIdPagedResponse>> GetByJobOfferId(
+    Guid jobOfferId,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 20,
+    CancellationToken cancellationToken = default)
         {
             var userId = GetUserId();
-            var postulations = await _postulationService.GetByJobOfferId(jobOfferId, userId, cancellationToken);
+
+            var postulations =
+                await _postulationService.GetByJobOfferId(
+                    jobOfferId,
+                    page,
+                    pageSize,
+                    userId,
+                    cancellationToken);
+
             return Ok(postulations);
         }
 
