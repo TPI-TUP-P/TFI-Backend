@@ -1,13 +1,13 @@
 export default function RecruiterActivity({ jobs }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow sm:p-6">
+    <div className="rounded-xl border border-brand-border bg-brand-card p-4 shadow-sm sm:p-6">
 
       <div>
-        <h2 className="font-display text-xl font-semibold text-[#1f2a33]">
+        <h2 className="font-display text-xl font-semibold text-brand-title">
           Actividad reciente
         </h2>
 
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-brand-muted">
           Un vistazo rápido a tus últimas búsquedas de personal.
         </p>
       </div>
@@ -15,7 +15,7 @@ export default function RecruiterActivity({ jobs }) {
       <div className="mt-4">
 
         {jobs.length > 0 ? (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-brand-border">
 
             {jobs.slice(0, 3).map((job) => (
               <div
@@ -25,17 +25,18 @@ export default function RecruiterActivity({ jobs }) {
 
                 <div className="flex min-w-0 items-center gap-3">
 
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#355872]/10">
+                  <div className="flex h-9 w-9 shrink-0 items-center
+                                  justify-center rounded-lg bg-brand-accent/10">
                     📄
                   </div>
 
                   <div className="min-w-0">
 
-                    <p className="truncate text-sm font-medium text-slate-800">
+                    <p className="truncate text-sm font-medium text-brand-title">
                       Búsqueda publicada: "{job.job_position}"
                     </p>
 
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-brand-muted">
                       {job.applicants ?? 0}{' '}
                       {job.applicants === 1
                         ? 'candidato recibido'
@@ -46,7 +47,7 @@ export default function RecruiterActivity({ jobs }) {
 
                 </div>
 
-                <span className="shrink-0 text-xs text-slate-400">
+                <span className="shrink-0 text-xs text-brand-muted">
                   {job.created_Date
                     ? new Date(job.created_Date).toLocaleDateString('es-AR')
                     : ''}
@@ -57,8 +58,8 @@ export default function RecruiterActivity({ jobs }) {
 
           </div>
         ) : (
-          <div className="rounded-lg bg-gray-50 p-5 text-center">
-            <p className="text-sm text-slate-500">
+          <div className="rounded-lg bg-brand-bg p-5 text-center">
+            <p className="text-sm text-brand-muted">
               Cuando publiques una búsqueda de personal,
               vas a ver tu actividad acá.
             </p>

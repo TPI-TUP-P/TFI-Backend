@@ -11,18 +11,13 @@ import AppLayout from "./layouts/AppLayout";
 import JobDetailPage from "./Pages/Jobs/JobDetailPage";
 
 export const router = createBrowserRouter([
- {
+  {
     element: <PublicRoute />,
     errorElement: <NotFoundPage />,
     children: [
-    
-          { path: "/", element: <LandingPage /> },
-          { path: "/register", element: <RegisterPage /> },
-          { path: "/login", element: <LoginPage /> },
-          
-           
-        
-      
+      { path: "/", element: <LandingPage /> },
+      { path: "/register", element: <RegisterPage /> },
+      { path: "/login", element: <LoginPage /> },
     ],
   },
 
@@ -31,7 +26,7 @@ export const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       {
-        element: <AppLayout />, 
+        element: <AppLayout />,
         children: [
           { path: "/home", element: <HomePage /> },
           { path: "/jobs", element: <JobsPage /> },

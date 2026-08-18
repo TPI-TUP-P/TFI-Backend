@@ -163,6 +163,7 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
     public async Task<GetAllPublicationsResponse> GetAllAsync(
      int page,
      int pageSize,
+     string? search,
      CancellationToken cancellationToken)
     {
         if (page < 1)
@@ -177,6 +178,7 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         var publications = await _Publication.GetAllAsync(
             page,
             pageSize,
+            search,
             cancellationToken);
 
         return new GetAllPublicationsResponse

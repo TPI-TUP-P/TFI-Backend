@@ -8,8 +8,9 @@ public interface IUserService
 {
     Task<GetByIdResponse> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    // Task<IEnumerable<UserResponse>> GetAllAsync();
+    Task<GetByIdResponse> GetByEmailAsync(string email, CancellationToken cancellationToken);
 
+    Task<GetAllWithCountResponse> GetAllAsync(UserRole? userRole,CancellationToken cancellationToken);
     Task<UpdloadCVResponse> UploadCvAsync(Guid idUser, UploadCVRequest request, CancellationToken cancellationToken);
 
     Task<bool> ExistsUserEmail(string email, CancellationToken cancellationToken);
@@ -20,5 +21,5 @@ public interface IUserService
 
     Task<GetByIdResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
 
-    Task DeleteAsync(Guid idTarget, Guid id, UserRole role,CancellationToken cancellationToken);
+    Task DeleteAsync(Guid idTarget, Guid id, UserRole role, CancellationToken cancellationToken);
 }

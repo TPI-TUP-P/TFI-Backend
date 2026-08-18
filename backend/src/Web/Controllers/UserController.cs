@@ -14,9 +14,30 @@ namespace Web.Controllers;
 public class UserController(IUserService userService) : ControllerBase
 {
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<GetByIdResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var user = await userService.GetByIdAsync(id, cancellationToken);
+        return Ok(user);
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    public async Task<ActionResult<GetAllWithCountResponse>> GetAll(
+    [FromQuery] UserRole? userRole,
+    CancellationToken cancellationToken)
+    {
+        var users = await userService.GetAllAsync(
+            userRole,
+            cancellationToken);
+
+        return Ok(users);
+    }
+    [HttpGet("email/{email}")]
+    [Authorize]
+    public async Task<ActionResult<GetByIdResponse>> GetByEmail(string email, CancellationToken cancellationToken)
+    {
+        var user = await userService.GetByEmailAsync(email, cancellationToken);
         return Ok(user);
     }
 

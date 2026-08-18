@@ -4,6 +4,7 @@ import { useAuthStore } from "../stores/useAuthStore";
 import { Link, NavLink } from "react-router-dom";
 import { Menu, Search, X } from "lucide-react";
 import Input from "../ui/Input";
+import AppSearch from "./AppSearch";
 const AppNavbar = () => {
   const logout = useAuthStore((s) => s.logout);
   const [open, setOpen] = useState(false);
@@ -37,10 +38,11 @@ const AppNavbar = () => {
             ))}
           </nav>
 
-          <div className="relative w-full max-w-xs">
+          {/* <div className="relative w-full max-w-xs">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted" />
             <Input placeholder="Buscar..." classname="pl-9 py-2 text-xs rounded-full" />
-          </div>
+          </div> */}
+          <AppSearch/>
 
           <button onClick={logout} className="shrink-0 rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
             Salir
@@ -73,11 +75,12 @@ const AppNavbar = () => {
               ))}
             </nav>
 
-            <div className="relative">
+            {/* <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted" />
               <Input placeholder="Buscar..." classname="pl-9 py-2 text-xs rounded-full" />
-            </div>
+            </div> */}
 
+              <AppSearch/>
             <button onClick={logout} className="rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
               Salir
             </button>

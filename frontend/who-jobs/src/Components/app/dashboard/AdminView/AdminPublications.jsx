@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import api from '../../../../services/api'
+import api from '../../../../Services/api'
 
 export default function AdminPublications() {
   const [query, setQuery] = useState('')
@@ -47,7 +47,6 @@ export default function AdminPublications() {
     try {
       setLoading(true)
 
-      // Tu interceptor ya devuelve response.data
       const data = await api.get('/Publication/search', {
         params: {
           name: query,
@@ -126,13 +125,14 @@ export default function AdminPublications() {
 
   return (
     <>
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow">
+      <div className="rounded-2xl border border-brand-border bg-brand-card p-6 shadow-sm">
+
         <div className="space-y-1">
-          <h2 className="text-xl font-semibold text-[#1f2a33]">
+          <h2 className="text-xl font-semibold text-brand-title">
             Gestionar búsquedas
           </h2>
 
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-brand-muted">
             Buscá y administrá publicaciones laborales.
           </p>
         </div>
@@ -148,27 +148,36 @@ export default function AdminPublications() {
                 searchPublications()
               }
             }}
-            className="flex-1 rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-[#355872]/30"
+            className="flex-1 rounded-lg border border-brand-border
+                       bg-brand-card p-3 text-brand-title
+                       placeholder:text-brand-muted
+                       focus:outline-none focus:border-brand-accent
+                       focus:ring-2 focus:ring-brand-accent/20"
           />
 
           <button
             onClick={searchPublications}
             disabled={loading}
-            className="rounded-lg bg-[#355872] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#2b475c] disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-brand-accent px-5 py-3
+                       text-sm font-medium text-white
+                       transition hover:opacity-90
+                       disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? 'Buscando...' : 'Buscar'}
           </button>
         </div>
 
         <div className="mt-5 space-y-3">
+
           {!searched && (
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-brand-muted">
               Ingresá un puesto para comenzar una búsqueda.
             </p>
           )}
 
           {searched && publications.length === 0 && (
-            <p className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-slate-500">
+            <p className="rounded-xl border border-brand-border
+                          bg-brand-bg p-4 text-sm text-brand-muted">
               No se encontraron publicaciones.
             </p>
           )}
@@ -176,27 +185,31 @@ export default function AdminPublications() {
           {publications.map((publication) => (
             <div
               key={publication.id}
-              className="rounded-xl border border-gray-200 bg-gray-50 p-4"
+              className="rounded-xl border border-brand-border
+                         bg-brand-bg p-4"
             >
               <div>
-                <p className="font-medium text-[#1f2a33]">
+                <p className="font-medium text-brand-title">
                   {publication.job_position ?? 'Sin título'}
                 </p>
 
-                <p className="mt-1 text-sm text-slate-500 break-all">
+                <p className="mt-1 break-all text-sm text-brand-muted">
                   ID: {publication.id}
                 </p>
 
                 {publication.description && (
-                  <p className="mt-2 line-clamp-2 text-sm text-slate-600">
+                  <p className="mt-2 line-clamp-2 text-sm text-brand-muted">
                     {publication.description}
                   </p>
                 )}
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
+
                 <button
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm transition hover:bg-white"
+                  className="rounded-lg border border-brand-border
+                             px-3 py-2 text-sm text-brand-title
+                             transition hover:bg-brand-card"
                 >
                   Ver
                 </button>
@@ -204,10 +217,14 @@ export default function AdminPublications() {
                 <button
                   onClick={() => openDeleteModal(publication)}
                   disabled={deleting}
-                  className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 transition hover:bg-red-100 disabled:opacity-50"
+                  className="rounded-lg border border-red-200
+                             bg-red-50 px-3 py-2 text-sm text-red-700
+                             transition hover:bg-red-100
+                             disabled:opacity-50"
                 >
                   Eliminar
                 </button>
+
               </div>
             </div>
           ))}
@@ -217,28 +234,32 @@ export default function AdminPublications() {
       {/* Modal */}
       {modal.open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center
+                     bg-black/40 px-4 backdrop-blur-sm"
           onClick={() => {
             if (!deleting) closeModal()
           }}
         >
           <div
-            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+            className="w-full max-w-md rounded-2xl bg-brand-card
+                       p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start gap-4">
+
               <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
+                className={`flex h-10 w-10 shrink-0 items-center
+                            justify-center rounded-full ${
                   modal.type === 'confirm'
                     ? 'bg-red-100'
-                    : 'bg-slate-100'
+                    : 'bg-brand-bg'
                 }`}
               >
                 <span
                   className={`text-lg font-bold ${
                     modal.type === 'confirm'
                       ? 'text-red-600'
-                      : 'text-[#355872]'
+                      : 'text-brand-accent'
                   }`}
                 >
                   {modal.type === 'confirm' ? '!' : 'i'}
@@ -246,25 +267,31 @@ export default function AdminPublications() {
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-[#1f2a33]">
+                <h3 className="text-lg font-semibold text-brand-title">
                   {modal.title}
                 </h3>
 
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                <p className="mt-2 text-sm leading-relaxed text-brand-muted">
                   {modal.message}
                 </p>
               </div>
+
             </div>
 
             {modal.type === 'confirm' ? (
               <div className="mt-6 flex justify-end gap-3">
+
                 <button
                   onClick={() => {
                     setPublicationToDelete(null)
                     closeModal()
                   }}
                   disabled={deleting}
-                  className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-gray-100 disabled:opacity-50"
+                  className="rounded-lg border border-brand-border
+                             px-4 py-2.5 text-sm font-medium
+                             text-brand-title transition
+                             hover:bg-brand-bg
+                             disabled:opacity-50"
                 >
                   Cancelar
                 </button>
@@ -272,19 +299,28 @@ export default function AdminPublications() {
                 <button
                   onClick={deletePublication}
                   disabled={deleting}
-                  className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg bg-red-600 px-4 py-2.5
+                             text-sm font-medium text-white
+                             transition hover:bg-red-700
+                             disabled:cursor-not-allowed
+                             disabled:opacity-50"
                 >
                   {deleting ? 'Eliminando...' : 'Eliminar'}
                 </button>
+
               </div>
             ) : (
               <div className="mt-6 flex justify-end">
+
                 <button
                   onClick={closeModal}
-                  className="rounded-lg bg-[#355872] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#2b475c]"
+                  className="rounded-lg bg-brand-accent
+                             px-5 py-2.5 text-sm font-medium text-white
+                             transition hover:opacity-90"
                 >
                   Entendido
                 </button>
+
               </div>
             )}
           </div>
@@ -293,4 +329,3 @@ export default function AdminPublications() {
     </>
   )
 }
-

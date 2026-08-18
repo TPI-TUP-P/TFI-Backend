@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom'
 
 export default function RecruiterJobItem({ job }) {
+  const formattedSalary = new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits: 0,
+  }).format(job.salary ?? 0)
+
   return (
-    <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 transition-shadow hover:shadow-sm">
+    <div className="rounded-xl border border-brand-border bg-brand-bg p-4 transition-shadow hover:shadow-sm">
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
@@ -10,7 +16,7 @@ export default function RecruiterJobItem({ job }) {
 
           <div className="flex flex-wrap items-center gap-2">
 
-            <h3 className="font-semibold text-[#1f2a33]">
+            <h3 className="font-semibold text-brand-title">
               {job.job_position || 'Sin título'}
             </h3>
 
@@ -20,11 +26,11 @@ export default function RecruiterJobItem({ job }) {
 
           </div>
 
-          <p className="mt-1 line-clamp-2 text-sm text-slate-500">
+          <p className="mt-1 line-clamp-2 text-sm text-brand-muted">
             {job.description || 'Sin descripción'}
           </p>
 
-          <p className="mt-2 text-xs text-slate-400">
+          <p className="mt-2 text-xs text-brand-muted">
             Publicada el{' '}
             {job.created_Date
               ? new Date(job.created_Date).toLocaleDateString('es-AR')
@@ -36,26 +42,31 @@ export default function RecruiterJobItem({ job }) {
         <div className="flex flex-wrap items-center gap-4">
 
           <div className="text-sm">
-            <span className="font-semibold text-[#1f2a33]">
-              {job.applicants ?? 0}
-            </span>{' '}
-
-            <span className="text-slate-500">
-              {job.applicants === 1
-                ? 'candidato'
-                : 'candidatos'}
+            <span className="text-brand-muted">
+              Candidatos
             </span>
+
+            <p className="font-semibold text-brand-title">
+              {job.applicants ?? 0}
+            </p>
           </div>
 
           <div className="text-sm">
-            <span className="font-semibold text-[#1f2a33]">
-              ${job.salary ?? 0}
+            <span className="text-brand-muted">
+              Salario
             </span>
+
+            <p className="font-semibold text-brand-title">
+              {formattedSalary}
+            </p>
           </div>
 
           <Link
             to={`/jobs/${job.id}`}
-            className="rounded-lg bg-[#355872] px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-[#2b475c] focus-ring"
+            className="rounded-lg bg-brand-accent px-4 py-2
+                       text-sm font-medium text-white
+                       transition-opacity duration-200
+                       hover:opacity-90 focus-ring"
           >
             Gestionar
           </Link>
