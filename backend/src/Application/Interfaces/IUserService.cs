@@ -13,6 +13,7 @@ public interface IUserService
     Task<GetAllWithCountResponse> GetAllAsync(UserRole? userRole,CancellationToken cancellationToken);
     Task<UpdloadCVResponse> UploadCvAsync(Guid idUser, UploadCVRequest request, CancellationToken cancellationToken);
 
+    Task<string> GetMyCvUrlAsync(Guid userId, CancellationToken cancellationToken);
     Task<bool> ExistsUserEmail(string email, CancellationToken cancellationToken);
 
     Task<bool> ExistsUserId(Guid id, CancellationToken cancellationToken);

@@ -110,7 +110,7 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
 
             <div className="mt-2 flex items-center gap-4">
               <span className="font-mono text-sm font-semibold text-brand-title">
-                ${job.salary}
+                ${Number(job.salary).toLocaleString("es-AR") }
               </span>
               <span className="text-[11px] text-brand-muted">
                 Salario estimado

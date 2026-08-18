@@ -39,6 +39,21 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
         };
     }
 
+    public async Task<string> GetMyCvUrlAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+
+        if (string.IsNullOrEmpty(user.CVFilePath))
+        {
+            throw new Exception("El usuario no tiene un CV cargado");
+        }
+
+        return await _storageService.GetSignedUrlAsync(user.CVFilePath);
+    }
 
 
     public async Task<GetByIdResponse> GetByEmail(string email, CancellationToken cancellationToken)
@@ -162,23 +177,23 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
     public async Task<GetAllWithCountResponse> GetAllAsync(
     UserRole? userRole,
     CancellationToken cancellationToken)
-{
-    var (user, userCount) = await _userRepository.GetAllAsync(
-        userRole,
-        cancellationToken);
+    {
+        var (user, userCount) = await _userRepository.GetAllAsync(
+            userRole,
+            cancellationToken);
 
-    var users = user.Select(user => new GetAllResponse(
-        user.Id,
-        user.Name,
-        user.Email,
-        user.Role
-    )).ToList();
+        var users = user.Select(user => new GetAllResponse(
+            user.Id,
+            user.Name,
+            user.Email,
+            user.Role
+        )).ToList();
 
-    return new GetAllWithCountResponse(
-        users,
-        userCount
-    );
-}
+        return new GetAllWithCountResponse(
+            users,
+            userCount
+        );
+    }
 
 
 
