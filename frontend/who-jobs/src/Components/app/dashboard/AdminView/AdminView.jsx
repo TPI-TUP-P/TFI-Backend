@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import StatCard from '../StatCard'
 import AdminPublications from './AdminPublications'
 import AdminUserLookup from './AdminUserLookup'
-import AdminCreatePublication from './AdminCreatePublication'
+import AdminUserSearch from './AdminMailLookup'
 import api from '../../../../Services/api'
 
 export default function AdminView() {
@@ -12,6 +12,13 @@ export default function AdminView() {
   })
 
   const [postulationCount, setPostulationCount] = useState(0)
+
+  const [userCount, setUserCount] = useState({
+    total: 0,
+    candidates: 0,
+    recruiters: 0,
+  })
+
   const [loadingStats, setLoadingStats] = useState(true)
 
   useEffect(() => {
@@ -22,11 +29,31 @@ export default function AdminView() {
     try {
       setLoadingStats(true)
 
-      const [publicationsResponse, postulationsResponse] =
-        await Promise.all([
-          api.get('/Publication/count'),
-          api.get('/Postulation/count'),
-        ])
+      const [
+        publicationsResponse,
+        postulationsResponse,
+        usersResponse,
+        candidatesResponse,
+        recruitersResponse,
+      ] = await Promise.all([
+        api.get('/Publication/count'),
+
+        api.get('/Postulation/count'),
+
+        api.get('/User'),
+
+        api.get('/User', {
+          params: {
+            userRole: 'Candidate',
+          },
+        }),
+
+        api.get('/User', {
+          params: {
+            userRole: 'Recruiter',
+          },
+        }),
+      ])
 
       setPublicationCount({
         total: publicationsResponse?.total ?? 0,
@@ -35,6 +62,11 @@ export default function AdminView() {
 
       setPostulationCount(postulationsResponse ?? 0)
 
+      setUserCount({
+        total: usersResponse?.totalCount ?? 0,
+        candidates: candidatesResponse?.totalCount ?? 0,
+        recruiters: recruitersResponse?.totalCount ?? 0,
+      })
     } catch (error) {
       console.error('Error cargando estadísticas:', error)
     } finally {
@@ -61,7 +93,25 @@ export default function AdminView() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
+
+        <StatCard
+          title="Usuarios"
+          value={loadingStats ? '...' : userCount.total}
+          subtitle="Usuarios registrados"
+        />
+
+        <StatCard
+          title="Candidatos"
+          value={loadingStats ? '...' : userCount.candidates}
+          subtitle="Usuarios candidatos"
+        />
+
+        <StatCard
+          title="Recruiters"
+          value={loadingStats ? '...' : userCount.recruiters}
+          subtitle="Usuarios recruiters"
+        />
 
         <StatCard
           title="Publicaciones"
@@ -73,12 +123,6 @@ export default function AdminView() {
           title="Publicaciones activas"
           value={loadingStats ? '...' : publicationCount.active}
           subtitle="Ofertas disponibles"
-        />
-
-        <StatCard
-          title="Publicaciones eliminadas"
-          value={loadingStats ? '...' : deletedPublications}
-          subtitle="Ofertas desactivadas"
         />
 
         <StatCard
@@ -96,7 +140,7 @@ export default function AdminView() {
       </div>
 
       {/* Crear publicación */}
-      <AdminCreatePublication
+      <AdminUserSearch
         onCreated={loadStats}
       />
 
