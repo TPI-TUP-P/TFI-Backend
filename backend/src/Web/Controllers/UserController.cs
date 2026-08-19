@@ -21,11 +21,27 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(user);
     }
 
+    [HttpGet("me/cv")]
+    [Authorize]
+    public async Task<ActionResult<string>> GetMyCvUrl(CancellationToken cancellationToken)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim is null)
+            return Unauthorized();
+
+        var userId = Guid.Parse(userIdClaim);
+        var cvUrl = await userService.GetMyCvUrlAsync(userId, cancellationToken);
+        return Ok(cvUrl);
+    }
+
+
+
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<ActionResult<GetAllWithCountResponse>> GetAll(
-    [FromQuery] UserRole? userRole,
-    CancellationToken cancellationToken)
+        [FromQuery] UserRole? userRole,
+        CancellationToken cancellationToken)
     {
         var users = await userService.GetAllAsync(
             userRole,
