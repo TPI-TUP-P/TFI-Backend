@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Input from "../ui/Input";
 import { jobService } from "../../Services/job.service";
 import { Link } from "react-router-dom";
@@ -7,20 +7,44 @@ import { Link } from "react-router-dom";
 const AppSearch = () => {
   const [jobs, setJobs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  useEffect(() => {
-    const searchJobs = async () => {
-      try {
-        var result = await jobService.getJobs(1, searchValue);
+  const timer = useRef(null);
+  // useEffect(() => {
+  //   const searchJobs = async () => {
+  //     try {
+  //       var result = await jobService.getJobs(1, searchValue);
+  //       setJobs(result?.items);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   searchJobs();
+  // }, [searchValue]);
 
-        console.log(result.items );
-        console.log(result?.data);
-        setJobs(result?.items);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    searchJobs();
-  }, [searchValue]);
+  const handleNavigate = ()=> {
+    setSearchValue("");
+    setJobs([])
+  }
+
+  const handleChange = async(e) => {
+    const value = e.target.value;
+    console.log(value)
+    setSearchValue(value);
+
+    clearTimeout(timer.current);
+
+    if (!value.trim()) {
+      setJobs([]);
+      return;
+    }try {
+      
+      timer.current = setTimeout(async () => {
+        const res = await jobService.getJobsBySearch(1, searchValue);
+        setJobs(res.items);
+      }, 300);
+    } catch (error) {
+      console.log(error, "error")
+    }
+  };
 
   return (
     <div className="relative w-full max-w-xs">
@@ -31,7 +55,7 @@ const AppSearch = () => {
       <Input
         placeholder="Buscar..."
         value={searchValue}
-        onChange={(e) => setSearchValue(e.target.value)}
+        onChange={handleChange}
         classname="pl-9 py-2 text-xs rounded-full"
       />
 
@@ -41,7 +65,7 @@ const AppSearch = () => {
             jobs.map((job) => (
               <Link
                 key={job.id}
-                onClick={() => setSearchValue(job.job_position)}
+                onClick={() => handleNavigate()}
                 to={`/jobs/${job.id}`}
                 className="flex w-full items-center justify-between gap-3 border-b border-brand-border px-4 py-3 text-left last:border-0 hover:bg-brand-bg"
               >

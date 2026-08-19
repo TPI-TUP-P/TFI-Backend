@@ -2,16 +2,20 @@ import api from "./api";
 
 export const jobService = {
 
-  // getJobsBySearch: async (searchValue)=> {
-  //   try {
-  //       const response = await api.get("Publication")
-  //       return response;
-  //   } catch (error) {
-  //     console.error("Error fetching jobs:", error);
-  //     throw error
-  //   }
-  // },
-
+ getJobsBySearch: async (page = 1, searchValue = '') => {
+  try {
+   
+    const response = await api.get('Publication', {
+      params: { page, search: searchValue },
+      skipGlobalLoader: true,
+    });
+    
+    return response; 
+  } catch (error) {
+    console.error("Error fetching jobs by search:", error);
+    throw error;
+  }
+},
   getJobs: async (page = 1, searchValue = "") => {
     try {
       const response = await api.get(`Publication?page=${page}&search=${searchValue}`);

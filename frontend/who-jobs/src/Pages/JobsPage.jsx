@@ -4,8 +4,8 @@ import Pagination from "../Components/jobs/Pagination";
 import ProfileCard from "../Components/profile/ProfileCard";
 import CreateJobModal from "../Components/jobs/CreateJobModal";
 import { jobService } from "../Services/job.service";
-import { usePostulatedJobs } from "../hooks/usePostulatedJobs";
 import { useAuthStore } from "../Components/stores/useAuthStore";
+import { usePostulatedJobs } from "../Hooks/usePostulatedJobs";
 
 const ROLE_PERMITIDOS=[1, 2, 3]; // Recluter, Admin, SuperAdmin
 
