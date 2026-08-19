@@ -9,7 +9,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FindAsync(id, cancellationToken);
+        var user = await context.Users.Where(u=> u.IsActive == true).FirstOrDefaultAsync(u=> u.Id == id, cancellationToken);
         return user;
     }
     public async Task<(IReadOnlyList<User> Users, int TotalCount)> GetAllAsync(
@@ -38,7 +38,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<User?> GetByPhoneAsync(string phone, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FirstOrDefaultAsync(u => u.Phone == phone, cancellationToken);
+        var user = await context.Users.Where(u => u.IsActive == true).FirstOrDefaultAsync(u => u.Phone == phone, cancellationToken);
         return user;
     }
 
@@ -71,7 +71,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
+        var user = await context.Users.Where(u=> u.IsActive == true).FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
         return user;
     }
 
