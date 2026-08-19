@@ -13,7 +13,7 @@ public interface IPublicationService
 
     Task<CreateResponse> AddAsync(Guid IdUser, CreateRequest publication, CancellationToken cancellationToken);
 
-    Task<GetAllPublicationsResponse> GetAllAsync(int page, int pageSize, string search,CancellationToken cancellationToken);
+    Task<GetAllPublicationsResponse> GetAllAsync(int page, int pageSize, string search, CancellationToken cancellationToken);
 
     Task<UpdateResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
 
@@ -28,4 +28,6 @@ public interface IPublicationService
     Task<List<GetByIdResponse>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken);
 
     Task<PublicationCountDto> GetCountAsync(CancellationToken cancellationToken);
+
+    Task<PublicationCountDto> GetCountByCreatorAsync(Guid creatorId, CancellationToken cancellationToken);
 }

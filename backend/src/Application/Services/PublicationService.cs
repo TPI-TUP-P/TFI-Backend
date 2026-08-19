@@ -256,6 +256,26 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         return await _Publication.GetCountAsync(cancellationToken);
     }
 
+    public async Task<PublicationCountDto> GetCountByCreatorAsync(
+    Guid creatorId,
+    CancellationToken cancellationToken)
+    {
+        ValidateId(creatorId);
+
+        var total = await _Publication.CountByCreatorAsync(
+            creatorId,
+            cancellationToken);
+
+        var visible = await _Publication.CountVisibleByCreatorAsync(
+            creatorId,
+            cancellationToken);
+
+        return new PublicationCountDto(
+            total,
+            visible
+        );
+    }
+
     private void ValidateId(Guid Id)
     {
         if (Id == Guid.Empty)

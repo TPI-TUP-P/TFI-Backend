@@ -119,6 +119,29 @@ public class PublicationController(IPublicationService _publication) : Controlle
 
         return Ok(result);
     }
+    [Authorize(Roles = "Recruiter")]
+    [HttpGet("count/my")]
+    public async Task<ActionResult<PublicationCountDto>> GetCount(
+    CancellationToken cancellationToken)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim is null)
+        {
+            return Unauthorized();
+        }
+
+        if (!Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _publication.GetCountByCreatorAsync(
+            userId,
+            cancellationToken);
+
+        return Ok(result);
+    }
     private Guid GetUserId()
     {
         var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value

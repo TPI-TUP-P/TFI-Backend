@@ -13,7 +13,10 @@ export default function RecruiterView() {
   const {
     profile,
     jobs,
-    totalPublications,
+    publicationStats = {
+      total: 0,
+      visible: 0,
+    },
     totalApplicants,
     postulationStats,
     loading,
@@ -33,10 +36,8 @@ export default function RecruiterView() {
 
       await api.delete('/User/me')
 
-      // Limpiar sesión
       localStorage.removeItem('token')
 
-      // Redirigir
       navigate('/login', { replace: true })
     } catch (error) {
       console.error(error)
@@ -84,13 +85,12 @@ export default function RecruiterView() {
 
         <RecruiterWelcome
           name={profile.name}
-          totalPublications={totalPublications}
+          totalPublications={publicationStats.total}
         />
 
         <RecruiterStats
-          totalPublications={totalPublications}
+          publicationStats={publicationStats}
           totalApplicants={totalApplicants}
-          visibleJobs={jobs.length}
           postulationStats={postulationStats}
         />
 

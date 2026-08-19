@@ -45,18 +45,22 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
     {
         var result = await context.Publications
             .GroupBy(p => 1)
-            .Select(g => new PublicationCountDto
-            {
-                Total = g.Count(),
-                Active = g.Count(p => p.State)
-            })
+            .Select(g => new PublicationCountDto(
+                g.Count(),
+                g.Count(p => p.State)
+            ))
             .FirstOrDefaultAsync(cancellationToken);
 
-        return result ?? new PublicationCountDto
-        {
-            Total = 0,
-            Active = 0
-        };
+        return result ?? new PublicationCountDto(0, 0);
+    }
+    public async Task<int> CountVisibleByCreatorAsync(
+    Guid creatorId,
+    CancellationToken cancellationToken)
+    {
+        return await context.Publications
+            .CountAsync(
+                p => p.Creator == creatorId && p.State,
+                cancellationToken);
     }
 
     public async Task<PagedResult<Publication>> GetAllAsync(
@@ -70,13 +74,13 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
             .Where(p => p.State);
 
 
-    if (!string.IsNullOrWhiteSpace(search))
-    {
+        if (!string.IsNullOrWhiteSpace(search))
+        {
             search = search.Trim().ToLower();
 
-        query = query.Where(p =>
-            p.Job_position.ToLower().Contains(search));
-    }
+            query = query.Where(p =>
+                p.Job_position.ToLower().Contains(search));
+        }
         var totalItems = await query.CountAsync(cancellationToken);
 
         var items = await query
@@ -124,6 +128,8 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
         return await context.Publications
             .CountAsync(p => p.Creator == creatorId, cancellationToken);
     }
+
+
 
     public async Task<List<Publication>> SearchByNameAsync(
         string name,
