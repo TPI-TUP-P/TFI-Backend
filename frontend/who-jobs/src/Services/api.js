@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useLoaderStore } from '../Components/stores/useLoaderStore';
+import { useAuthStore } from '../Components/stores/useAuthStore';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://localhost:7258/api',
@@ -40,6 +41,7 @@ api.interceptors.response.use(
 
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
+      useAuthStore.getState().logout();
       window.location.href = '/login';
     }
 

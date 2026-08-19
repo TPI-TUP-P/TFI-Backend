@@ -9,7 +9,8 @@ import ProtectedRoute from "./Components/guards/ProtectedRoute";
 import PublicRoute from "./Components/guards/PublicRoute";
 import AppLayout from "./layouts/AppLayout";
 import JobDetailPage from "./Pages/Jobs/JobDetailPage";
-
+import { useAuthCheck } from "./Hooks/useAuthCheck";
+// useAuthCheck();
 export const router = createBrowserRouter([
   {
     element: <PublicRoute />,
