@@ -176,10 +176,12 @@ public class UserService(IUserRepository _userRepository, IStorageService _stora
 
     public async Task<GetAllWithCountResponse> GetAllAsync(
     UserRole? userRole,
+    bool includeDeleted,
     CancellationToken cancellationToken)
     {
         var (user, userCount) = await _userRepository.GetAllAsync(
             userRole,
+            includeDeleted,
             cancellationToken);
 
         var users = user.Select(user => new GetAllResponse(

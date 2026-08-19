@@ -77,7 +77,7 @@ const AppSearch = () => {
                     {job.applicants} postulantes
                   </p>
                 </div>
-                <span className="flex-shrink-0 text-xs font-semibold text-brand-accent">
+                <span className="shrink-0 text-xs font-semibold text-brand-accent">
                   ${job.salary}
                 </span>
               </Link>

@@ -11,6 +11,15 @@ export const userService = {
     }
   },
 
+  getAll: async (role = "", includeDeleted = false) => {
+    return await api.get("user", {
+      params: {
+        userRole: role ? role : undefined,
+        includeDeleted: includeDeleted,
+      },
+    });
+  },
+
   getMyCvUrl: async () => {
     try {
       const response = await api.get("User/me/cv");
