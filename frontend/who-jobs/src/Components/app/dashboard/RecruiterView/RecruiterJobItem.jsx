@@ -20,8 +20,14 @@ export default function RecruiterJobItem({ job }) {
               {job.job_position || 'Sin título'}
             </h3>
 
-            <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-              Publicada
+            <span
+              className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                job.state
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-red-100 text-red-700'
+              }`}
+            >
+              {job.state ? 'Publicada' : 'Eliminada'}
             </span>
 
           </div>
