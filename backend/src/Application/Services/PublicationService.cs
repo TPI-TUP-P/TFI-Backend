@@ -18,14 +18,15 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         ValidateId(Id);
         var publication = await _Publication.GetByIdAsync(Id, cancellationToken) ?? throw new NotFoundException("Publicantion");
         return new GetByIdResponse(
-            publication.Id,
-            publication.Creator,
-            publication.Job_position!,
-            publication.Description!,
-            publication.Salary,
-            publication.Applicants,
-            publication.Created_Date
-            );
+        publication.Id,
+        publication.Creator,
+        publication.Job_position!,
+        publication.Description!,
+        publication.Salary,
+        publication.Applicants,
+        publication.State,
+        publication.Created_Date
+    );
 
     }
     public async Task<List<GetByIdResponse>> GetAllByCreatorAsync(Guid creatorId, int page, int pageSize, CancellationToken cancellationToken)
@@ -45,25 +46,40 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         var publications = await _Publication.GetAllByCreatorAsync(creatorId, page, pageSize, cancellationToken);
 
         return publications.Select(p => new GetByIdResponse(
-            p.Id,
-            p.Creator,
-            p.Job_position!,
-            p.Description!,
-            p.Salary,
-            p.Applicants,
-            p.Created_Date
-        )).ToList();
+        p.Id,
+        p.Creator,
+        p.Job_position!,
+        p.Description!,
+        p.Salary,
+        p.Applicants,
+        p.State,
+        p.Created_Date
+    )).ToList();
     }
-    public async Task<CreateResponse> AddAsync(Guid IdUser, CreateRequest publicationDto, CancellationToken cancellationToken)
+    public async Task<CreateResponse> AddAsync(
+    Guid IdUser,
+    CreateRequest publicationDto,
+    CancellationToken cancellationToken)
     {
         ValidateId(IdUser);
+
         if (publicationDto is null)
         {
             throw new NotFoundException("publication dto");
         }
+
         CheckField(publicationDto.Job_position, "Job_position");
         CheckField(publicationDto.Description, "Description");
 
+        if (publicationDto.Job_position!.Trim().Length < 5)
+        {
+            throw new BadRequestException("Job_position");
+        }
+
+        if (publicationDto.Description!.Trim().Length < 5)
+        {
+            throw new BadRequestException("Description");
+        }
 
         var NewPublication = new Publication(
             IdUser,
@@ -72,7 +88,11 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             publicationDto.Salary,
             publicationDto.Applicants
         );
-        var publication = await _Publication.AddAsync(NewPublication, cancellationToken);
+
+        var publication = await _Publication.AddAsync(
+            NewPublication,
+            cancellationToken
+        );
 
         return new CreateResponse(
             publication.Id,
@@ -84,7 +104,6 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             publication.Created_Date
         );
     }
-
     public async Task<UpdateResponse> UpdateAsync(Guid IdUser, UpdateRequest publicationDto, CancellationToken cancellationToken)
     {
 
@@ -190,6 +209,7 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
                 p.Description!,
                 p.Salary,
                 p.Applicants,
+                p.State,
                 p.Created_Date
             )).ToList(),
 
@@ -220,19 +240,40 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             cancellationToken);
 
         return publications.Select(p => new GetByIdResponse(
-            p.Id,
-            p.Creator,
-            p.Job_position!,
-            p.Description!,
-            p.Salary,
-            p.Applicants,
-            p.Created_Date
-        )).ToList();
+    p.Id,
+    p.Creator,
+    p.Job_position!,
+    p.Description!,
+    p.Salary,
+    p.Applicants,
+    p.State,
+    p.Created_Date
+)).ToList();
     }
     public async Task<PublicationCountDto> GetCountAsync(
     CancellationToken cancellationToken)
     {
         return await _Publication.GetCountAsync(cancellationToken);
+    }
+
+    public async Task<PublicationCountDto> GetCountByCreatorAsync(
+    Guid creatorId,
+    CancellationToken cancellationToken)
+    {
+        ValidateId(creatorId);
+
+        var total = await _Publication.CountByCreatorAsync(
+            creatorId,
+            cancellationToken);
+
+        var visible = await _Publication.CountVisibleByCreatorAsync(
+            creatorId,
+            cancellationToken);
+
+        return new PublicationCountDto(
+            total,
+            visible
+        );
     }
 
     private void ValidateId(Guid Id)
