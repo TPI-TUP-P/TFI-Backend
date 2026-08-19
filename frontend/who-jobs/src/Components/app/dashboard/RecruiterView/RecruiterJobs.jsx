@@ -1,7 +1,24 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import RecruiterJobItem from './RecruiterJobItem'
 
+const ITEMS_PER_PAGE = 5
+
 export default function RecruiterJobs({ jobs }) {
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const totalPages = Math.ceil(jobs.length / ITEMS_PER_PAGE)
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const visibleJobs = jobs.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  )
+
+  const goToPage = (page) => {
+    setCurrentPage(page)
+  }
+
   return (
     <div className="rounded-xl border border-brand-border bg-brand-card p-4 shadow-sm sm:p-6">
 
@@ -32,14 +49,63 @@ export default function RecruiterJobs({ jobs }) {
       {jobs.length === 0 ? (
         <EmptyJobs />
       ) : (
-        <div className="space-y-3">
-          {jobs.map((job) => (
-            <RecruiterJobItem
-              key={job.id}
-              job={job}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-3">
+            {visibleJobs.map((job) => (
+              <RecruiterJobItem
+                key={job.id}
+                job={job}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-2">
+
+              <button
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="rounded-lg border border-brand-border px-3 py-2
+                           text-sm text-brand-title transition
+                           hover:bg-brand-bg disabled:cursor-not-allowed
+                           disabled:opacity-40"
+              >
+                ←
+              </button>
+
+              {Array.from({ length: totalPages }, (_, index) => {
+                const page = index + 1
+
+                return (
+                  <button
+                    key={page}
+                    onClick={() => goToPage(page)}
+                    className={`h-9 min-w-9 rounded-lg px-3 text-sm font-medium transition
+                      ${
+                        currentPage === page
+                          ? 'bg-brand-accent text-white'
+                          : 'border border-brand-border text-brand-title hover:bg-brand-bg'
+                      }`}
+                  >
+                    {page}
+                  </button>
+                )
+              })}
+
+              <button
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="rounded-lg border border-brand-border px-3 py-2
+                           text-sm text-brand-title transition
+                           hover:bg-brand-bg disabled:cursor-not-allowed
+                           disabled:opacity-40"
+              >
+                →
+              </button>
+
+            </div>
+          )}
+        </>
       )}
 
     </div>
