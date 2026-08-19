@@ -41,10 +41,13 @@ public class UserController(IUserService userService) : ControllerBase
     [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<ActionResult<GetAllWithCountResponse>> GetAll(
         [FromQuery] UserRole? userRole,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        [FromQuery] bool includeDeleted = false     
+        )
     {
         var users = await userService.GetAllAsync(
             userRole,
+            includeDeleted,
             cancellationToken);
 
         return Ok(users);

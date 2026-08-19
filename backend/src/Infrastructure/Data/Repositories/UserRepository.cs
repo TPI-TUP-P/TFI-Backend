@@ -12,20 +12,28 @@ public class UserRepository(AppDbContext context) : IUserRepository
         var user = await context.Users.FindAsync(id, cancellationToken);
         return user;
     }
-
     public async Task<(IReadOnlyList<User> Users, int TotalCount)> GetAllAsync(
-       UserRole? userRole,
-       CancellationToken cancellationToken)
+        UserRole? userRole,
+        bool includeDeleted,
+        CancellationToken cancellationToken)
     {
         var query = context.Users.AsQueryable();
+
+        if (!includeDeleted)
+        {
+            query = query.Where(u => u.IsActive);
+        }
 
         if (userRole.HasValue)
         {
             query = query.Where(u => u.Role == userRole.Value);
         }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
         var users = await query.ToListAsync(cancellationToken);
 
-        return (users, users.Count);
+        return (users, totalCount);
     }
 
     public async Task<User?> GetByPhoneAsync(string phone, CancellationToken cancellationToken)

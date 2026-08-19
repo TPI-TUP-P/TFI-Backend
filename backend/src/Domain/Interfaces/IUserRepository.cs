@@ -9,5 +9,6 @@ public interface IUserRepository : IGenericRepository<User>
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken);
     Task<(IReadOnlyList<User> Users, int TotalCount)> GetAllAsync(
            UserRole? role,
+           bool includeDeleted,
            CancellationToken cancellationToken); Task<User?> GetByPhoneAsync(string phone, CancellationToken cancellationToken);
 }
