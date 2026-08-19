@@ -1,9 +1,8 @@
 import StatCard from "../StatCard"
 
 export default function RecruiterStats({
-  totalPublications,
+  publicationStats,
   totalApplicants,
-  visibleJobs,
   postulationStats,
 }) {
   return (
@@ -11,11 +10,11 @@ export default function RecruiterStats({
 
       <StatCard
         title="Búsquedas publicadas"
-        value={totalPublications}
+        value={publicationStats.total}
         subtitle={
-          totalPublications === 1
-            ? 'Búsqueda de personal'
-            : 'Búsquedas de personal'
+          publicationStats.total === 1
+            ? "Búsqueda de personal"
+            : "Búsquedas de personal"
         }
       />
 
@@ -27,8 +26,8 @@ export default function RecruiterStats({
 
       <StatCard
         title="Búsquedas visibles"
-        value={visibleJobs}
-        subtitle="Cargadas en este panel"
+        value={publicationStats.visible}
+        subtitle="Actualmente visibles"
       />
 
       <StatCard

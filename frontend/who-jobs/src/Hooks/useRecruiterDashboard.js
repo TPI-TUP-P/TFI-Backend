@@ -15,7 +15,11 @@ export function useRecruiterDashboard() {
   })
 
   const [jobs, setJobs] = useState([])
-  const [totalPublications, setTotalPublications] = useState(0)
+
+  const [publicationStats, setPublicationStats] = useState({
+    total: 0,
+    visible: 0,
+  })
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -90,24 +94,25 @@ export function useRecruiterDashboard() {
           await publicationsResponse.json()
 
         // =========================
-        // Cantidad de publicaciones
+        // Estadísticas publicaciones
         // =========================
 
-        const countResponse = await fetch(
-          `${PUBLICATION_URL}/my/count`,
+        const publicationCountResponse = await fetch(
+          `${PUBLICATION_URL}/count/my`,
           {
             method: 'GET',
             headers,
           }
         )
 
-        if (!countResponse.ok) {
+        if (!publicationCountResponse.ok) {
           throw new Error(
-            'No se pudo obtener la cantidad de búsquedas.'
+            'No se pudieron obtener las estadísticas de búsquedas.'
           )
         }
 
-        const countData = await countResponse.json()
+        const publicationCountData =
+          await publicationCountResponse.json()
 
         // =========================
         // Estadísticas postulaciones
@@ -135,7 +140,11 @@ export function useRecruiterDashboard() {
         // =========================
 
         setJobs(publicationsData)
-        setTotalPublications(countData)
+
+        setPublicationStats({
+          total: publicationCountData.total ?? 0,
+          visible: publicationCountData.visible ?? 0,
+        })
 
         setPostulationStats({
           pending: postulationData.pending ?? 0,
@@ -166,7 +175,7 @@ export function useRecruiterDashboard() {
   return {
     profile,
     jobs,
-    totalPublications,
+    publicationStats,
     totalApplicants,
     postulationStats,
     loading,
