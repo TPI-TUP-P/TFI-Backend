@@ -13,7 +13,7 @@ export default function AppLayout() {
       <div className="flex min-h-screen w-full flex-col bg-brand-bg text-brand-title">
         <GlobalLoader/>
       <AppNavbar />
-      <main className="flex-1 overflow-y-auto pt-24 md:px-15 px-3">
+      <main className="flex-1 overflow-y-auto pt-24 md:px-20 px-3">
         <Outlet />
       </main>
       <AppFooter />
