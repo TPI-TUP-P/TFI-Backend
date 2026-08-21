@@ -23,7 +23,7 @@ export const userService = {
   getMyCvUrl: async () => {
     try {
       const response = await api.get("User/me/cv");
-      return response.url;
+      return response;
     } catch (error) {
       console.error("Error fetching CV url:", error);
       throw error;

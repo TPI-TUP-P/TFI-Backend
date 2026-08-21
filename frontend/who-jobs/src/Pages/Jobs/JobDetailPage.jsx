@@ -51,11 +51,11 @@ const JobDetailPage = () => {
   const isCreator = job && user && job.creator === user.id;
   const isOwner = job && user && ((user.role === 1 && isCreator) || ADMIN_ROLES.includes(user.role));
   const canEdit =
-  job &&
-  user &&
-  ((user.role === 1 && isCreator) ||
-    (user.role === 2 && isCreator) ||
-    user.role === 3);
+    job &&
+    user &&
+    ((user.role === 1 && isCreator) ||
+      (user.role === 2 && isCreator) ||
+      user.role === 3);
   const canApply = job && user && APPLY_ROLES.includes(user.role) && !isCreator;
 
   const fetchPostulations = useCallback(
@@ -143,16 +143,43 @@ const JobDetailPage = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateForm = () => {
+    const position = form.job_position.trim();
+    const description = form.description.trim();
+    const salary = parseFloat(form.salary);
+
+    if (position.length < 5 || position.length >= 100) {
+      return "El puesto debe tener entre 5 y 99 caracteres.";
+    }
+
+    if (description.length < 5 || description.length >= 1000) {
+      return "La descripción debe tener entre 5 y 999 caracteres.";
+    }
+
+    if (isNaN(salary) || salary <= 0 || salary >= 1000000000) {
+      return "El salario debe ser mayor a 0 y menor a 1.000.000.000.";
+    }
+
+    return null;
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
+
+    const validationError = validateForm();
+    if (validationError) {
+      setSaveError(validationError);
+      return;
+    }
+
     setSaving(true);
     setSaveError(null);
 
     try {
       const payload = {
         id: job.id,
-        job_position: form.job_position,
-        description: form.description,
+        job_position: form.job_position.trim(),
+        description: form.description.trim(),
         salary: parseFloat(form.salary),
       };
 
@@ -250,6 +277,9 @@ const JobDetailPage = () => {
                   onChange={handleFormChange}
                   className="w-full rounded-lg border border-brand-border bg-brand-bg px-3.5 py-2.5 text-sm text-brand-title outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20"
                 />
+                <p className="mt-1 text-[11px] text-brand-muted">
+                  {form.job_position.length}/99 caracteres
+                </p>
               </div>
 
               <div>
@@ -263,6 +293,9 @@ const JobDetailPage = () => {
                   rows={6}
                   className="w-full resize-none rounded-lg border border-brand-border bg-brand-bg px-3.5 py-2.5 text-sm text-brand-title outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20"
                 />
+                <p className="mt-1 text-[11px] text-brand-muted">
+                  {form.description.length}/999 caracteres
+                </p>
               </div>
 
               <div>

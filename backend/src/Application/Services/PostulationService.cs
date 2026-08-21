@@ -68,6 +68,8 @@ namespace Application.Services
             var cvPath = await _storageService.UploadAsync(request.CV, idUser, request.JobOfferId);
             var postulation = new Postulation(idUser, request.JobOfferId, request.CV.FileName, cvPath);
             await _postulationRepository.Create(postulation, cancellationToken);
+
+            await _PublicationService.AddApplicantAsync(request.JobOfferId, cancellationToken);
             return new CreateResponse(
                 postulation.Id,
                 postulation.UserId,
@@ -76,6 +78,7 @@ namespace Application.Services
                 postulation.State,
                 postulation.CvFileName
             );
+            
 
         }
 
@@ -410,6 +413,7 @@ namespace Application.Services
 
 
             await _postulationRepository.Delete(id, cancellationToken);
+            await _PublicationService.DeleteApplicantAsync(postulation.JobOfferId, cancellationToken);
         }
     }
 }
