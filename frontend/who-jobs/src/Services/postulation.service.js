@@ -58,4 +58,15 @@ export const postulationService = {
       throw error;
     }
   },
+
+  remove: async (id) => {
+    try {
+      const response = await api.delete(`Postulation/${id}`);
+      return response;
+    } catch (error) {
+      console.error("Error removing postulation:", error);
+      throw error;
+    }
+  },
+  
 };

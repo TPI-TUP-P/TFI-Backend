@@ -48,6 +48,10 @@ const JobDetailPage = () => {
   const [postulationsTotalPages, setPostulationsTotalPages] = useState(1);
   const [postulationsLoading, setPostulationsLoading] = useState(false);
 
+  const [myPostulationId, setMyPostulationId] = useState(null);
+  const [showUnapplyConfirm, setShowUnapplyConfirm] = useState(false);
+  const [unapplying, setUnapplying] = useState(false);
+
   const isCreator = job && user && job.creator === user.id;
   const isOwner = job && user && ((user.role === 1 && isCreator) || ADMIN_ROLES.includes(user.role));
   const canEdit =
@@ -56,6 +60,7 @@ const JobDetailPage = () => {
     ((user.role === 1 && isCreator) ||
       (user.role === 2 && isCreator) ||
       user.role === 3);
+
   const canApply = job && user && APPLY_ROLES.includes(user.role) && !isCreator;
 
   const fetchPostulations = useCallback(
@@ -121,7 +126,9 @@ const JobDetailPage = () => {
           await fetchPostulations(1);
         } else if (user && APPLY_ROLES.includes(user.role)) {
           const myPostulations = await postulationService.getByUser(user.id);
-          setAlreadyApplied(myPostulations.some((p) => p.jobOfferId === id));
+          const mine = myPostulations.find((p) => p.jobOfferId === id);
+          setAlreadyApplied(Boolean(mine));
+          setMyPostulationId(mine?.id ?? null);
         }
       } catch (err) {
         setError("No se pudo cargar la publicación.");
@@ -195,6 +202,21 @@ const JobDetailPage = () => {
       setSaveError(message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleConfirmUnapply = async () => {
+    setUnapplying(true);
+    try {
+      await postulationService.remove(myPostulationId);
+      setAlreadyApplied(false);
+      setMyPostulationId(null);
+      setShowUnapplyConfirm(false);
+      setToast({ type: "success", message: "Te despostulaste correctamente." });
+    } catch {
+      setToast({ type: "error", message: "No se pudo cancelar la postulación." });
+    } finally {
+      setUnapplying(false);
     }
   };
 
@@ -377,9 +399,17 @@ const JobDetailPage = () => {
 
                     {canApply && (
                       alreadyApplied ? (
-                        <span className="rounded-lg bg-brand-bg px-4 py-2 text-sm font-semibold text-brand-muted">
-                          ✓ Ya te postulaste
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-lg bg-brand-bg px-4 py-2 text-sm font-semibold text-brand-muted">
+                            ✓ Ya te postulaste
+                          </span>
+                          <button
+                            onClick={() => setShowUnapplyConfirm(true)}
+                            className="rounded-lg border border-brand-border px-4 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
+                          >
+                            Despostularme
+                          </button>
+                        </div>
                       ) : (
                         <button
                           onClick={() => setShowApplyModal(true)}
@@ -545,6 +575,19 @@ const JobDetailPage = () => {
           loading={deleting}
           onConfirm={handleConfirmDeleteJob}
           onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
+
+      {showUnapplyConfirm && (
+        <ConfirmDialog
+          title="Cancelar postulación"
+          message="¿Seguro que querés despostularte de esta oferta?"
+          confirmLabel="Despostularme"
+          cancelLabel="Volver"
+          danger
+          loading={unapplying}
+          onConfirm={handleConfirmUnapply}
+          onCancel={() => setShowUnapplyConfirm(false)}
         />
       )}
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
 import { userService } from "../../Services/user.service";
+import { postulationService } from "../../Services/postulation.service";
 import ApplyModal from "./ApplyModal";
 import ConfirmDialog from "../common/ConfirmDialog";
 import Toast from "../common/Toast";
@@ -9,10 +10,12 @@ import Toast from "../common/Toast";
 const APPLY_ROLES = [0, 2, 3]; // Candidate, Admin, SuperAdmin
 const ADMIN_ROLES = [2, 3]; // Admin, SuperAdmin
 
-function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
+function JobCard({ job, onDelete, appliedJobsMap, onApplied, onUnapplied }) {
   const [showModal, setShowModal] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showUnapplyConfirm, setShowUnapplyConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [unapplying, setUnapplying] = useState(false);
   const [toast, setToast] = useState(null);
   const [creator, setCreator] = useState(null);
   const navigate = useNavigate();
@@ -38,7 +41,8 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
     user && ((user.role === 1 && isCreator) || ADMIN_ROLES.includes(user.role));
 
   const canApply = user && APPLY_ROLES.includes(user.role) && !isCreator;
-  const alreadyApplied = appliedJobIds?.has(job.id);
+  const postulationId = appliedJobsMap?.get(job.id);
+  const alreadyApplied = Boolean(postulationId);
 
   const handleCardClick = () => {
     navigate(`/jobs/${job.id}`);
@@ -46,14 +50,14 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
 
   const handleDeleteClick = (e) => {
     e.stopPropagation();
-    setShowConfirm(true);
+    setShowDeleteConfirm(true);
   };
 
   const handleConfirmDelete = async () => {
     setDeleting(true);
     try {
       await onDelete(job.id);
-      setShowConfirm(false);
+      setShowDeleteConfirm(false);
       setToast({ type: "success", message: "Publicación eliminada correctamente." });
     } catch {
       setToast({ type: "error", message: "No se pudo eliminar la publicación." });
@@ -62,17 +66,32 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
     }
   };
 
-  const handleCancelDelete = () => {
-    setShowConfirm(false);
-  };
-
   const handleApplyClick = (e) => {
     e.stopPropagation();
     setShowModal(true);
   };
 
-  const handleApplySuccess = () => {
-    onApplied?.(job.id);
+  const handleApplySuccess = (newPostulationId) => {
+    onApplied?.(job.id, newPostulationId);
+  };
+
+  const handleUnapplyClick = (e) => {
+    e.stopPropagation();
+    setShowUnapplyConfirm(true);
+  };
+
+  const handleConfirmUnapply = async () => {
+    setUnapplying(true);
+    try {
+      await postulationService.remove(postulationId);
+      onUnapplied?.(job.id);
+      setShowUnapplyConfirm(false);
+      setToast({ type: "success", message: "Te despostulaste correctamente." });
+    } catch {
+      setToast({ type: "error", message: "No se pudo cancelar la postulación." });
+    } finally {
+      setUnapplying(false);
+    }
   };
 
   const creatorName = creator
@@ -110,7 +129,7 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
 
             <div className="mt-2 flex items-center gap-4">
               <span className="font-mono text-sm font-semibold text-brand-title">
-                ${Number(job.salary).toLocaleString("es-AR") }
+                ${job.salary}
               </span>
               <span className="text-[11px] text-brand-muted">
                 Salario estimado
@@ -124,9 +143,17 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
           <div className="flex shrink-0 items-center gap-2">
             {canApply && (
               alreadyApplied ? (
-                <span className="rounded-lg bg-brand-bg px-4 py-2 text-sm font-semibold text-brand-muted">
-                  ✓ Ya postulado
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-lg bg-brand-bg px-3 py-2 text-sm font-semibold text-brand-muted">
+                    ✓ Postulado
+                  </span>
+                  <button
+                    onClick={handleUnapplyClick}
+                    className="rounded-lg border border-brand-border px-3 py-2 text-xs font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
+                  >
+                    Despostularme
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={handleApplyClick}
@@ -159,7 +186,7 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
         />
       )}
 
-      {showConfirm && (
+      {showDeleteConfirm && (
         <ConfirmDialog
           title="Eliminar publicación"
           message={`¿Seguro que querés eliminar "${job.job_position}"? Esta acción no se puede deshacer.`}
@@ -168,7 +195,20 @@ function JobCard({ job, onDelete, appliedJobIds, onApplied }) {
           danger
           loading={deleting}
           onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
+
+      {showUnapplyConfirm && (
+        <ConfirmDialog
+          title="Cancelar postulación"
+          message={`¿Seguro que querés despostularte de "${job.job_position}"?`}
+          confirmLabel="Despostularme"
+          cancelLabel="Volver"
+          danger
+          loading={unapplying}
+          onConfirm={handleConfirmUnapply}
+          onCancel={() => setShowUnapplyConfirm(false)}
         />
       )}
 
