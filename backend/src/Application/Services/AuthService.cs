@@ -7,7 +7,7 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class AuthService(IUserRepository userRepository, IJwtService jwtService, IPasswordHasherService passwordHasher) : IAuthService
+public class AuthService(IUserRepository userRepository, IJwtService jwtService, IPasswordHasherService passwordHasher, IEmailService emailService) : IAuthService
 {
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
@@ -71,7 +71,36 @@ public class AuthService(IUserRepository userRepository, IJwtService jwtService,
             Name = user.Name,
             LastName = user.LastName,
             Email = user.Email,
-            Role = user.Role
+            Role = user.Role,
         };
+    }
+
+    public async Task ForgotPasswordAsync(ForgotPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var user = await userRepository.GetByEmailAsync(request.Email, cancellationToken);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.GeneratePasswordResetToken();
+        await userRepository.UpdateAsync(user, cancellationToken);
+
+        await emailService.SendPasswordResetEmailAsync(user.Email, user.ResetToken!);
+    }
+
+    public async Task ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var user = await userRepository.GetByResetTokenAsync(request.Token, cancellationToken);
+        
+        if (user == null || !user.ValidateResetToken(request.Token))
+        {
+            throw new Exception("Invalid or expired reset token.");
+        }
+
+        var newPasswordHash = passwordHasher.Hash(request.NewPassword);
+        user.UpdatePassword(newPasswordHash);
+        
+        await userRepository.UpdateAsync(user, cancellationToken);
     }
 }
