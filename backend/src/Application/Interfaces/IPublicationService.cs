@@ -30,4 +30,7 @@ public interface IPublicationService
     Task<PublicationCountDto> GetCountAsync(CancellationToken cancellationToken);
 
     Task<PublicationCountDto> GetCountByCreatorAsync(Guid creatorId, CancellationToken cancellationToken);
+
+    Task AddApplicantAsync(Guid publicationId, CancellationToken cancellationToken);
+    Task DeleteApplicantAsync(Guid publicationId, CancellationToken cancellationToken);
 }

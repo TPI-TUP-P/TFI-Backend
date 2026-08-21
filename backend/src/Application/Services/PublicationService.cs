@@ -295,6 +295,43 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             visible
         );
     }
+    public async Task AddApplicantAsync(
+    Guid publicationId,
+    CancellationToken cancellationToken)
+    {
+        ValidateId(publicationId);
+
+        var publication = await _Publication.GetByIdAsync(
+            publicationId,
+            cancellationToken
+        ) ?? throw new NotFoundException("Publication");
+
+        publication.AddApplicants();
+
+        await _Publication.UpdateAsync(
+            publication,
+            cancellationToken
+        );
+    }
+
+    public async Task DeleteApplicantAsync(
+        Guid publicationId,
+        CancellationToken cancellationToken)
+    {
+        ValidateId(publicationId);
+
+        var publication = await _Publication.GetByIdAsync(
+            publicationId,
+            cancellationToken
+        ) ?? throw new NotFoundException("Publication");
+
+        publication.DeleteApplicants();
+
+        await _Publication.UpdateAsync(
+            publication,
+            cancellationToken
+        );
+    }
 
     private void ValidateId(Guid Id)
     {
