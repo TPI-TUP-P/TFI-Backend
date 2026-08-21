@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
+import { useState } from "react";
+import { userService } from "../../Services/user.service";
 
 const getInitials = (name = "", lastName = "") => {
   const first = name.trim().charAt(0) || "";
@@ -20,9 +22,23 @@ const roleLabels = {
 };
 
 const ProfileCard = () => {
+
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
-// console.log(user);
+  const [downloadingCv, setDownloadingCv] = useState(false);
+
+  const handleDownloadCv = async () => {
+    setDownloadingCv(true);
+    try {
+      const url = await userService.getMyCvUrl();
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      alert("No se pudo obtener el CV.");
+    } finally {
+      setDownloadingCv(false);
+    }
+  };
+
   if (!user) return null;
 
   const {
@@ -99,28 +115,26 @@ const ProfileCard = () => {
             Curriculum
           </p>
 
-        {cvFileName ? (
-            <a
-          
-            href={cvFilePath || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-1 block truncate text-sm font-medium text-brand-accent hover:underline"
-          >
-            {cvFileName}
-          </a>
-        ) : (
-          <p className="mt-1 text-sm text-brand-muted">
-            No hay CV cargado
-          </p>
-        )}
-      </div>
+          {cvFileName ? (
+            <button
+              onClick={handleDownloadCv}
+              disabled={downloadingCv}
+              className="mt-1 block truncate text-left text-sm font-medium text-brand-accent hover:underline disabled:opacity-60"
+            >
+              {downloadingCv ? "Generando enlace..." : cvFileName}
+            </button>
+          ) : (
+            <p className="mt-1 text-sm text-brand-muted">
+              No hay CV cargado
+            </p>
+          )}
+        </div>
       )}
       {/* CTA */}
-      <button 
-      className="mt-6 w-full rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-title"
-      onClick={() => navigate("/home")}
-    >
+      <button
+        className="mt-6 w-full rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-title"
+        onClick={() => navigate("/home")}
+      >
         Mas información
       </button>
     </aside>

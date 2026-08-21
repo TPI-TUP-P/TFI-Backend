@@ -10,29 +10,76 @@ const initialForm = {
 const CreateJobModal = ({ onClose, onCreated }) => {
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.job_position.trim() || !form.description.trim() || !form.salary) {
-      setError("Completá todos los campos.");
+    const jobPosition = form.job_position.trim();
+    const description = form.description.trim();
+    const salary = parseFloat(form.salary);
+
+    const newErrors = {};
+
+    if (!jobPosition) {
+      newErrors.job_position = "El puesto es obligatorio.";
+    } else if (jobPosition.length < 5) {
+      newErrors.job_position =
+        "El puesto debe tener al menos 5 caracteres.";
+    } else if (jobPosition.length >= 100) {
+      newErrors.job_position =
+        "El puesto debe tener menos de 100 caracteres.";
+    }
+
+    if (!description) {
+      newErrors.description = "La descripción es obligatoria.";
+    } else if (description.length < 5) {
+      newErrors.description =
+        "La descripción debe tener al menos 5 caracteres.";
+    } else if (description.length >= 1000) {
+      newErrors.description =
+        "La descripción debe tener menos de 1000 caracteres.";
+    }
+
+    if (!form.salary) {
+      newErrors.salary = "El salario es obligatorio.";
+    } else if (isNaN(salary)) {
+      newErrors.salary = "Ingresá un salario válido.";
+    } else if (salary < 1) {
+      newErrors.salary = "El salario mínimo es $1.";
+    } else if (salary > 1_000_000_000) {
+      newErrors.salary =
+        "El salario máximo es $1.000.000.000.";
+    }
+
+    setErrors(newErrors);
+
+    // Si hay errores, no hacemos la petición
+    if (Object.keys(newErrors).length > 0) {
       return;
     }
 
     setLoading(true);
-    setError(null);
 
     try {
       const payload = {
-        job_position: form.job_position,
-        description: form.description,
-        salary: parseFloat(form.salary),
+        job_position: jobPosition,
+        description: description,
+        salary: salary,
         applicants: 0,
       };
 
@@ -41,11 +88,7 @@ const CreateJobModal = ({ onClose, onCreated }) => {
       onCreated?.(response);
       onClose();
     } catch (err) {
-      const message =
-        err?.response?.data?.detail ||
-        err?.response?.data?.title ||
-        "No se pudo crear la publicación. Intentá de nuevo.";
-      setError(message);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -66,6 +109,7 @@ const CreateJobModal = ({ onClose, onCreated }) => {
           <h2 className="text-lg font-bold text-brand-title">
             Nueva publicación
           </h2>
+
           <button
             onClick={onClose}
             className="text-brand-muted transition hover:text-brand-title"
@@ -75,57 +119,94 @@ const CreateJobModal = ({ onClose, onCreated }) => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
+        <form onSubmit={handleSubmit} noValidate className="mt-4 flex flex-col gap-4">
+
+
+          {/* Puesto */}
           <div>
             <label className="mb-1 block text-sm font-medium text-brand-title">
               Puesto
             </label>
+
             <input
               type="text"
               name="job_position"
               value={form.job_position}
               onChange={handleChange}
+              minLength={5}
+              maxLength={99}
               placeholder="Ej: Desarrollador Frontend Jr."
-              className="w-full rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-sm text-brand-title outline-none focus:border-brand-accent"
+              className={`w-full rounded-lg border bg-brand-bg px-3 py-2 text-sm text-brand-title outline-none focus:border-brand-accent ${errors.job_position
+                  ? "border-red-500"
+                  : "border-brand-border"
+                }`}
             />
+
+            {errors.job_position && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.job_position}
+              </p>
+            )}
           </div>
 
+          {/* Descripción */}
           <div>
             <label className="mb-1 block text-sm font-medium text-brand-title">
               Descripción
             </label>
+
             <textarea
               name="description"
               value={form.description}
               onChange={handleChange}
+              minLength={5}
+              maxLength={999}
               rows={4}
               placeholder="Detalle del puesto, requisitos, etc."
-              className="w-full resize-none rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-sm text-brand-title outline-none focus:border-brand-accent"
+              className={`w-full resize-none rounded-lg border bg-brand-bg px-3 py-2 text-sm text-brand-title outline-none focus:border-brand-accent ${errors.description
+                  ? "border-red-500"
+                  : "border-brand-border"
+                }`}
             />
+
+            {errors.description && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.description}
+              </p>
+            )}
           </div>
 
+          {/* Salario */}
           <div>
             <label className="mb-1 block text-sm font-medium text-brand-title">
               Salario estimado
             </label>
+
             <input
               type="number"
               name="salary"
               value={form.salary}
               onChange={handleChange}
-              placeholder="Ej: 900000"
-              min="0"
+              min="1"
+              max="1000000000"
               step="0.01"
-              className="w-full rounded-lg border border-brand-border bg-brand-bg px-3 py-2 text-sm text-brand-title outline-none focus:border-brand-accent"
+              placeholder="Ej: 900000"
+              className={`w-full rounded-lg border bg-brand-bg px-3 py-2 text-sm text-brand-title outline-none focus:border-brand-accent ${errors.salary
+                  ? "border-red-500"
+                  : "border-brand-border"
+                }`}
             />
+
+            {errors.salary && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.salary}
+              </p>
+            )}
           </div>
 
-          {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-              {error}
-            </p>
-          )}
+          
 
+          {/* Botón */}
           <button
             type="submit"
             disabled={loading}
@@ -133,8 +214,8 @@ const CreateJobModal = ({ onClose, onCreated }) => {
           >
             {loading ? "Publicando..." : "Publicar oferta"}
           </button>
-        </form>
 
+        </form>
       </div>
     </div>
   );
