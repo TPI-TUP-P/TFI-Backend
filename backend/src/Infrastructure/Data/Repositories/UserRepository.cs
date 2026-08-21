@@ -9,7 +9,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await context.Users.Where(u=> u.IsActive == true).FirstOrDefaultAsync(u=> u.Id == id, cancellationToken);
+        var user = await context.Users.Where(u => u.IsActive == true).FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
         return user;
     }
     public async Task<(IReadOnlyList<User> Users, int TotalCount)> GetAllAsync(
@@ -64,21 +64,24 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     }
 
+    public async Task<User?> GetByEmailWithDeletedUsersAsync(string email, CancellationToken cancellationToken)
+    {
+        return await context.Users.FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
+    }
     public async Task<User?> GetByResetTokenAsync(string token, CancellationToken cancellationToken)
     {
-        return await context.Users.FirstOrDefaultAsync(u => u.IsActive && u.ResetToken == token, cancellationToken);
+        return await context.Users
+            .FirstOrDefaultAsync(u => u.ResetToken == token, cancellationToken);
     }
-
     public Task DeleteAsync(User user, CancellationToken cancellationToken)
     {
         user.Delete();
         return Task.CompletedTask;
 
     }
-
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var user = await context.Users.Where(u=> u.IsActive == true).FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
+        var user = await context.Users.Where(u => u.IsActive == true).FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
         return user;
     }
 

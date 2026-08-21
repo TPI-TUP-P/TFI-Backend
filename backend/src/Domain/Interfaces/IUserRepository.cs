@@ -12,5 +12,6 @@ public interface IUserRepository : IGenericRepository<User>
            bool includeDeleted,
            CancellationToken cancellationToken); 
     Task<User?> GetByPhoneAsync(string phone, CancellationToken cancellationToken);
+    Task<User?> GetByEmailWithDeletedUsersAsync(string email, CancellationToken cancellationToken);
     Task<User?> GetByResetTokenAsync(string token, CancellationToken cancellationToken);
 }
