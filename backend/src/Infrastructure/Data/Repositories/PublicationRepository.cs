@@ -112,9 +112,17 @@ public class PublicationRepository(AppDbContext context) : IPublicationRepositor
     int pageSize,
     CancellationToken cancellationToken)
     {
+        var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+
         return await context.Publications
             .AsNoTracking()
-            .Where(p => p.Creator == creatorId)
+            .Where(p =>
+                p.Creator == creatorId &&
+                (
+                    p.State ||
+                    p.Created_Date >= oneMonthAgo
+                )
+            )
             .OrderByDescending(p => p.Created_Date)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
