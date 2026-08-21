@@ -104,26 +104,46 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             publication.Created_Date
         );
     }
-    public async Task<UpdateResponse> UpdateAsync(Guid IdUser, UpdateRequest publicationDto, CancellationToken cancellationToken)
+    public async Task<UpdateResponse> UpdateAsync(
+    Guid IdUser,
+    UpdateRequest publicationDto,
+    CancellationToken cancellationToken)
     {
-
         ValidateId(publicationDto.Id);
         ValidateId(IdUser);
 
-        var existingPublication = await _Publication.GetByIdAsync(publicationDto.Id, cancellationToken);
-        //why fay are scared of needles
+        var existingPublication =
+            await _Publication.GetByIdAsync(publicationDto.Id, cancellationToken);
+
         if (IdUser != existingPublication!.Creator)
         {
             throw new UnauthorizedException();
         }
+
         if (!string.IsNullOrWhiteSpace(publicationDto.Job_position))
         {
+            if (publicationDto.Job_position.Trim().Length < 4)
+            {
+                throw new ArgumentException(
+                    "El título debe tener al menos 4 caracteres.",
+                    nameof(publicationDto.Job_position));
+            }
+
             existingPublication.Job_position = publicationDto.Job_position;
         }
+
         if (!string.IsNullOrWhiteSpace(publicationDto.Description))
         {
+            if (publicationDto.Description.Trim().Length < 4)
+            {
+                throw new ArgumentException(
+                    "La descripción debe tener al menos 4 caracteres.",
+                    nameof(publicationDto.Description));
+            }
+
             existingPublication.Description = publicationDto.Description;
         }
+
         if (publicationDto.Salary > 0)
         {
             existingPublication.Salary = publicationDto.Salary;
@@ -132,7 +152,9 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
         {
             throw new NegativeNumberException("Salary");
         }
+
         await _Publication.UpdateAsync(existingPublication, cancellationToken);
+
         return new UpdateResponse(
             existingPublication.Id,
             existingPublication.Creator,
@@ -141,10 +163,8 @@ public class PublicationService(IPublicationRepository _Publication) : IPublicat
             existingPublication.Salary,
             existingPublication.Applicants,
             existingPublication.Created_Date
-
         );
     }
-
     public async Task<int> CountMyPublicationsAsync(Guid creatorId, CancellationToken cancellationToken)
     {
         if (creatorId == Guid.Empty)

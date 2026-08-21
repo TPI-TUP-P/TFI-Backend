@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-
+import { useNavigate } from 'react-router-dom'
 import api from '../../../../Services/api'
 import { updateUserSchema } from '../../../../Components/schemas/userschema'
-
 import CandidateStats from './CandidateStats'
 import CandidateCV from './CandidateCV'
 import AccountInfo from './AccountInfo'
@@ -10,6 +9,8 @@ import EditUserModal from './EditUserModal'
 import { useAuthStore } from '../../../stores/useAuthStore'
 
 export default function CandidateView() {
+  const navigate = useNavigate()
+
   const { token, user, setAuth } = useAuthStore()
 
   const [postulations, setPostulations] = useState([])
@@ -26,6 +27,11 @@ export default function CandidateView() {
 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+
+  // Eliminar cuenta
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
 
   useEffect(() => {
     const loadPostulations = async () => {
@@ -79,7 +85,10 @@ export default function CandidateView() {
       setError('')
 
       const updateRequest = {
-        Name: editingField === 'name' ? editingValue : user.name,
+        Name:
+          editingField === 'name'
+            ? editingValue
+            : user.name,
 
         LastName:
           editingField === 'lastName'
@@ -119,6 +128,28 @@ export default function CandidateView() {
     }
   }
 
+  const handleDeleteAccount = async () => {
+    try {
+      setDeleting(true)
+      setDeleteError('')
+
+      await api.delete('/User/me')
+
+      localStorage.removeItem('token')
+
+      navigate('/login', { replace: true })
+    } catch (error) {
+      console.error(error)
+
+      setDeleteError(
+        error?.response?.data?.message ||
+        'No se pudo eliminar la cuenta. Intentá nuevamente.'
+      )
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   if (!user) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -135,7 +166,6 @@ export default function CandidateView() {
 
         {/* Header */}
         <div className="rounded-2xl bg-brand-accent p-6 text-white shadow-sm">
-
           <p className="text-sm text-white/70">
             Panel principal
           </p>
@@ -149,7 +179,6 @@ export default function CandidateView() {
             administrar tu currículum y revisar el estado de tus
             postulaciones.
           </p>
-
         </div>
 
         {/* Estadísticas */}
@@ -175,9 +204,36 @@ export default function CandidateView() {
           onEdit={openEditModal}
         />
 
+        {/* Cuenta */}
+        <section className="rounded-xl border border-brand-border bg-white p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-semibold text-brand-text">
+                Cuenta
+              </h2>
+
+              <p className="mt-1 text-sm text-brand-muted">
+                Esta acción eliminará tu cuenta y tus datos asociados.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setDeleteError('')
+                setShowDeleteModal(true)
+              }}
+              className="rounded-lg border border-red-200 px-4 py-2
+                         text-sm font-medium text-red-600
+                         transition hover:bg-red-50"
+            >
+              Eliminar mi cuenta
+            </button>
+          </div>
+        </section>
       </div>
 
-      {/* Modal */}
+      {/* Modal de edición */}
       <EditUserModal
         open={openModal}
         label={editingLabel}
@@ -188,6 +244,59 @@ export default function CandidateView() {
         onSave={handleSave}
         onClose={closeEditModal}
       />
+
+      {/* Modal */}
+      {showDeleteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center
+                     bg-black/50 px-4"
+        >
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-brand-text">
+              ¿Eliminar tu cuenta?
+            </h2>
+
+            <p className="mt-3 text-sm leading-6 text-brand-muted">
+              Esta acción es permanente. Se eliminará tu cuenta y no podrás
+              recuperar tus datos posteriormente.
+            </p>
+
+            {deleteError && (
+              <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3">
+                <p className="text-sm text-red-700">
+                  {deleteError}
+                </p>
+              </div>
+            )}
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => setShowDeleteModal(false)}
+                className="rounded-lg border border-brand-border px-4 py-2
+                           text-sm font-medium text-brand-text
+                           transition hover:bg-brand-border/30
+                           disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleDeleteAccount}
+                className="rounded-lg bg-red-600 px-4 py-2
+                           text-sm font-medium text-white
+                           transition hover:bg-red-700
+                           disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {deleting ? 'Eliminando...' : 'Sí, eliminar cuenta'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
