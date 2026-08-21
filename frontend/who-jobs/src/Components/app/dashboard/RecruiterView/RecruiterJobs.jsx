@@ -132,7 +132,7 @@ function EmptyJobs() {
       </p>
 
       <Link
-        to="/jobs/create"
+        to="/jobs"
         className="mt-5 inline-flex items-center rounded-lg
                    bg-brand-accent px-5 py-2.5 text-sm font-medium text-white
                    transition-colors duration-200 hover:opacity-90
