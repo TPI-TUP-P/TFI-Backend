@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import api from '../../../../Services/api'
+import { useAuthStore } from '../../../stores/useAuthStore'
 
 export default function CandidateCV({
   cvFile,
@@ -9,6 +10,7 @@ export default function CandidateCV({
   error,
   setError,
 }) {
+  const { token, user, setAuth } = useAuthStore()
   const [cvSuccess, setCvSuccess] = useState('')
 
   const handleUploadCv = async () => {
@@ -28,6 +30,11 @@ export default function CandidateCV({
 
       const result = await api.post('/User/cv', formData)
 
+      setAuth(token, {
+        ...user,
+        cvFileName: result.cvFileName ?? result.CvFileName,
+        cvFilePath: result.cvFilePath ?? result.CvFilePath,
+      })
 
       setCvFile(null)
 

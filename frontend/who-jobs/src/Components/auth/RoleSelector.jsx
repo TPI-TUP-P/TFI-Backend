@@ -27,14 +27,13 @@ const ROLES = [
   },
 ];
 
-const RoleSelector = ({ role , setData }) => {
-
-    const handleSelect = (id) => {
-        console.log(id)
-        if (id === role) return;
-        setData({
-            selectedRole: id,
-        });
+const RoleSelector = ({ role, setData }) => {
+  const handleSelect = (id) => {
+    console.log(id);
+    if (id === role) return;
+    setData({
+      selectedRole: id,
+    });
   };
 
   return (
@@ -60,7 +59,6 @@ const RoleSelector = ({ role , setData }) => {
               boxShadow: isSelected ? `0 0 0 3px ${COLORS.accent}1A` : "none",
             }}
           >
-            {/* check indicator */}
             <span
               className="absolute right-3 top-3 flex h-4 w-4 items-center justify-center rounded-full border transition-colors"
               style={{
@@ -77,7 +75,6 @@ const RoleSelector = ({ role , setData }) => {
               )}
             </span>
 
-            {/* icon */}
             <span
               className="mb-3 flex h-9 w-9 items-center justify-center rounded-full transition-colors"
               style={{
