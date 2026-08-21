@@ -4,21 +4,17 @@ import { useAuthStore } from "../Components/stores/useAuthStore";
 
 export const usePostulatedJobs = () => {
   const user = useAuthStore((state) => state.user);
-  const [appliedJobIds, setAppliedJobIds] = useState(new Set());
-  const [loaded, setLoaded] = useState(false);
+  // Map<jobOfferId, postulationId>
+  const [appliedJobsMap, setAppliedJobsMap] = useState(new Map());
 
   const refresh = useCallback(async () => {
-    if (!user) {
-      setLoaded(true);
-      return;
-    }
+    if (!user) return;
     try {
       const postulations = await postulationService.getByUser(user.id);
-      setAppliedJobIds(new Set(postulations.map((p) => p.jobOfferId)));
+      const map = new Map(postulations.map((p) => [p.jobOfferId, p.id]));
+      setAppliedJobsMap(map);
     } catch (error) {
       console.error("Error fetching user postulations:", error);
-    } finally {
-      setLoaded(true);
     }
   }, [user]);
 
@@ -26,9 +22,17 @@ export const usePostulatedJobs = () => {
     refresh();
   }, [refresh]);
 
-  const markApplied = (jobId) => {
-    setAppliedJobIds((prev) => new Set(prev).add(jobId));
+  const markApplied = (jobId, postulationId) => {
+    setAppliedJobsMap((prev) => new Map(prev).set(jobId, postulationId));
   };
 
-  return { appliedJobIds, loaded, refresh, markApplied };
+  const removeApplication = (jobId) => {
+    setAppliedJobsMap((prev) => {
+      const next = new Map(prev);
+      next.delete(jobId);
+      return next;
+    });
+  };
+
+  return { appliedJobsMap, refresh, markApplied, removeApplication };
 };

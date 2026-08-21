@@ -61,7 +61,7 @@ const ApplyModal = ({ job, onClose, onSuccess }) => {
         type: "success",
         message: `¡Postulación enviada con éxito! Estado: ${stateLabels[response.state] ?? "Pendiente"}.`,
       });
-      onSuccess?.();
+      onSuccess?.(response.id);
     } catch (error) {
       const message =
         error?.response?.data?.detail ||
