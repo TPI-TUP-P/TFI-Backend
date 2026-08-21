@@ -22,7 +22,7 @@ const roleLabels = {
 const ProfileCard = () => {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
-
+// console.log(user);
   if (!user) return null;
 
   const {
