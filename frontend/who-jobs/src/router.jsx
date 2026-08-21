@@ -12,6 +12,7 @@ import JobDetailPage from "./Pages/Jobs/JobDetailPage";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import ResetPasswordPage from "./Pages/ResetPasswordPage";
 import { useAuthCheck } from "./Hooks/useAuthCheck";
+import ReactivateAccountPage from "./Pages/ReactiveAccountPage";
 // useAuthCheck();
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
       { path: "/login", element: <LoginPage /> },
       { path: "/forgot-password", element: <ForgotPasswordPage /> },
       { path: "/reset-password", element: <ResetPasswordPage /> },
+      { path: "/reactivate", element: <ReactivateAccountPage /> }, 
     ],
   },
 

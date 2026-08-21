@@ -54,6 +54,11 @@ public class User
     {
         IsActive = false;
     }
+
+    public void Active()
+    {
+        IsActive =true;
+    }
     
     public void GeneratePasswordResetToken()
     {
