@@ -23,4 +23,25 @@ using Microsoft.AspNetCore.Mvc;
         var result = await authService.LoginAsync(request, cancellationToken);
         return Ok(result);
     }
+    
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request, CancellationToken cancellationToken)
+    {
+        await authService.ForgotPasswordAsync(request, cancellationToken);
+        return Ok(new { message = "Si el correo está registrado, se enviara un enlace de recuperacion." });
     }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await authService.ResetPasswordAsync(request, cancellationToken);
+            return Ok(new { message = "Contraseña restablecida exitosamente." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+}

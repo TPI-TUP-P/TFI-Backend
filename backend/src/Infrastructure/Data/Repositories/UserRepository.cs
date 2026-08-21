@@ -56,10 +56,17 @@ public class UserRepository(AppDbContext context) : IUserRepository
         userToUpdate.LastName = user.LastName;
         userToUpdate.Email = user.Email;
         userToUpdate.Password = user.Password;
+        userToUpdate.ResetToken = user.ResetToken;
+        userToUpdate.ResetTokenExpires = user.ResetTokenExpires;
 
         await context.SaveChangesAsync(cancellationToken);
         return user;
 
+    }
+
+    public async Task<User?> GetByResetTokenAsync(string token, CancellationToken cancellationToken)
+    {
+        return await context.Users.FirstOrDefaultAsync(u => u.IsActive && u.ResetToken == token, cancellationToken);
     }
 
     public Task DeleteAsync(User user, CancellationToken cancellationToken)

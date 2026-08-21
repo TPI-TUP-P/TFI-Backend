@@ -27,6 +27,9 @@ public class User
     public DateTime CreatedDate { get; set; }
     public string? CVFileName { get; set; }
     public string? CVFilePath { get; set; }
+    
+    public string? ResetToken { get; set; }
+    public DateTime? ResetTokenExpires { get; set; }
 
     public User(string name, string lastName, string phone, string email, string password, UserRole role)
     {
@@ -50,6 +53,24 @@ public class User
     public void Delete()
     {
         IsActive = false;
+    }
+    
+    public void GeneratePasswordResetToken()
+    {
+        ResetToken = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
+        ResetTokenExpires = DateTime.UtcNow.AddHours(24);
+    }
+    
+    public bool ValidateResetToken(string token)
+    {
+        return ResetToken == token && ResetTokenExpires.HasValue && ResetTokenExpires.Value > DateTime.UtcNow;
+    }
+    
+    public void UpdatePassword(string newPasswordHash)
+    {
+        Password = newPasswordHash;
+        ResetToken = null;
+        ResetTokenExpires = null;
     }
 
     public User() { }

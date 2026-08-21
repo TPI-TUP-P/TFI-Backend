@@ -9,6 +9,8 @@ import ProtectedRoute from "./Components/guards/ProtectedRoute";
 import PublicRoute from "./Components/guards/PublicRoute";
 import AppLayout from "./layouts/AppLayout";
 import JobDetailPage from "./Pages/Jobs/JobDetailPage";
+import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
+import ResetPasswordPage from "./Pages/ResetPasswordPage";
 import { useAuthCheck } from "./Hooks/useAuthCheck";
 // useAuthCheck();
 export const router = createBrowserRouter([
@@ -19,6 +21,8 @@ export const router = createBrowserRouter([
       { path: "/", element: <LandingPage /> },
       { path: "/register", element: <RegisterPage /> },
       { path: "/login", element: <LoginPage /> },
+      { path: "/forgot-password", element: <ForgotPasswordPage /> },
+      { path: "/reset-password", element: <ResetPasswordPage /> },
     ],
   },
 

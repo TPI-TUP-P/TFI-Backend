@@ -37,3 +37,24 @@ export const loginSchema = z.object({
   email: z.string().min(1, { message: "El email es obligatorio" }),
   password: z.string().min(1, { message: "La contraseña es obligatoria" }),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: "El email es obligatorio" })
+    .email({ message: "Formato de email invalido" }),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(6, { message: "La contraseña debe tener al menos 6 caracteres" }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Debes confirmar tu contraseña" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirmPassword"],
+  });

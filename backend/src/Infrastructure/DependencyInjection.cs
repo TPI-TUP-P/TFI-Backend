@@ -37,10 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IPostulationService, PostulationService>();
         services.AddScoped<IPostulationRepository, PostulationRepository>();
         services.AddScoped<IStorageService, SupabaseStorageService>();
-        
-
-
-
+        services.AddTransient<IEmailService, EmailService>();
 
         return services;
     }

@@ -11,6 +11,24 @@ export const userService = {
     }
   },
 
+  delete: async (id) => {
+    try {
+      const response = await api.delete(`User/${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  update: async (data) => {
+    try {
+      const response = await api.patch(`User`, data);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   getAll: async (role = "", includeDeleted = false) => {
     return await api.get("user", {
       params: {
