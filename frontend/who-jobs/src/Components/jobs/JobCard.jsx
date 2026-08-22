@@ -41,8 +41,10 @@ function JobCard({ job, onDelete, appliedJobsMap, onApplied, onUnapplied }) {
     user && ((user.role === 1 && isCreator) || ADMIN_ROLES.includes(user.role));
 
   const canApply = user && APPLY_ROLES.includes(user.role) && !isCreator;
-  const postulationId = appliedJobsMap?.get(job.id);
-  const alreadyApplied = Boolean(postulationId);
+  const applicationInfo = appliedJobsMap?.get(job.id);
+const postulationId = applicationInfo?.postulationId;
+const postulationState = applicationInfo?.state;
+const alreadyApplied = Boolean(postulationId);
 
   const handleCardClick = () => {
     navigate(`/jobs/${job.id}`);
@@ -142,27 +144,37 @@ function JobCard({ job, onDelete, appliedJobsMap, onApplied, onUnapplied }) {
 
           <div className="flex shrink-0 items-center gap-2">
             {canApply && (
-              alreadyApplied ? (
-                <div className="flex items-center gap-2">
-                  <span className="rounded-lg bg-brand-bg px-3 py-2 text-sm font-semibold text-brand-muted">
-                    ✓ Postulado
-                  </span>
-                  <button
-                    onClick={handleUnapplyClick}
-                    className="rounded-lg border border-brand-border px-3 py-2 text-xs font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
-                  >
-                    Despostularme
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={handleApplyClick}
-                  className="shrink-0 rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-title"
-                >
-                  Postularme
-                </button>
-              )
-            )}
+  alreadyApplied ? (
+    postulationState === 1 ? (
+      <span className="rounded-lg bg-green-100 px-3 py-2 text-sm font-semibold text-green-700">
+        ✓ Aceptada
+      </span>
+    ) : postulationState === 2 ? (
+      <span className="rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-700">
+        ✕ Rechazada
+      </span>
+    ) : (
+      <div className="flex items-center gap-2">
+        <span className="rounded-lg bg-brand-bg px-3 py-2 text-sm font-semibold text-brand-muted">
+          ✓ Postulado
+        </span>
+        <button
+          onClick={handleUnapplyClick}
+          className="rounded-lg border border-brand-border px-3 py-2 text-xs font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
+        >
+          Despostularme
+        </button>
+      </div>
+    )
+  ) : (
+    <button
+      onClick={handleApplyClick}
+      className="shrink-0 rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-title"
+    >
+      Postularme
+    </button>
+  )
+)}
 
             {canManage && (
               <button

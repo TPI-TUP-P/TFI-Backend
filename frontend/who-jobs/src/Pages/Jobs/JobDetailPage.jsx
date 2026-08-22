@@ -48,6 +48,7 @@ const JobDetailPage = () => {
   const [postulationsTotalPages, setPostulationsTotalPages] = useState(1);
   const [postulationsLoading, setPostulationsLoading] = useState(false);
 
+  const [myPostulationState, setMyPostulationState] = useState(null);
   const [myPostulationId, setMyPostulationId] = useState(null);
   const [showUnapplyConfirm, setShowUnapplyConfirm] = useState(false);
   const [unapplying, setUnapplying] = useState(false);
@@ -129,6 +130,7 @@ const JobDetailPage = () => {
           const mine = myPostulations.find((p) => p.jobOfferId === id);
           setAlreadyApplied(Boolean(mine));
           setMyPostulationId(mine?.id ?? null);
+          setMyPostulationState(mine?.state ?? null);
         }
       } catch (err) {
         setError("No se pudo cargar la publicación.");
@@ -366,50 +368,58 @@ const JobDetailPage = () => {
           ) : (
             <>
               <div className="border-b border-brand-border bg-brand-bg/60 px-8 py-7">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1">
                     <span className="mb-2 inline-block rounded-full bg-brand-accent/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-brand-accent">
                       Oferta de trabajo
                     </span>
-                    <h1 className="text-3xl font-bold leading-tight text-brand-title">
+                    <h1 className="break-words text-3xl font-bold leading-tight text-brand-title">
                       {job.job_position}
                     </h1>
                   </div>
 
-                  <div className="flex shrink-0 flex-col items-end gap-2">
-                    <div className="flex gap-2">
-                      {canEdit && (
-                        <button
-                          onClick={() => setIsEditing(true)}
-                          className="rounded-lg border border-brand-border bg-brand-card px-4 py-2 text-sm font-semibold text-brand-title transition hover:border-brand-accent hover:text-brand-accent"
-                        >
-                          Editar
-                        </button>
-                      )}
+                  <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    {canEdit && (
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="rounded-lg border border-brand-border bg-brand-card px-4 py-2 text-sm font-semibold text-brand-title transition hover:border-brand-accent hover:text-brand-accent"
+                      >
+                        Editar
+                      </button>
+                    )}
 
-                      {isOwner && (
-                        <button
-                          onClick={() => setShowDeleteConfirm(true)}
-                          className="rounded-lg border border-brand-border bg-brand-card px-4 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
-                        >
-                          Eliminar
-                        </button>
-                      )}
-                    </div>
+                    {isOwner && (
+                      <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="rounded-lg border border-brand-border bg-brand-card px-4 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
+                      >
+                        Eliminar
+                      </button>
+                    )}
 
                     {canApply && (
                       alreadyApplied ? (
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-lg bg-brand-bg px-4 py-2 text-sm font-semibold text-brand-muted">
-                            ✓ Ya te postulaste
+                        myPostulationState === 1 ? (
+                          <span className="rounded-lg bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
+                            ✓ Aceptada
                           </span>
-                          <button
-                            onClick={() => setShowUnapplyConfirm(true)}
-                            className="rounded-lg border border-brand-border px-4 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
-                          >
-                            Despostularme
-                          </button>
-                        </div>
+                        ) : myPostulationState === 2 ? (
+                          <span className="rounded-lg bg-red-100 px-4 py-2 text-sm font-semibold text-red-700">
+                            ✕ Rechazada
+                          </span>
+                        ) : (
+                          <>
+                            <span className="rounded-lg bg-brand-bg px-4 py-2 text-sm font-semibold text-brand-muted">
+                              ✓ Ya te postulaste
+                            </span>
+                            <button
+                              onClick={() => setShowUnapplyConfirm(true)}
+                              className="rounded-lg border border-brand-border px-4 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
+                            >
+                              Despostularme
+                            </button>
+                          </>
+                        )
                       ) : (
                         <button
                           onClick={() => setShowApplyModal(true)}
