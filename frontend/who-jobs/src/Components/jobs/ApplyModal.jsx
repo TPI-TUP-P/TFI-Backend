@@ -86,13 +86,13 @@ const ApplyModal = ({ job, onClose, onSuccess }) => {
     >
       <div className="w-full max-w-md rounded-xl bg-brand-card p-6 shadow-lg">
 
-        <div className="flex items-start justify-between">
-          <h2 className="text-lg font-bold text-brand-title">
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="min-w-0 break-words text-lg font-bold text-brand-title">
             Postularme a {job.job_position}
           </h2>
           <button
             onClick={onClose}
-            className="text-brand-muted transition hover:text-brand-title"
+            className="shrink-0 text-brand-muted transition hover:text-brand-title"
             aria-label="Cerrar"
           >
             ✕

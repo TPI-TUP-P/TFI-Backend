@@ -21,7 +21,7 @@ const ConfirmDialog = ({
     >
       <div className="w-full max-w-sm rounded-2xl bg-brand-card p-6 shadow-lg">
         <h3 className="text-lg font-bold text-brand-title">{title}</h3>
-        <p className="mt-2 text-sm text-brand-muted">{message}</p>
+        <p className="mt-2 break-words text-sm text-brand-muted">{message}</p>
 
         <div className="mt-6 flex gap-2">
           <button
