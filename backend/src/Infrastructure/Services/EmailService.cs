@@ -79,7 +79,7 @@ public class EmailService(IConfiguration configuration, ILogger<EmailService> lo
             await client.ConnectAsync(host, port, socketOptions);
 
             await client.AuthenticateAsync(username, password);
-
+            
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
 

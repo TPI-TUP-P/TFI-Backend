@@ -9,7 +9,7 @@ namespace Web.Controllers
 
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] 
     public class PostulationController : ControllerBase
     {
         private readonly IPostulationService _postulationService;

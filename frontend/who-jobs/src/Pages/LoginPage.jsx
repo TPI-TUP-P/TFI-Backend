@@ -9,6 +9,7 @@ import { authService } from "../Services/auth.service";
 import { ArrowRight, LogIn, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../Components/stores/useAuthStore";
+import toast, { Toaster } from "react-hot-toast";
 const LoginPage = () => {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -17,6 +18,7 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     setValue,
+    resetField
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
@@ -35,7 +37,8 @@ const LoginPage = () => {
       setAuth(response.token, user);
       navigate("/home");
     } catch (error) {
-      console.log("error", error.message);
+  
+      resetField("password")
     }
   };
 
@@ -138,6 +141,7 @@ const LoginPage = () => {
       </div>
     </div>
   </div>
+  {/* <Toaster/> */}
 </div>
   );
 };
