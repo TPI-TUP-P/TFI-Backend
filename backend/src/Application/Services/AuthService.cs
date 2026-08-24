@@ -31,7 +31,7 @@ public class AuthService(IUserRepository userRepository, IJwtService jwtService,
         var existingPhone = await userRepository.GetByPhoneAsync(request.Phone, cancellationToken);
         if (existingPhone != null)
         {
-            throw new EmailAlredyExistsException();
+            throw new PhoneAlredyExistsException();
         }
 
         var passwordHash = passwordHasher.Hash(request.Password);

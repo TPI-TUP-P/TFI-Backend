@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useLoaderStore } from '../Components/stores/useLoaderStore';
 import { useAuthStore } from '../Components/stores/useAuthStore';
+import toast from 'react-hot-toast';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://localhost:7258/api',
@@ -50,7 +51,8 @@ api.interceptors.response.use(
       error.response?.data?.title ||
       'Ocurrió un error inesperado';
 
-    return Promise.reject(new Error(errorMessage));
+       toast.error(errorMessage)
+      return Promise.reject(new Error(errorMessage));
   }
 );
 
