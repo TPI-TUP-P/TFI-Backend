@@ -4,7 +4,7 @@ import { useAuthStore } from '../Components/stores/useAuthStore';
 import toast from 'react-hot-toast';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://localhost:7258/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://localhost:7256/api',
   timeout: 10000,
 });
 
@@ -39,18 +39,17 @@ api.interceptors.response.use(
     if (!error.config?.skipGlobalLoader) {
       useLoaderStore.getState().hideLoader();
     }
-
-    if (error.response?.status === 401) {
+const isLoginRequest = error.config?.url?.includes('/auth/login');
+    if (error.response?.status === 401 &&  !isLoginRequest) {
       localStorage.removeItem('token');
       useAuthStore.getState().logout();
       window.location.href = '/login';
     }
 
     const errorMessage =
-      error.response?.data?.message ||
+      error.response?.data?.detail ||
       error.response?.data?.title ||
       'Ocurrió un error inesperado';
-
        toast.error(errorMessage)
       return Promise.reject(new Error(errorMessage));
   }
