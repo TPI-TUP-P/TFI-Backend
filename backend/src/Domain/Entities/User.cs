@@ -124,7 +124,7 @@ public class User
             throw new FieldEmptyException(nameof(name));
 
         if (name.Length < 3 || name.Length > 100)
-            throw new InvalidLegthException(3, 100, name);
+            throw new InvalidLengthException(3, 100, name);
 
         if (!Regex.IsMatch(name, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
             throw new InvalidFormatException(name);
@@ -136,7 +136,7 @@ public class User
             throw new FieldEmptyException(nameof(lastName));
 
         if (lastName.Length < 3 || lastName.Length > 100)
-            throw new InvalidLegthException(3, 100, lastName);
+            throw new InvalidLengthException(3, 100, lastName);
 
         if (!Regex.IsMatch(lastName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
             throw new InvalidFormatException(lastName);
@@ -169,7 +169,7 @@ public class User
             throw new FieldEmptyException(nameof(password));
 
         if (password.Length < 8 || password.Length > 100)
-            throw new InvalidLegthException(8, 100, password);
+            throw new InvalidLengthException(8, 100, password);
 
         // Ejemplo de regla de dominio:
         if (!Regex.IsMatch(password, @"[A-Z]") ||

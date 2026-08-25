@@ -37,7 +37,7 @@ const LoginPage = () => {
       setAuth(response.token, user);
       navigate("/home");
     } catch (error) {
-  
+  console.log(error, "hola")
       resetField("password")
     }
   };

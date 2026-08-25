@@ -11,6 +11,7 @@ using Scalar.AspNetCore;
 using Infrastructure.Data.Seed;
 using Microsoft.AspNetCore.Identity;
 using Domain.Entities;
+using TuProyecto.WebAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -77,6 +78,7 @@ app.UseStaticFiles();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+app.UseDeveloperExceptionPage();
     app.MapScalarApiReference(options =>
     {
         options.Title = "Mi API en .NET 10";
@@ -101,7 +103,7 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.InitializeAsync(db, passwordHasher);
 }
 
-app.UseDeveloperExceptionPage();
+app.UseExceptionHandler("/error");
 
 
 app.UseHttpsRedirection();
