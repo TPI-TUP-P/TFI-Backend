@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useLoaderStore } from '../Components/stores/useLoaderStore';
 import { useAuthStore } from '../Components/stores/useAuthStore';
 import toast from 'react-hot-toast';
+import { showErrorToast } from '../Components/AppToaster';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://localhost:7256/api',
@@ -50,7 +51,7 @@ const isLoginRequest = error.config?.url?.includes('/auth/login');
       error.response?.data?.detail ||
       error.response?.data?.title ||
       'Ocurrió un error inesperado';
-       toast.error(errorMessage)
+       showErrorToast(errorMessage)
       return Promise.reject(new Error(errorMessage));
   }
 );

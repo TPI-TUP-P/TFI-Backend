@@ -9,7 +9,7 @@ function App() {
 // useAuthCheck();
  return <>
  <RouterProvider router={router} />
-    <Toaster position='top-right'/>
+    <Toaster  position='top-right'/>
  </>
  
 }
