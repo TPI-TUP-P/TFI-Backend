@@ -15,10 +15,23 @@
 }
 @theme {
   /* Mapeo Tailwind CSS v4 idéntico al tuyo */
-  --color-brand-bg: var(--color-brand-bg);
+   --animate-custom-enter: custom-enter 0.35s cubic-bezier(0.21, 1.02, 0.73, 1);
+  --animate-custom-leave: custom-leave 0.4s cubic-bezier(0.06, 0.71, 0.55, 1) forwards;
+  --color-brand-bg: var(--color-brand-bg);  
   --color-brand-card: var(--color-brand-card);
   --color-brand-title: var(--color-brand-title);
   --color-brand-muted: var(--color-brand-muted);
   --color-brand-accent: var(--color-brand-accent);
   --color-brand-border: var(--color-brand-border);
+}
+
+
+@keyframes custom-enter {
+  0%   { transform: translate3d(0, -8px, 0) scale(0.95); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes custom-leave {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+  100% { transform: translate3d(0, -8px, 0) scale(0.9); opacity: 0; }
 }

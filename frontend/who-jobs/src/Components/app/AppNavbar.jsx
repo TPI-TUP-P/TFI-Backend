@@ -1,13 +1,29 @@
-// AppNavbar.jsx
 import React, { useState } from "react";
 import { useAuthStore } from "../stores/useAuthStore";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, Search, X } from "lucide-react";
-import Input from "../ui/Input";
+import { Menu, X } from "lucide-react";
+import { toast } from "react-hot-toast";
 import AppSearch from "./AppSearch";
+import useModalConfirm from "../../Hooks/useModalConfirm";
 const AppNavbar = () => {
   const logout = useAuthStore((s) => s.logout);
   const [open, setOpen] = useState(false);
+  const { Modal, openModal } = useModalConfirm();
+
+  // Función que abre el modal de confirmación
+  const handleLogout = () => {
+    openModal({
+      type: 'warning',
+      title: '¿Cerrar sesión?',
+      description: 'Se cerrará tu sesión actual',
+      buttonConfirmText: 'Salir',
+      buttonCancelText: 'Cancelar',
+      onConfirm: () => {
+        logout();
+        toast.success('Sesión cerrada correctamente');
+      },
+    });
+  };
 
   const NAV_LINKS = [
   { to: "/home", label: "Inicio" },
@@ -17,6 +33,7 @@ const AppNavbar = () => {
 
   return (
      <header className="fixed left-1/2 top-4 z-50 w-[92%] max-w-5xl -translate-x-1/2">
+      {Modal}
       <div className="rounded-2xl border border-brand-border bg-brand-card/90 px-6 py-3 shadow-lg shadow-brand-title/5 backdrop-blur-md">
         
         <div className="hidden items-center justify-between gap-6 md:flex">
@@ -44,7 +61,7 @@ const AppNavbar = () => {
           </div> */}
           <AppSearch/>
 
-          <button onClick={logout} className="shrink-0 rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
+          <button onClick={handleLogout} className="shrink-0 rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
             Salir
           </button>
         </div>
@@ -81,7 +98,7 @@ const AppNavbar = () => {
             </div> */}
 
               <AppSearch/>
-            <button onClick={logout} className="rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
+            <button onClick={handleLogout} className="rounded-full border border-brand-border px-4 py-2 text-xs font-medium text-brand-title hover:bg-brand-bg">
               Salir
             </button>
           </div>
