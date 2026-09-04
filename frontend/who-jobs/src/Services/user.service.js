@@ -38,9 +38,24 @@ export const userService = {
     });
   },
 
+
+  
+  
+  uploadCv: async (formData) => {
+    try {
+      const response = await api.post('/User/cv', formData);
+      return response;
+    } catch (error) {
+      console.error("Error uploading CV:", error);
+      throw error;
+    }
+  },
+
   getMyCvUrl: async () => {
     try {
-      const response = await api.get("User/me/cv");
+      const response = await api.get("User/me/cv",{
+        skipGlobalLoader: true,
+      });
       return response;
     } catch (error) {
       console.error("Error fetching CV url:", error);
