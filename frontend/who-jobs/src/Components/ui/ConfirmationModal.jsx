@@ -45,7 +45,6 @@ const ConfirmationModal = ({
 
   const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Overlay */}
       <div
         className="absolute inset-0 transition-opacity animate-custom-enter"
         style={{
@@ -54,14 +53,12 @@ const ConfirmationModal = ({
         onClick={onCancel}
       />
 
-      {/* Modal */}
       <div
         className="relative w-full max-w-md mx-4 rounded-lg shadow-xl animate-custom-enter"
         style={{
           backgroundColor: "var(--color-brand-card)",
         }}
       >
-        {/* Close Button */}
         <button
           onClick={onCancel}
           className="absolute top-4 right-4 p-1 rounded-full transition-colors"
@@ -78,9 +75,7 @@ const ConfirmationModal = ({
           <X size={20} />
         </button>
 
-        {/* Content */}
         <div className="p-6">
-          {/* Icon */}
           <div
             className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full"
             style={{
@@ -90,7 +85,6 @@ const ConfirmationModal = ({
             <IconComponent size={24} color={variant.iconColor} />
           </div>
 
-          {/* Title */}
           <h2
             className="text-lg font-semibold text-center mb-2"
             style={{
@@ -100,7 +94,6 @@ const ConfirmationModal = ({
             {title}
           </h2>
 
-          {/* Description */}
           {description && (
             <p
               className="text-center text-sm mb-6"
@@ -112,9 +105,7 @@ const ConfirmationModal = ({
             </p>
           )}
 
-          {/* Buttons */}
           <div className="flex gap-3">
-            {/* Cancel Button */}
             <button
               onClick={onCancel}
               className="flex-1 px-4 py-2 rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2"
@@ -135,7 +126,6 @@ const ConfirmationModal = ({
               {buttonCancelText}
             </button>
 
-            {/* Confirm Button */}
             <button
               onClick={onConfirm}
               className={`flex-1 px-4 py-2 rounded-lg font-medium text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${variant.button}`}

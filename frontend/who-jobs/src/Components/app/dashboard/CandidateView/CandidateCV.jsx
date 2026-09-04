@@ -28,6 +28,7 @@ export default function CandidateCV({
       const formData = new FormData()
       formData.append('cv', cvFile)
 
+
       const result = await api.post('/User/cv', formData)
 
       setAuth(token, {
