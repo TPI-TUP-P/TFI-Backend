@@ -4,15 +4,19 @@ import { jobService } from "../../Services/job.service";
 import { postulationService } from "../../Services/postulation.service";
 import { userService } from "../../Services/user.service";
 import { useAuthStore } from "../../Components/stores/useAuthStore";
+import { calificationService } from "../../Services/calification.service";
 import PostulationCard from "../../Components/postulations/PostulationCard";
 import ApplyModal from "../../Components/jobs/ApplyModal";
 import ConfirmDialog from "../../Components/common/ConfirmDialog";
 import Toast from "../../Components/common/Toast";
 import Pagination from "../../Components/jobs/Pagination";
+import StarRating from "../../Components/common/StarRating";
+import RatingDisplay from "../../Components/common/RatingDisplay";
 
 const APPLY_ROLES = [0, 2, 3]; // Candidate, Admin, SuperAdmin
 const ADMIN_ROLES = [2, 3]; // Admin, SuperAdmin
 const POSTULATIONS_PAGE_SIZE = 5;
+const CAN_RATE_ROLES = [0, 2, 3];
 
 const roleLabels = {
   0: "Candidato",
@@ -52,6 +56,12 @@ const JobDetailPage = () => {
   const [myPostulationId, setMyPostulationId] = useState(null);
   const [showUnapplyConfirm, setShowUnapplyConfirm] = useState(false);
   const [unapplying, setUnapplying] = useState(false);
+
+  const [myCalification, setMyCalification] = useState(null); // null = sin calificar, {id, score} = ya calificó
+  const [ratingValue, setRatingValue] = useState(0);
+  const [savingRating, setSavingRating] = useState(false);
+
+  const [creatorAverage, setCreatorAverage] = useState(null);
 
   const isCreator = job && user && job.creator === user.id;
   const isOwner = job && user && ((user.role === 1 && isCreator) || ADMIN_ROLES.includes(user.role));
@@ -118,6 +128,23 @@ const JobDetailPage = () => {
           .then(setCreator)
           .catch(() => setCreator(null));
 
+        calificationService
+          .getAverage(jobData.creator)
+          .then(setCreatorAverage)
+          .catch(() => setCreatorAverage(null));
+
+        if (user && CAN_RATE_ROLES.includes(user.role) && jobData.creator !== user.id) {
+          try {
+            const existing = await calificationService.getMine(jobData.creator);
+            if (existing) {
+              setMyCalification(existing);
+              setRatingValue(existing.score);
+            }
+          } catch {
+            // no calificó todavía, queda en null
+          }
+        }
+
         const canManageThisJob =
           user &&
           ((user.role === 1 && jobData.creator === user.id) ||
@@ -150,6 +177,26 @@ const JobDetailPage = () => {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRate = async (score) => {
+    setRatingValue(score);
+    setSavingRating(true);
+    try {
+      if (myCalification) {
+        await calificationService.update(myCalification.id, user.id, job.creator, score);
+        setMyCalification((prev) => ({ ...prev, score }));
+      } else {
+        const created = await calificationService.create(job.creator, score);
+        setMyCalification({ id: created.id, score });
+      }
+      setToast({ type: "success", message: "Calificación guardada." });
+    } catch (err) {
+      setToast({ type: "error", message: "No se pudo guardar la calificación." });
+      setRatingValue(myCalification?.score ?? 0);
+    } finally {
+      setSavingRating(false);
+    }
   };
 
   const validateForm = () => {
@@ -470,7 +517,6 @@ const JobDetailPage = () => {
                     </div>
                   </div>
                 </div>
-
                 {/* Info del creador */}
                 <div>
                   <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-brand-muted">
@@ -478,18 +524,46 @@ const JobDetailPage = () => {
                   </h3>
 
                   {creator ? (
-                    <div className="flex items-center gap-4 rounded-lg bg-brand-bg px-4 py-3.5">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-accent text-sm font-bold text-white">
-                        {creatorInitials}
+                    <div className="rounded-lg bg-brand-bg px-4 py-3.5">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex min-w-0 items-center gap-4">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-accent text-sm font-bold text-white">
+                            {creatorInitials}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-brand-title">
+                              {creator.name} {creator.lastName}
+                            </p>
+                            <p className="truncate text-xs text-brand-muted">
+                              {creator.email}
+                              {roleLabels[creator.role] ? ` · ${roleLabels[creator.role]}` : ""}
+                            </p>
+                          </div>
+                        </div>
+
+                        {user && CAN_RATE_ROLES.includes(user.role) && job.creator !== user.id && (
+                          <div className="shrink-0 text-right">
+                            <p className="mb-1 text-[11px] font-medium text-brand-muted">
+                              Calificá a la empresa
+                            </p>
+                            <div className="flex items-center justify-end gap-2">
+                              <StarRating value={ratingValue} onChange={handleRate} size="text-lg" />
+                              {savingRating && (
+                                <span className="text-[11px] text-brand-muted">...</span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-brand-title">
-                          {creator.name} {creator.lastName}
+
+                      <div className="mt-3.5 border-t border-brand-border pt-3.5">
+                        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-brand-muted">
+                          Calificación general
                         </p>
-                        <p className="truncate text-xs text-brand-muted">
-                          {creator.email}
-                          {roleLabels[creator.role] ? ` · ${roleLabels[creator.role]}` : ""}
-                        </p>
+                        <RatingDisplay
+                          average={creatorAverage?.average}
+                          count={creatorAverage?.count}
+                        />
                       </div>
                     </div>
                   ) : (
@@ -499,6 +573,7 @@ const JobDetailPage = () => {
                   )}
                 </div>
               </div>
+
             </>
           )}
         </div>

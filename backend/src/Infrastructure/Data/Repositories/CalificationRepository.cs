@@ -14,6 +14,24 @@ public class CalificationRepository(AppDbContext context) : ICalificationReposit
         return calification;
     }
 
+    public async Task<Calification?> GetByQualifierAndQualifiedAsync(Guid idQualifier, Guid idQualified, CancellationToken cancellationToken)
+    {
+        return await context.Califications
+            .FirstOrDefaultAsync(c => c.IdQualifier == idQualifier && c.IdQualified == idQualified, cancellationToken);
+    }
+
+    public async Task<(double Average, int Count)> GetAverageAndCountAsync(Guid idQualified, CancellationToken cancellationToken)
+    {
+        var scores = await context.Califications
+            .Where(c => c.IdQualified == idQualified)
+            .Select(c => c.Score)
+            .ToListAsync(cancellationToken);
+
+        if (scores.Count == 0) return (0, 0);
+
+        return (scores.Average(), scores.Count);
+    }
+
     public async Task<Calification> AddAsync(Calification calification, CancellationToken cancellationToken)
     {
         var calificationcreated = await context.Califications.AddAsync(calification, cancellationToken);
