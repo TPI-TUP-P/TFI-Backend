@@ -1,8 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { userService } from "../../Services/user.service";
+import { calificationService } from "../../Services/calification.service";
+import RatingDisplay from "../common/RatingDisplay";
 
 const getInitials = (name = "", lastName = "") => {
   const first = name.trim().charAt(0) || "";
@@ -26,6 +28,16 @@ const ProfileCard = () => {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const [downloadingCv, setDownloadingCv] = useState(false);
+
+  const [myRating, setMyRating] = useState(null);
+
+  useEffect(() => {
+    if (!user || user.role === 0) return;
+    calificationService
+      .getAverage(user.id)
+      .then(setMyRating)
+      .catch(() => setMyRating(null));
+  }, [user]);
 
   const handleDownloadCv = async () => {
     setDownloadingCv(true);
@@ -128,6 +140,16 @@ const ProfileCard = () => {
               No hay CV cargado
             </p>
           )}
+        </div>
+      )}
+      {user.role !== 0 && (
+        <div className="mt-6 border-t border-brand-border pt-5">
+          <p className="text-[11px] uppercase tracking-wide text-brand-muted">
+            Puntaje como empresa
+          </p>
+          <div className="mt-1.5">
+            <RatingDisplay average={myRating?.average} count={myRating?.count} />
+          </div>
         </div>
       )}
       {/* CTA */}

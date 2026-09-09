@@ -23,6 +23,27 @@ public class CalificationService(ICalificationRepository _Calification, IUserSer
         );
     }
 
+    public async Task<GetByIdResponse?> GetMyCalificationForUserAsync(Guid idQualifier, Guid idQualified, CancellationToken cancellationToken)
+    {
+        var calification = await _Calification.GetByQualifierAndQualifiedAsync(idQualifier, idQualified, cancellationToken);
+        if (calification == null) return null;
+
+        return new GetByIdResponse(
+            calification.Id,
+            calification.IdQualifier,
+            calification.IdQualified,
+            calification.CreateAt,
+            calification.Score
+        );
+    }
+
+    public async Task<GetAverageResponse> GetAverageAsync(Guid idQualified, CancellationToken cancellationToken)
+    {
+        ValidateId(idQualified);
+        var (average, count) = await _Calification.GetAverageAndCountAsync(idQualified, cancellationToken);
+        return new GetAverageResponse(idQualified, average, count);
+    }
+
     public async Task<CreateResponse> AddAsync(Guid IdUser, CreateRequest calificationDto, CancellationToken cancellationToken)
     {
         if (calificationDto is null)
