@@ -19,11 +19,11 @@ const ConfirmDialog = ({
       onClick={handleOverlayClick}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
     >
-      <div className="w-full max-w-sm rounded-2xl bg-brand-card p-6 shadow-lg">
-        <h3 className="text-lg font-bold text-brand-title">{title}</h3>
+      <div className="w-full max-w-sm rounded-2xl bg-brand-card p-5 shadow-lg sm:p-6">
+        <h3 className="text-base font-bold text-brand-title sm:text-lg">{title}</h3>
         <p className="mt-2 break-words text-sm text-brand-muted">{message}</p>
 
-        <div className="mt-6 flex gap-2">
+        <div className="mt-6 flex flex-col gap-2 sm:flex-row">
           <button
             onClick={onConfirm}
             disabled={loading}

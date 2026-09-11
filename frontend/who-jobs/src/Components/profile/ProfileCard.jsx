@@ -69,7 +69,8 @@ const ProfileCard = () => {
   const isCandidate = role === 0 || role === "Candidate";
 
   return (
-    <aside className="flex w-full flex-col rounded-xl border border-brand-border bg-brand-card p-6 shadow-sm">
+    // Cambios: p-6 → p-5 sm:p-6 para que respire mejor en pantallas angostas
+<aside className="flex w-full flex-col rounded-xl border border-brand-border bg-brand-card p-5 shadow-sm sm:p-6">
 
       {/* Avatar + nombre */}
       <div className="flex flex-col items-center text-center">

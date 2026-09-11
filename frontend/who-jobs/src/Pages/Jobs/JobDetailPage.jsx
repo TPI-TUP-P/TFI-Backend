@@ -319,8 +319,8 @@ const JobDetailPage = () => {
     : "?";
 
   return (
-    <main className="min-h-screen bg-brand-bg py-10">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6">
+    <main className="min-h-screen bg-brand-bg py-6 sm:py-10">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-3 sm:px-6">
 
         <button
           onClick={() => navigate(-1)}
@@ -414,13 +414,13 @@ const JobDetailPage = () => {
             </form>
           ) : (
             <>
-              <div className="border-b border-brand-border bg-brand-bg/60 px-8 py-7">
+              <div className="border-b border-brand-border bg-brand-bg/60 px-5 py-6 sm:px-8 sm:py-7">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <span className="mb-2 inline-block rounded-full bg-brand-accent/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-brand-accent">
                       Oferta de trabajo
                     </span>
-                    <h1 className="break-words text-3xl font-bold leading-tight text-brand-title">
+                    <h1 className="break-words text-2xl font-bold leading-tight text-brand-title sm:text-3xl">
                       {job.job_position}
                     </h1>
                   </div>
@@ -480,7 +480,7 @@ const JobDetailPage = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-7 px-8 py-7">
+              <div className="flex flex-col gap-6 px-5 py-6 sm:gap-7 sm:px-8 sm:py-7">
                 <div>
                   <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted">
                     Descripción del puesto
@@ -525,7 +525,7 @@ const JobDetailPage = () => {
 
                   {creator ? (
                     <div className="rounded-lg bg-brand-bg px-4 py-3.5">
-                      <div className="flex items-start justify-between gap-4">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div className="flex min-w-0 items-center gap-4">
                           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-accent text-sm font-bold text-white">
                             {creatorInitials}
@@ -580,7 +580,7 @@ const JobDetailPage = () => {
 
         {isOwner && (
           <div className="overflow-hidden rounded-2xl border border-brand-border bg-brand-card shadow-sm">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-brand-border bg-brand-bg/60 px-8 py-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-brand-border bg-brand-bg/60 px-5 py-5 sm:px-8 sm:py-6">
               <h2 className="text-base font-bold text-brand-title">
                 Postulaciones
               </h2>
@@ -603,7 +603,7 @@ const JobDetailPage = () => {
               </div>
             </div>
 
-            <div className="p-8">
+            <div className="p-5 sm:p-8">
               {postulationsLoading ? (
                 <p className="py-8 text-center text-sm text-brand-muted">
                   Cargando postulaciones...

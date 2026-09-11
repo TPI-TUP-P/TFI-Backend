@@ -23,21 +23,18 @@ const ApplyModal = ({ job, onClose, onSuccess }) => {
     setResult(null);
     try {
       const url = await userService.getMyCvUrl();
-
       const fileResponse = await fetch(url);
       if (!fileResponse.ok) {
         throw new Error("No se pudo descargar el CV guardado.");
       }
-
       const blob = await fileResponse.blob();
       const file = new File([blob], "cv.pdf", { type: "application/pdf" });
-
       setCvFile(file);
     } catch (err) {
-      const message =
-        err?.response?.data?.detail ||
-        "No tenés un CV guardado en tu perfil, o no se pudo obtener.";
-      setResult({ type: "error", message });
+      setResult({
+        type: "error",
+        message: "No tenés un CV guardado en tu perfil, o no se pudo obtener.",
+      });
     } finally {
       setLoadingSavedCv(false);
     }
@@ -56,7 +53,6 @@ const ApplyModal = ({ job, onClose, onSuccess }) => {
 
     try {
       const response = await postulationService.apply(job.id, cvFile);
-
       setResult({
         type: "success",
         message: `¡Postulación enviada con éxito! Estado: ${stateLabels[response.state] ?? "Pendiente"}.`,
@@ -68,7 +64,6 @@ const ApplyModal = ({ job, onClose, onSuccess }) => {
         error?.response?.data?.title ||
         error?.response?.data?.message ||
         "No se pudo completar la postulación. Intentá de nuevo.";
-
       setResult({ type: "error", message });
     } finally {
       setLoading(false);
@@ -82,12 +77,12 @@ const ApplyModal = ({ job, onClose, onSuccess }) => {
   return (
     <div
       onClick={handleOverlayClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6"
     >
-      <div className="w-full max-w-md rounded-xl bg-brand-card p-6 shadow-lg">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-brand-card p-5 shadow-lg sm:p-6">
 
         <div className="flex items-start justify-between gap-3">
-          <h2 className="min-w-0 break-words text-lg font-bold text-brand-title">
+          <h2 className="min-w-0 break-words text-base font-bold text-brand-title sm:text-lg">
             Postularme a {job.job_position}
           </h2>
           <button

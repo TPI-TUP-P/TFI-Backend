@@ -70,14 +70,14 @@ const PostulationCard = ({ postulation, onUpdateState }) => {
           <button
             onClick={() => handleAction(1, "accept")}
             disabled={loadingAction !== null}
-            className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex-1 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none"
           >
             {loadingAction === "accept" ? "..." : "Aceptar"}
           </button>
           <button
             onClick={() => handleAction(2, "reject")}
             disabled={loadingAction !== null}
-            className="rounded-lg border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex-1 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none"
           >
             {loadingAction === "reject" ? "..." : "Rechazar"}
           </button>
