@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuthLandingStore } from "../Components/stores/useAuthLandingStore";
 import { useForm } from "react-hook-form";
-import { Navigate, useNavigate, useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Input from "../Components/ui/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../Components/schemas/auth.schema";
@@ -11,6 +11,7 @@ import { ROLE_TO_NUMBER } from "../Utils/roles";
 import { ArrowRight, Sparkles, UserPlus } from "lucide-react";
 import RoleSelector from "../Components/auth/RoleSelector";
 const RegisterPage = () => {
+  const [errorMessage, setErrorMessage] = useState("");
   const initialEmail = useAuthLandingStore((state) => state.initialEmail);
   const selectedRole = useAuthLandingStore((state) => state.selectedRole);
   const { setData } = useAuthLandingStore();
@@ -37,11 +38,13 @@ const RegisterPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await authService.register(data);
-
+      setErrorMessage("");
+      await authService.register(data);
       navigate("/login");
     } catch (error) {
-      console.error(error?.message || "error en el servidor");
+      setErrorMessage(
+        error?.message || "No se pudo crear la cuenta. Intentá nuevamente."
+      );
     }
   };
 
@@ -103,12 +106,18 @@ const RegisterPage = () => {
             <p className="text-sm text-brand-muted mb-8">
               Armá tu perfil una sola vez y dejá que te encuentren.
             </p>
+            {errorMessage && (
+              <div
+                role="alert"
+                className="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-700"
+              >
+                {errorMessage}
+              </div>
+            )}
             <RoleSelector role={selectedRole} setData={setData} />
 
             <form
-              onSubmit={handleSubmit(onSubmit, (errors) =>
-                console.log("error", errors),
-              )}
+              onSubmit={handleSubmit(onSubmit)}
               className="space-y-5"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-x-4">
@@ -155,9 +164,10 @@ const RegisterPage = () => {
               </div>
               <Button
                 type="submit"
+                disabled={isSubmitting}
                 className="w-full bg-brand-title text-brand-card hover:bg-brand-title/90"
               >
-                Registrarme
+                {isSubmitting ? "Registrando..." : "Registrarme"}
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </form>

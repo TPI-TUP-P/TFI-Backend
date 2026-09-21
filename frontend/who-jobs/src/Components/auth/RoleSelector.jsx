@@ -29,7 +29,6 @@ const ROLES = [
 
 const RoleSelector = ({ role, setData }) => {
   const handleSelect = (id) => {
-    console.log(id);
     if (id === role) return;
     setData({
       selectedRole: id,

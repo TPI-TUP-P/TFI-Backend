@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 const AppSearch = () => {
   const [jobs, setJobs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const timer = useRef(null);
   // useEffect(() => {
   //   const searchJobs = async () => {
@@ -27,23 +28,27 @@ const AppSearch = () => {
 
   const handleChange = async(e) => {
     const value = e.target.value;
-    console.log(value)
     setSearchValue(value);
+    setErrorMessage("");
 
     clearTimeout(timer.current);
 
     if (!value.trim()) {
       setJobs([]);
       return;
-    }try {
-      
-      timer.current = setTimeout(async () => {
-        const res = await jobService.getJobsBySearch(1, searchValue);
-        setJobs(res.items);
-      }, 300);
-    } catch (error) {
-      console.log(error, "error")
     }
+
+    timer.current = setTimeout(async () => {
+      try {
+        const res = await jobService.getJobsBySearch(1, value);
+        setJobs(res.items);
+      } catch (error) {
+        setJobs([]);
+        setErrorMessage(
+          error?.message || "No se pudieron buscar las ofertas."
+        );
+      }
+    }, 300);
   };
 
   return (
@@ -61,7 +66,11 @@ const AppSearch = () => {
 
       {searchValue && (
         <div className="absolute left-0 right-0 top-full z-20 mt-2 max-h-80 overflow-y-auto rounded-2xl border border-brand-border bg-brand-card shadow-lg shadow-brand-title/10">
-          {jobs && jobs.length > 0 ? (
+          {errorMessage ? (
+            <p role="alert" className="px-4 py-3 text-xs text-red-700">
+              {errorMessage}
+            </p>
+          ) : jobs && jobs.length > 0 ? (
             jobs.map((job) => (
               <Link
                 key={job.id}

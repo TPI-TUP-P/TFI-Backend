@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Input from "../Components/ui/Input";
 import { loginSchema } from "../Components/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,8 +9,8 @@ import { authService } from "../Services/auth.service";
 import { ArrowRight, LogIn, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../Components/stores/useAuthStore";
-import toast, { Toaster } from "react-hot-toast";
 const LoginPage = () => {
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
   const {
@@ -25,6 +25,7 @@ const LoginPage = () => {
 
   const onSubmit = async (data) => {
     try {
+      setErrorMessage("");
       const response = await authService.login(data);
       const { token, ...userData } = response;
       const user = {
@@ -37,8 +38,10 @@ const LoginPage = () => {
       setAuth(response.token, user);
       navigate("/home");
     } catch (error) {
-  console.log(error, "hola")
-      resetField("password")
+      resetField("password");
+      setErrorMessage(
+        error?.message || "No se pudo iniciar sesión. Intentá nuevamente."
+      );
     }
   };
 
@@ -99,6 +102,15 @@ const LoginPage = () => {
         <p className="text-sm text-brand-muted mb-8">
           Entrá para ver y postularte a las ofertas activas.
         </p>
+
+        {errorMessage && (
+          <div
+            role="alert"
+            className="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-700"
+          >
+            {errorMessage}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <Input
