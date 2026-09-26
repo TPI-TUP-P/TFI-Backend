@@ -1,0 +1,37 @@
+/* main.css */
+@import "tailwindcss";
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+:root {
+  --color-brand-bg: #F5F4F7;     /* Neutro gris-púrpura ultra suave */
+  --color-brand-card: #FFFFFF;   /* Blanco puro para las tarjetas */
+  --color-brand-title: #1E1B2E;  /* Berenjena/Púrpura oscuro profundo (Sustituye al negro/azul) */
+  --color-brand-muted: #6B657B;  /* Gris violeta para textos secundarios */
+  --color-brand-accent: #7C3AED; /* Púrpura eléctrico / Violeta brillante (Match, CTAs y detalles) */
+  --color-brand-border: #E4E1EA; /* Borde lila pastel muy suave */
+}
+@theme {
+  /* Mapeo Tailwind CSS v4 idéntico al tuyo */
+   --animate-custom-enter: custom-enter 0.35s cubic-bezier(0.21, 1.02, 0.73, 1);
+  --animate-custom-leave: custom-leave 0.4s cubic-bezier(0.06, 0.71, 0.55, 1) forwards;
+  --color-brand-bg: var(--color-brand-bg);  
+  --color-brand-card: var(--color-brand-card);
+  --color-brand-title: var(--color-brand-title);
+  --color-brand-muted: var(--color-brand-muted);
+  --color-brand-accent: var(--color-brand-accent);
+  --color-brand-border: var(--color-brand-border);
+}
+
+
+@keyframes custom-enter {
+  0%   { transform: translate3d(0, -8px, 0) scale(0.95); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes custom-leave {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+  100% { transform: translate3d(0, -8px, 0) scale(0.9); opacity: 0; }
+}

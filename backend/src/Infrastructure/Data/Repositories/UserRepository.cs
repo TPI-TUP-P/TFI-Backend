@@ -1,0 +1,91 @@
+using Domain.Entities;
+using Domain.Enums;
+using Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
+namespace Infrastructure.Data.Repositories;
+
+public class UserRepository(AppDbContext context) : IUserRepository
+{
+
+    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.Where(u => u.IsActive == true).FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+        return user;
+    }
+    public async Task<(IReadOnlyList<User> Users, int TotalCount)> GetAllAsync(
+        UserRole? userRole,
+        bool includeDeleted,
+        CancellationToken cancellationToken)
+    {
+        var query = context.Users.AsQueryable();
+
+        if (!includeDeleted)
+        {
+            query = query.Where(u => u.IsActive);
+        }
+
+        if (userRole.HasValue)
+        {
+            query = query.Where(u => u.Role == userRole.Value);
+        }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var users = await query.ToListAsync(cancellationToken);
+
+        return (users, totalCount);
+    }
+
+    public async Task<User?> GetByPhoneAsync(string phone, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.Where(u => u.IsActive == true).FirstOrDefaultAsync(u => u.Phone == phone, cancellationToken);
+        return user;
+    }
+
+    public async Task<User> AddAsync(User user, CancellationToken cancellationToken)
+    {
+        var userCreated = await context.Users.AddAsync(user);
+        await context.SaveChangesAsync(cancellationToken);
+        return userCreated.Entity;
+    }
+
+    public async Task<User> UpdateAsync(User user, CancellationToken cancellationToken)
+    {
+        var userToUpdate = await context.Users.FindAsync(user.Id, cancellationToken);
+        userToUpdate!.Name = user.Name;
+        userToUpdate.LastName = user.LastName;
+        userToUpdate.Email = user.Email;
+        userToUpdate.Password = user.Password;
+        userToUpdate.ResetToken = user.ResetToken;
+        userToUpdate.ResetTokenExpires = user.ResetTokenExpires;
+
+        await context.SaveChangesAsync(cancellationToken);
+        return user;
+
+    }
+
+    public async Task<User?> GetByEmailWithDeletedUsersAsync(string email, CancellationToken cancellationToken)
+    {
+        return await context.Users.FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
+    }
+    public async Task<User?> GetByResetTokenAsync(string token, CancellationToken cancellationToken)
+    {
+        return await context.Users
+            .FirstOrDefaultAsync(u => u.ResetToken == token, cancellationToken);
+    }
+    public Task DeleteAsync(User user, CancellationToken cancellationToken)
+    {
+        user.Delete();
+        return Task.CompletedTask;
+
+    }
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.Where(u => u.IsActive == true).FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
+        return user;
+    }
+
+
+
+
+}

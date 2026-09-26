@@ -1,0 +1,36 @@
+namespace Application.Interfaces;
+
+using Domain.Entities;
+using Application.DTOs.Publication.Request;
+using Domain.Enums;
+using Application.DTOs.Publication.Response;
+using Domain.DTOs;
+
+
+public interface IPublicationService
+{
+    Task<GetByIdResponse> GetByIdAsync(Guid Id, CancellationToken cancellationToken);
+
+    Task<CreateResponse> AddAsync(Guid IdUser, CreateRequest publication, CancellationToken cancellationToken);
+
+    Task<GetAllPublicationsResponse> GetAllAsync(int page, int pageSize, string search, CancellationToken cancellationToken);
+
+    Task<UpdateResponse> UpdateAsync(Guid id, UpdateRequest request, CancellationToken cancellationToken);
+
+    Task DeleteAsync(UserRole? role, Guid id, Guid idUser, CancellationToken cancellationToken);
+
+    Task<bool> PublicationExistsAsync(Guid idPublication, CancellationToken cancellationToken);
+
+    Task<List<GetByIdResponse>> GetAllByCreatorAsync(Guid creatorId, int page, int pageSize, CancellationToken cancellationToken);
+
+    Task<int> CountMyPublicationsAsync(Guid creatorId, CancellationToken cancellationToken);
+
+    Task<List<GetByIdResponse>> SearchByNameAsync(string name, int page, int pageSize, CancellationToken cancellationToken);
+
+    Task<PublicationCountDto> GetCountAsync(CancellationToken cancellationToken);
+
+    Task<PublicationCountDto> GetCountByCreatorAsync(Guid creatorId, CancellationToken cancellationToken);
+
+    Task AddApplicantAsync(Guid publicationId, CancellationToken cancellationToken);
+    Task DeleteApplicantAsync(Guid publicationId, CancellationToken cancellationToken);
+}
